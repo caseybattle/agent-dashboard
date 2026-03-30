@@ -4,437 +4,202 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CLX Agent Command Center</title>
+  <meta name="description" content="CLX Agent Command Center — real-time AI agent operations dashboard for the CLX business system.">
+  <meta property="og:title" content="CLX Agent Command Center">
+  <meta property="og:description" content="Real-time AI agent ops hub. 20 agents. Live metrics. Revenue tracking.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://agent-dashboard-five-delta.vercel.app/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CLX Agent Command Center">
+  <meta name="theme-color" content="#0A0A0F">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230A0A0F'/><text x='4' y='24' font-size='20' font-family='monospace' fill='%2306B6D4'>C</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0A0A0F;
-      --sidebar-bg: #0D0D14;
-      --surface: rgba(18,18,26,0.7);
-      --surface2: rgba(26,26,40,0.6);
-      --border: rgba(255,255,255,0.06);
-      --border-hover: rgba(255,255,255,0.12);
-      --purple: #A855F7;
-      --cyan: #06B6D4;
-      --orange: #F97316;
-      --green: #22C55E;
-      --red: #EF4444;
-      --yellow: #EAB308;
-      --white: #E2E8F0;
-      --dim: #64748B;
-      --sidebar-w: 260px;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Inter', -apple-system, sans-serif;
-      --ease: cubic-bezier(0.16,1,0.3,1);
-    }
+    :root{--bg:#0A0A0F;--sidebar-bg:#0D0D14;--surface:rgba(18,18,26,0.7);--surface2:rgba(26,26,40,0.6);--border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);--purple:#A855F7;--cyan:#06B6D4;--orange:#F97316;--green:#22C55E;--red:#EF4444;--yellow:#EAB308;--white:#E2E8F0;--dim:#64748B;--sidebar-w:260px;--sidebar-collapsed:56px;--mono:'JetBrains Mono',monospace;--sans:'Inter',-apple-system,sans-serif;--ease:cubic-bezier(0.16,1,0.3,1)}
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{height:100%;overflow:hidden}
+    body{font-family:var(--sans);background:var(--bg);color:var(--white);display:flex}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 500px 400px at 30% 20%,rgba(168,85,247,0.03) 0%,transparent 70%),radial-gradient(ellipse 400px 400px at 80% 70%,rgba(6,182,212,0.025) 0%,transparent 70%);pointer-events:none;z-index:0}
 
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--white);
-      display: flex;
-    }
-
-    /* ── AMBIENT ── */
-    body::before {
-      content:'';position:fixed;inset:0;
-      background:
-        radial-gradient(ellipse 500px 400px at 30% 20%, rgba(168,85,247,0.03) 0%,transparent 70%),
-        radial-gradient(ellipse 400px 400px at 80% 70%, rgba(6,182,212,0.025) 0%,transparent 70%);
-      pointer-events:none;z-index:0;
-    }
-
-    /* ══════════════════════════════════
-       SIDEBAR
-    ══════════════════════════════════ */
-    .sidebar {
-      width: var(--sidebar-w);
-      min-width: var(--sidebar-w);
-      height: 100vh;
-      background: var(--sidebar-bg);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      left: 0; top: 0;
-      z-index: 100;
-      overflow: hidden;
-    }
-
-    /* Logo */
-    .sidebar-logo {
-      padding: 1.5rem 1.25rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .logo-mark {
-      font-family: var(--mono);
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      background: linear-gradient(135deg, var(--cyan), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .logo-cursor {
-      -webkit-text-fill-color: var(--purple);
-      animation: blink 1.2s step-end infinite;
-    }
+    /* ═══ SIDEBAR ═══ */
+    .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;overflow:hidden;transition:width .3s var(--ease),min-width .3s var(--ease)}
+    .sidebar.collapsed{width:var(--sidebar-collapsed);min-width:var(--sidebar-collapsed)}
+    .sidebar-logo{padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;overflow:hidden;white-space:nowrap}
+    .logo-mark{font-family:var(--mono);font-size:.95rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:.4rem}
+    .logo-cursor{-webkit-text-fill-color:var(--purple);animation:blink 1.2s step-end infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-    .logo-sub {
-      font-family: var(--mono);
-      font-size: 0.55rem;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-top: 0.3rem;
-    }
+    .logo-text-wrap{overflow:hidden;transition:width .3s var(--ease),opacity .3s}
+    .sidebar.collapsed .logo-text-wrap{width:0;opacity:0}
+    .logo-sub{font-family:var(--mono);font-size:.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-top:.25rem;white-space:nowrap}
+    .collapse-btn{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--dim);cursor:pointer;padding:.28rem .35rem;transition:all .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .collapse-btn:hover{border-color:var(--border-hover);color:var(--white)}
+    .collapse-icon{transition:transform .3s var(--ease)}
+    .sidebar.collapsed .collapse-icon{transform:rotate(180deg)}
 
-    /* Status row */
-    .sidebar-status {
-      padding: 0.85rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .online-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: var(--mono);
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: var(--green);
-    }
-    .online-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-    @keyframes pulse-dot{0%,100%{box-shadow:0 0 6px var(--green)}50%{box-shadow:0 0 12px var(--green),0 0 20px rgba(34,197,94,0.3)}}
-    .sidebar-clock {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--dim);
-      font-variant-numeric: tabular-nums;
-    }
+    .sidebar-status{padding:.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;overflow:hidden;white-space:nowrap;gap:.5rem}
+    .online-pill{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:1px;color:var(--green);flex-shrink:0}
+    .online-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pdot 2s ease-in-out infinite;flex-shrink:0}
+    @keyframes pdot{0%,100%{box-shadow:0 0 6px var(--green)}50%{box-shadow:0 0 14px var(--green),0 0 22px rgba(34,197,94,0.3)}}
+    .sidebar-clock{font-family:var(--mono);font-size:.62rem;color:var(--dim);font-variant-numeric:tabular-nums;overflow:hidden;transition:width .3s,opacity .3s;white-space:nowrap}
+    .sidebar.collapsed .sidebar-clock{width:0;opacity:0;padding:0}
+    .sidebar.collapsed .online-pill span{display:none}
 
-    /* Nav */
-    .sidebar-nav {
-      padding: 0.75rem 0.75rem;
-      flex: 1;
-      overflow-y: auto;
-    }
+    .sidebar-nav{padding:.6rem .5rem;flex:1;overflow-y:auto;overflow-x:hidden}
+    .nav-section-label{font-family:var(--mono);font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:rgba(100,116,139,0.45);padding:.45rem .5rem .3rem;white-space:nowrap;overflow:hidden;transition:opacity .2s}
+    .sidebar.collapsed .nav-section-label{opacity:0}
+    .nav-link{display:flex;align-items:center;justify-content:space-between;padding:.5rem .6rem;border-radius:8px;cursor:pointer;transition:all .2s var(--ease);margin-bottom:.08rem;border:1px solid transparent;user-select:none;overflow:hidden;white-space:nowrap;position:relative}
+    .nav-link:hover{background:rgba(255,255,255,0.04);border-color:var(--border)}
+    .nav-link.active{background:rgba(6,182,212,0.08);border-color:rgba(6,182,212,0.18)}
+    .nav-link-left{display:flex;align-items:center;gap:.6rem;min-width:0}
+    .nav-icon{width:15px;height:15px;flex-shrink:0;opacity:.45;transition:opacity .2s;color:var(--dim)}
+    .nav-link:hover .nav-icon,.nav-link.active .nav-icon{opacity:1}
+    .nav-link.active .nav-icon{color:var(--cyan)}
+    .nav-label{font-size:.75rem;font-weight:500;color:var(--dim);transition:color .2s,opacity .3s,width .3s;overflow:hidden;white-space:nowrap}
+    .nav-link:hover .nav-label{color:var(--white)}
+    .nav-link.active .nav-label{color:var(--cyan);font-weight:600}
+    .sidebar.collapsed .nav-label{width:0;opacity:0}
+    .nav-badge{font-family:var(--mono);font-size:.52rem;font-weight:700;padding:.08rem .38rem;border-radius:100px;min-width:16px;text-align:center;transition:opacity .3s}
+    .sidebar.collapsed .nav-badge{opacity:0;width:0;overflow:hidden;padding:0}
+    .badge-red{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+    .badge-green{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+    .badge-cyan{background:rgba(6,182,212,0.12);color:var(--cyan);border:1px solid rgba(6,182,212,0.2)}
+    .badge-dim{background:rgba(100,116,139,0.1);color:var(--dim);border:1px solid rgba(100,116,139,0.15)}
+    .badge-warn{background:rgba(249,115,22,0.1);color:var(--orange);border:1px solid rgba(249,115,22,0.2)}
 
-    .nav-section-label {
-      font-family: var(--mono);
-      font-size: 0.52rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(100,116,139,0.5);
-      padding: 0.5rem 0.5rem 0.35rem;
-    }
+    .sidebar-kpis{padding:.65rem .9rem;border-top:1px solid var(--border);overflow:hidden;transition:opacity .2s}
+    .sidebar.collapsed .sidebar-kpis{opacity:0;pointer-events:none}
+    .sidebar-kpi-label{font-family:var(--mono);font-size:.48rem;letter-spacing:2px;text-transform:uppercase;color:rgba(100,116,139,0.45);margin-bottom:.5rem}
+    .sidebar-kpi-row{display:flex;justify-content:space-between;align-items:center;padding:.25rem 0}
+    .sidebar-kpi-name{font-size:.65rem;color:var(--dim)}
+    .sidebar-kpi-val{font-family:var(--mono);font-size:.68rem;font-weight:600}
 
-    .nav-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.55rem 0.75rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
-      margin-bottom: 0.1rem;
-      border: 1px solid transparent;
-      user-select: none;
-    }
-    .nav-link:hover {
-      background: rgba(255,255,255,0.04);
-      border-color: var(--border);
-    }
-    .nav-link.active {
-      background: rgba(6,182,212,0.08);
-      border-color: rgba(6,182,212,0.18);
-    }
-    .nav-link-left {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-    .nav-icon {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      opacity: 0.5;
-      transition: opacity 0.2s;
-    }
-    .nav-link:hover .nav-icon,
-    .nav-link.active .nav-icon { opacity: 1; }
+    /* Notif bell */
+    .notif-btn{position:relative;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--dim);cursor:pointer;padding:.28rem .35rem;transition:all .2s;display:flex;align-items:center;justify-content:center}
+    .notif-btn:hover{border-color:var(--border-hover);color:var(--white)}
+    .notif-dot{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1px solid var(--sidebar-bg);animation:pdot 2s ease infinite}
 
-    .nav-label {
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--dim);
-      transition: color 0.2s;
-    }
-    .nav-link:hover .nav-label { color: var(--white); }
-    .nav-link.active .nav-label { color: var(--cyan); font-weight: 600; }
+    .sidebar-footer{padding:.75rem 1rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:.48rem;letter-spacing:1px;color:rgba(100,116,139,0.3);text-transform:uppercase;white-space:nowrap;overflow:hidden;transition:opacity .2s}
+    .sidebar.collapsed .sidebar-footer{opacity:0}
 
-    .nav-badge {
-      font-family: var(--mono);
-      font-size: 0.55rem;
-      font-weight: 700;
-      padding: 0.1rem 0.4rem;
-      border-radius: 100px;
-      min-width: 18px;
-      text-align: center;
-    }
-    .badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
-    .badge-green { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-    .badge-cyan { background: rgba(6,182,212,0.12); color: var(--cyan); border: 1px solid rgba(6,182,212,0.2); }
-    .badge-dim { background: rgba(100,116,139,0.1); color: var(--dim); border: 1px solid rgba(100,116,139,0.15); }
+    /* ═══ MAIN ═══ */
+    .main{margin-left:var(--sidebar-w);flex:1;height:100vh;overflow-y:auto;position:relative;z-index:1;transition:margin-left .3s var(--ease)}
+    .main.collapsed{margin-left:var(--sidebar-collapsed)}
 
-    /* Sidebar divider */
-    .sidebar-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0.5rem 0.75rem;
-    }
+    .topbar{position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:.85rem 1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+    .topbar-left{display:flex;align-items:center;gap:1rem}
+    .topbar-title{font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+    .topbar-title span{color:var(--white)}
+    .topbar-actions{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+    .topbar-btn{font-family:var(--mono);font-size:.58rem;font-weight:600;padding:.28rem .7rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:transparent;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;transition:all .2s var(--ease);white-space:nowrap}
+    .topbar-btn:hover{border-color:var(--border-hover);color:var(--white)}
+    .topbar-btn.primary{border-color:rgba(6,182,212,0.3);color:var(--cyan);background:rgba(6,182,212,0.06)}
+    .topbar-btn.primary:hover{background:rgba(6,182,212,0.12)}
+    .topbar-btn.danger{border-color:rgba(239,68,68,0.3);color:var(--red);background:rgba(239,68,68,0.06)}
+    .topbar-btn.danger:hover{background:rgba(239,68,68,0.12)}
 
-    /* Sidebar metrics summary */
-    .sidebar-kpis {
-      padding: 0.75rem 1rem;
-      border-top: 1px solid var(--border);
-    }
-    .sidebar-kpi-label {
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(100,116,139,0.5);
-      margin-bottom: 0.6rem;
-    }
-    .sidebar-kpi-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.3rem 0;
-    }
-    .sidebar-kpi-name { font-size: 0.68rem; color: var(--dim); }
-    .sidebar-kpi-val { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; }
+    /* Command search bar in topbar */
+    .cmd-search{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:.3rem .75rem;cursor:pointer;transition:all .2s;min-width:180px}
+    .cmd-search:hover{border-color:var(--border-hover);background:rgba(255,255,255,0.06)}
+    .cmd-search-icon{color:var(--dim);width:12px;height:12px;flex-shrink:0}
+    .cmd-search-text{font-family:var(--mono);font-size:.6rem;color:var(--dim)}
+    .cmd-search-kbd{font-family:var(--mono);font-size:.5rem;color:rgba(100,116,139,0.5);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:.1rem .3rem;margin-left:auto}
 
-    /* Sidebar footer */
-    .sidebar-footer {
-      padding: 0.85rem 1.25rem;
-      border-top: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      letter-spacing: 1px;
-      color: rgba(100,116,139,0.35);
-      text-transform: uppercase;
-    }
+    .content{padding:1.5rem 1.75rem 3rem;max-width:1400px}
 
-    /* ══════════════════════════════════
-       MAIN CONTENT
-    ══════════════════════════════════ */
-    .main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      height: 100vh;
-      overflow-y: auto;
-      position: relative;
-      z-index: 1;
-    }
+    /* ═══ SECTION HEAD ═══ */
+    .section-head{display:flex;align-items:center;gap:.75rem;margin-bottom:.9rem}
+    .section-head-label{font-family:var(--mono);font-size:.56rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim)}
+    .section-head-line{flex:1;height:1px;background:var(--border)}
 
-    /* Top bar */
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(10,10,15,0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 0.9rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .topbar-title {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--dim);
-    }
-    .topbar-title span { color: var(--white); }
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .topbar-btn {
-      font-family: var(--mono);
-      font-size: 0.6rem;
-      font-weight: 600;
-      padding: 0.3rem 0.75rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      background: transparent;
-      color: var(--dim);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      transition: all 0.2s var(--ease);
-    }
-    .topbar-btn:hover { border-color: var(--border-hover); color: var(--white); }
-    .topbar-btn.primary { border-color: rgba(6,182,212,0.3); color: var(--cyan); background: rgba(6,182,212,0.06); }
-    .topbar-btn.primary:hover { background: rgba(6,182,212,0.12); }
+    /* ═══ CARD ═══ */
+    .card{background:var(--surface);backdrop-filter:blur(20px) saturate(1.2);-webkit-backdrop-filter:blur(20px) saturate(1.2);border:1px solid var(--border);border-radius:16px;padding:1.4rem;position:relative;overflow:hidden;transition:all .4s var(--ease)}
+    .card:hover{border-color:var(--border-hover);box-shadow:0 10px 36px rgba(0,0,0,0.22)}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;opacity:.7}
+    .card-cyan::before{background:linear-gradient(90deg,var(--cyan),transparent 70%)}
+    .card-green::before{background:linear-gradient(90deg,var(--green),transparent 70%)}
+    .card-orange::before{background:linear-gradient(90deg,var(--orange),transparent 70%)}
+    .card-purple::before{background:linear-gradient(90deg,var(--purple),transparent 70%)}
+    .card-red::before{background:linear-gradient(90deg,var(--red),transparent 70%)}
+    .card-label{font-size:.58rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:.9rem;font-family:var(--mono)}
 
-    /* Content grid */
-    .content {
-      padding: 1.75rem 2rem 3rem;
-      max-width: 1400px;
-    }
+    /* ═══ SKELETON ═══ */
+    .skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite;border-radius:6px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skel-val{height:40px;width:70%;margin-bottom:.5rem}
+    .skel-sub{height:12px;width:55%}
+    .skel-spark{height:38px;margin-top:.75rem}
 
-    /* ── SECTION HEADER ── */
-    .section-head {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    .section-head-label {
-      font-family: var(--mono);
-      font-size: 0.58rem;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--dim);
-    }
-    .section-head-line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--surface);
-      backdrop-filter: blur(20px) saturate(1.2);
-      -webkit-backdrop-filter: blur(20px) saturate(1.2);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s var(--ease);
-    }
-    .card:hover { border-color: var(--border-hover); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
-    .card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;opacity:0.7; }
-    .card-cyan::before { background:linear-gradient(90deg,var(--cyan),transparent 70%); }
-    .card-green::before { background:linear-gradient(90deg,var(--green),transparent 70%); }
-    .card-orange::before { background:linear-gradient(90deg,var(--orange),transparent 70%); }
-    .card-purple::before { background:linear-gradient(90deg,var(--purple),transparent 70%); }
-    .card-red::before { background:linear-gradient(90deg,var(--red),transparent 70%); }
-    .card-label { font-size:0.6rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:1rem;font-family:var(--mono); }
-
-    /* ── METRICS ROW ── */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    @media(max-width:1100px){ .metrics-grid{ grid-template-columns:repeat(2,1fr); } }
-
-    .metric-card {
-      cursor: pointer;
-      padding: 1.25rem 1.5rem;
-    }
-    .metric-val {
-      font-size: 2.4rem;
-      font-weight: 800;
-      letter-spacing: -2px;
-      line-height: 1;
-      margin-bottom: 0.25rem;
-    }
-    .metric-sub { font-size: 0.72rem; color: var(--dim); margin-bottom: 0.75rem; }
+    /* ═══ METRICS ═══ */
+    .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.25rem}
+    @media(max-width:1100px){.metrics-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:600px){.metrics-grid{grid-template-columns:1fr 1fr}}
+    .metric-card{cursor:pointer;padding:1.15rem 1.3rem}
+    .metric-val{font-size:2.2rem;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:.2rem}
+    .metric-sub{font-size:.68rem;color:var(--dim);margin-bottom:.65rem}
     .grad-cyan{background:linear-gradient(135deg,var(--cyan),#67E8F9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .grad-green{background:linear-gradient(135deg,var(--green),#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .grad-orange{background:linear-gradient(135deg,var(--orange),#FDBA74);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .grad-purple{background:linear-gradient(135deg,var(--purple),#C084FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-
-    .delta{display:inline-flex;align-items:center;gap:.2rem;font-size:.6rem;font-family:var(--mono);font-weight:600;padding:.12rem .4rem;border-radius:4px;margin-left:.35rem;vertical-align:middle}
+    .delta{display:inline-flex;align-items:center;gap:.2rem;font-size:.58rem;font-family:var(--mono);font-weight:600;padding:.1rem .38rem;border-radius:4px;margin-left:.3rem;vertical-align:middle}
     .delta-up{color:var(--green);background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2)}
     .delta-flat{color:var(--dim);background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.15)}
-
-    /* Sparkline */
-    .sparkline-wrap{height:38px;margin-top:.5rem}
-    .sparkline{width:100%;height:38px;overflow:visible;display:block}
+    .sparkline-wrap{height:36px;margin-top:.4rem}
+    .sparkline{width:100%;height:36px;overflow:visible;display:block}
     .spark-path{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:500;stroke-dashoffset:500;transition:stroke-dashoffset 1.6s var(--ease) .2s}
     .spark-area{opacity:0;transition:opacity .6s ease .9s}
     .spark-dot{opacity:0;transition:opacity .3s ease 1.4s}
     .card.is-visible .spark-path{stroke-dashoffset:0}
     .card.is-visible .spark-area{opacity:1}
     .card.is-visible .spark-dot{opacity:1}
-
-    /* Metric breakdown */
     .metric-breakdown{max-height:0;overflow:hidden;transition:max-height .4s var(--ease),opacity .3s,margin-top .3s;opacity:0;margin-top:0}
-    .metric-breakdown.open{max-height:220px;opacity:1;margin-top:.75rem}
-    .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.72rem}
-    .breakdown-row:last-child{border-bottom:none}
-    .breakdown-label{color:var(--dim);font-family:var(--mono);font-size:.66rem}
-    .breakdown-value{font-family:var(--mono);font-weight:600;font-size:.7rem}
+    .metric-breakdown.open{max-height:200px;opacity:1;margin-top:.65rem}
+    .bdown-row{display:flex;justify-content:space-between;align-items:center;padding:.32rem 0;border-bottom:1px solid var(--border);font-size:.7rem}
+    .bdown-row:last-child{border-bottom:none}
+    .bdown-lbl{color:var(--dim);font-family:var(--mono);font-size:.62rem}
+    .bdown-val{font-family:var(--mono);font-weight:600;font-size:.66rem}
 
-    /* ── TWO COL ── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-    .three-col { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-    @media(max-width:900px){ .two-col,.three-col{ grid-template-columns:1fr; } }
+    /* ═══ LAYOUT COLS ═══ */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.25rem}
+    .three-col{display:grid;grid-template-columns:2fr 1fr;gap:.9rem;margin-bottom:1.25rem}
+    @media(max-width:900px){.two-col,.three-col{grid-template-columns:1fr}}
 
-    /* ── AGENTS ── */
-    .agent-list{display:flex;flex-direction:column;gap:.4rem;max-height:380px;overflow-y:auto;padding-right:4px}
-    .agent-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);transition:all .3s var(--ease);cursor:pointer}
+    /* ═══ AGENTS ═══ */
+    .agent-list{display:flex;flex-direction:column;gap:.35rem;max-height:370px;overflow-y:auto;padding-right:3px}
+    .agent-row{display:flex;justify-content:space-between;align-items:center;padding:.65rem .9rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);transition:all .3s var(--ease);cursor:pointer}
     .agent-row:hover{border-color:rgba(168,85,247,0.25);background:rgba(168,85,247,0.04);transform:translateX(3px)}
     .agent-row.expanded{border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.05)}
-    .agent-name{font-family:var(--mono);font-size:.78rem;font-weight:500}
-    .agent-domain{font-size:.62rem;color:var(--dim);margin-top:.15rem}
-    .agent-status{font-family:var(--mono);font-size:.6rem;font-weight:600;padding:.2rem .65rem;border-radius:100px;border:1px solid;white-space:nowrap}
+    .agent-name{font-family:var(--mono);font-size:.76rem;font-weight:500}
+    .agent-domain{font-size:.6rem;color:var(--dim);margin-top:.12rem}
+    .agent-row-right{display:flex;align-items:center;gap:.5rem}
+    .agent-status{font-family:var(--mono);font-size:.58rem;font-weight:600;padding:.18rem .6rem;border-radius:100px;border:1px solid;white-space:nowrap}
+    .agent-drill-btn{font-family:var(--mono);font-size:.55rem;padding:.15rem .45rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;transition:all .2s;opacity:0}
+    .agent-row:hover .agent-drill-btn{opacity:1}
+    .agent-drill-btn:hover{border-color:var(--cyan);color:var(--cyan)}
     .s-running{color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08);animation:glow-g 2.5s ease-in-out infinite}
     @keyframes glow-g{0%,100%{box-shadow:0 0 8px rgba(34,197,94,0.1)}50%{box-shadow:0 0 16px rgba(34,197,94,0.2)}}
     .s-idle{color:var(--yellow);border-color:rgba(234,179,8,0.2);background:rgba(234,179,8,0.05)}
     .s-completed{color:var(--cyan);border-color:rgba(6,182,212,0.2);background:rgba(6,182,212,0.05)}
     .s-error{color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.05);animation:glow-r 3s ease-in-out infinite}
     @keyframes glow-r{0%,100%{background:rgba(239,68,68,0.05)}50%{background:rgba(239,68,68,0.09)}}
-    .agent-detail{max-height:0;overflow:hidden;transition:max-height .4s var(--ease),padding .3s,opacity .3s;opacity:0;background:rgba(8,8,14,0.6);border-radius:0 0 10px 10px;margin-top:-.15rem;margin-bottom:.2rem;border:1px solid transparent;border-top:none}
-    .agent-detail.open{max-height:220px;padding:.85rem 1rem;opacity:1;border-color:rgba(168,85,247,0.12)}
-    .agent-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
-    .adl{font-family:var(--mono);font-size:.56rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
-    .adv{font-family:var(--mono);font-size:.7rem;color:var(--white);margin-top:.1rem}
-    .agent-actions{display:flex;gap:.4rem;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
-    .aab{font-family:var(--mono);font-size:.6rem;font-weight:600;padding:.28rem .65rem;border-radius:6px;border:1px solid;cursor:pointer;transition:all .2s var(--ease);text-transform:uppercase;letter-spacing:.5px;background:transparent}
-    .aab.restart{color:var(--green);border-color:rgba(34,197,94,0.3)}
-    .aab.restart:hover{background:rgba(34,197,94,0.1)}
-    .aab.stop{color:var(--red);border-color:rgba(239,68,68,0.3)}
-    .aab.stop:hover{background:rgba(239,68,68,0.1)}
-    .aab.logs{color:var(--cyan);border-color:rgba(6,182,212,0.3)}
-    .aab.logs:hover{background:rgba(6,182,212,0.1)}
+    .agent-detail{max-height:0;overflow:hidden;transition:max-height .4s var(--ease),padding .3s,opacity .3s;opacity:0;background:rgba(8,8,14,0.6);border-radius:0 0 10px 10px;margin-top:-.12rem;margin-bottom:.18rem;border:1px solid transparent;border-top:none}
+    .agent-detail.open{max-height:220px;padding:.8rem .9rem;opacity:1;border-color:rgba(168,85,247,0.12)}
+    .agent-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+    .adl{font-family:var(--mono);font-size:.54rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+    .adv{font-family:var(--mono);font-size:.68rem;color:var(--white);margin-top:.08rem}
+    .agent-actions{display:flex;gap:.35rem;margin-top:.55rem;padding-top:.55rem;border-top:1px solid var(--border)}
+    .aab{font-family:var(--mono);font-size:.58rem;font-weight:600;padding:.25rem .6rem;border-radius:6px;border:1px solid;cursor:pointer;transition:all .2s var(--ease);text-transform:uppercase;letter-spacing:.5px;background:transparent}
+    .aab.restart{color:var(--green);border-color:rgba(34,197,94,0.3)}.aab.restart:hover{background:rgba(34,197,94,0.1)}
+    .aab.stop{color:var(--red);border-color:rgba(239,68,68,0.3)}.aab.stop:hover{background:rgba(239,68,68,0.1)}
+    .aab.logs{color:var(--cyan);border-color:rgba(6,182,212,0.3)}.aab.logs:hover{background:rgba(6,182,212,0.1)}
 
-    /* ── FEED ── */
-    .feed-filter-bar{display:flex;gap:.3rem;margin-bottom:.65rem;flex-wrap:wrap}
-    .feed-filter{font-family:var(--mono);font-size:.56rem;font-weight:600;padding:.25rem .6rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;transition:all .2s var(--ease);text-transform:uppercase;letter-spacing:.5px;color:var(--dim);background:transparent;user-select:none}
+    /* ═══ FEED ═══ */
+    .feed-filter-bar{display:flex;gap:.28rem;margin-bottom:.6rem;flex-wrap:wrap}
+    .feed-filter{font-family:var(--mono);font-size:.54rem;font-weight:600;padding:.22rem .55rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;transition:all .2s var(--ease);text-transform:uppercase;letter-spacing:.5px;color:var(--dim);background:transparent;user-select:none}
     .feed-filter:hover{border-color:var(--border-hover);color:var(--white)}
     .feed-filter.active{color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.07)}
-    .feed{display:flex;flex-direction:column;gap:.3rem;max-height:360px;overflow-y:auto;padding-right:4px}
-    .feed-item{display:flex;gap:.85rem;padding:.65rem .85rem;border-left:2px solid var(--border);border-radius:0 8px 8px 0;transition:all .3s var(--ease);cursor:pointer}
+    .feed{display:flex;flex-direction:column;gap:.28rem;max-height:345px;overflow-y:auto;padding-right:3px}
+    .feed-item{display:flex;gap:.75rem;padding:.6rem .8rem;border-left:2px solid var(--border);border-radius:0 8px 8px 0;transition:all .3s var(--ease);cursor:pointer}
     .feed-item:hover{background:rgba(255,255,255,0.012);transform:translateX(2px)}
     .feed-item.success{border-left-color:var(--green)}.feed-item.success:hover{background:rgba(34,197,94,0.025)}
     .feed-item.info{border-left-color:var(--cyan)}.feed-item.info:hover{background:rgba(6,182,212,0.025)}
@@ -442,140 +207,228 @@
     .feed-item.error{border-left-color:var(--red)}.feed-item.error:hover{background:rgba(239,68,68,0.025)}
     .feed-item.hidden{display:none}
     .feed-item.highlighted{background:rgba(6,182,212,0.05);border-left-width:3px}
-    .feed-time{font-family:var(--mono);font-size:.62rem;color:var(--dim);white-space:nowrap;min-width:44px;padding-top:2px;font-variant-numeric:tabular-nums}
-    .feed-msg{font-size:.75rem;color:rgba(226,232,240,0.85);line-height:1.55}
-    .feed-detail{max-height:0;overflow:hidden;transition:max-height .3s var(--ease),opacity .3s;opacity:0;font-family:var(--mono);font-size:.66rem;color:var(--dim);line-height:1.7}
-    .feed-detail.open{max-height:100px;opacity:1;margin-top:.35rem;padding-top:.35rem;border-top:1px solid var(--border)}
+    .feed-time{font-family:var(--mono);font-size:.6rem;color:var(--dim);white-space:nowrap;min-width:42px;padding-top:2px;font-variant-numeric:tabular-nums}
+    .feed-msg{font-size:.72rem;color:rgba(226,232,240,0.85);line-height:1.55}
+    .feed-detail{max-height:0;overflow:hidden;transition:max-height .3s var(--ease),opacity .3s;opacity:0;font-family:var(--mono);font-size:.63rem;color:var(--dim);line-height:1.7}
+    .feed-detail.open{max-height:100px;opacity:1;margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--border)}
+    .empty-state{text-align:center;padding:2rem 1rem;color:var(--dim);font-family:var(--mono);font-size:.68rem}
+    .empty-state-icon{font-size:1.5rem;margin-bottom:.5rem;opacity:.3}
 
-    /* ── PERF CHART ── */
-    .perf-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem}
-    .perf-legend{display:flex;gap:.85rem}
-    .leg{display:flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.58rem;color:var(--dim)}
+    /* ═══ PERF CHART ═══ */
+    .perf-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+    .perf-legend{display:flex;gap:.75rem}
+    .leg{display:flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.56rem;color:var(--dim)}
     .leg-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-    .perf-tabs{display:flex;gap:.2rem}
-    .perf-tab{font-family:var(--mono);font-size:.55rem;font-weight:600;padding:.2rem .5rem;border-radius:4px;border:1px solid var(--border);cursor:pointer;color:var(--dim);background:transparent;text-transform:uppercase;letter-spacing:.5px;transition:all .2s;user-select:none}
+    .perf-tabs{display:flex;gap:.18rem}
+    .perf-tab{font-family:var(--mono);font-size:.53rem;font-weight:600;padding:.18rem .48rem;border-radius:4px;border:1px solid var(--border);cursor:pointer;color:var(--dim);background:transparent;text-transform:uppercase;letter-spacing:.5px;transition:all .2s;user-select:none}
     .perf-tab.active{color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.07)}
-    .perf-svg-wrap{position:relative;height:140px}
-    .perf-svg{width:100%;height:140px;overflow:visible;display:block}
+    .perf-svg-wrap{position:relative;height:135px}
+    .perf-svg{width:100%;height:135px;overflow:visible;display:block}
     .chart-line{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;transition:stroke-dashoffset 1.8s var(--ease)}
     .chart-area{opacity:0;transition:opacity .8s ease .7s}
     .card.is-visible .chart-line{stroke-dashoffset:0}
     .card.is-visible .chart-area{opacity:1}
     .perf-xlabels{display:flex;justify-content:space-between;margin-top:.4rem;padding:0 2px}
-    .perf-xlabel{font-family:var(--mono);font-size:.52rem;color:var(--dim)}
-    .chart-tip{position:absolute;background:rgba(8,8,14,0.97);backdrop-filter:blur(16px);border:1px solid var(--border-hover);border-radius:8px;padding:.45rem .75rem;font-family:var(--mono);font-size:.6rem;white-space:nowrap;pointer-events:none;opacity:0;transform:translateX(-50%);transition:opacity .15s;z-index:50;top:-6px}
+    .perf-xlabel{font-family:var(--mono);font-size:.5rem;color:var(--dim)}
+    .chart-tip{position:absolute;background:rgba(8,8,14,0.97);backdrop-filter:blur(16px);border:1px solid var(--border-hover);border-radius:8px;padding:.42rem .72rem;font-family:var(--mono);font-size:.58rem;white-space:nowrap;pointer-events:none;opacity:0;transform:translateX(-50%);transition:opacity .15s;z-index:50;top:-6px}
     .chart-tip.visible{opacity:1}
-    .ct-day{color:var(--dim);font-size:.55rem;margin-bottom:.2rem}
-    .ct-rows{display:flex;flex-direction:column;gap:.15rem}
-    .ct-row{display:flex;align-items:center;gap:.35rem}
+    .ct-day{color:var(--dim);font-size:.52rem;margin-bottom:.18rem}
+    .ct-rows{display:flex;flex-direction:column;gap:.14rem}
+    .ct-row{display:flex;align-items:center;gap:.32rem}
     .ct-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
-    .ct-lbl{color:var(--dim)}.ct-val{color:var(--white);font-weight:600;margin-left:auto;padding-left:.65rem}
+    .ct-lbl{color:var(--dim)}.ct-val{color:var(--white);font-weight:600;margin-left:auto;padding-left:.6rem}
 
-    /* ── FRAMEWORKS ── */
-    .fw-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:1rem}
-    .fw-pill{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem .75rem;cursor:pointer;transition:all .3s var(--ease)}
+    /* ═══ FRAMEWORKS ═══ */
+    .fw-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem;margin-bottom:.9rem}
+    .fw-pill{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.55rem .7rem;cursor:pointer;transition:all .3s var(--ease)}
     .fw-pill.active{border-color:rgba(34,197,94,0.2);background:rgba(34,197,94,0.03)}
     .fw-pill.active:hover{border-color:rgba(34,197,94,0.35);transform:translateY(-1px)}
     .fw-pill.warning{border-color:rgba(249,115,22,0.2);background:rgba(249,115,22,0.025)}
     .fw-pill.inactive{opacity:.35}.fw-pill.inactive:hover{opacity:.6}
-    .fw-pname{font-family:var(--mono);font-size:.66rem;font-weight:600;display:flex;align-items:center;gap:.35rem}
+    .fw-pname{font-family:var(--mono);font-size:.63rem;font-weight:600;display:flex;align-items:center;gap:.32rem}
     .fw-pulse{width:4px;height:4px;border-radius:50%;flex-shrink:0}
-    .fw-pulse.on{background:var(--green);box-shadow:0 0 5px var(--green);animation:pulse-dot 2s ease infinite}
+    .fw-pulse.on{background:var(--green);box-shadow:0 0 5px var(--green);animation:pdot 2s ease infinite}
     .fw-pulse.warn{background:var(--orange);box-shadow:0 0 5px var(--orange)}
     .fw-pulse.off{background:var(--dim)}
-    .fw-pstatus{font-size:.56rem;color:var(--dim);font-family:var(--mono);margin-top:.1rem}
-    .fw-pill.active .fw-pstatus{color:rgba(34,197,94,0.6)}
-    .fw-pill.warning .fw-pstatus{color:rgba(249,115,22,0.65)}
-
-    /* Task dist bars */
-    .tdist-label{font-family:var(--mono);font-size:.54rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:.5rem}
-    .tbar-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
-    .tbar-name{font-family:var(--mono);font-size:.58rem;color:var(--dim);width:78px;flex-shrink:0}
+    .fw-pstatus{font-size:.54rem;color:var(--dim);font-family:var(--mono);margin-top:.1rem}
+    .fw-pill.active .fw-pstatus{color:rgba(34,197,94,0.6)}.fw-pill.warning .fw-pstatus{color:rgba(249,115,22,0.65)}
+    .tdist-label{font-family:var(--mono);font-size:.52rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:.45rem}
+    .tbar-row{display:flex;align-items:center;gap:.45rem;margin-bottom:.38rem}
+    .tbar-name{font-family:var(--mono);font-size:.56rem;color:var(--dim);width:76px;flex-shrink:0}
     .tbar-track{flex:1;height:3px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden}
     .tbar-fill{height:100%;border-radius:3px;width:0%;transition:width 1.2s var(--ease)}
     .card.is-visible .tbar-fill{width:var(--bt)}
-    .tbar-count{font-family:var(--mono);font-size:.6rem;color:var(--white);width:18px;text-align:right;flex-shrink:0}
+    .tbar-count{font-family:var(--mono);font-size:.58rem;color:var(--white);width:18px;text-align:right;flex-shrink:0}
 
-    /* ── REVENUE ── */
-    .rev-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
-    .rev-item{background:var(--surface2);border-radius:10px;padding:1.1rem;border:1px solid var(--border);transition:all .35s var(--ease);cursor:pointer}
+    /* ═══ REVENUE ═══ */
+    .rev-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+    @media(max-width:800px){.rev-grid{grid-template-columns:repeat(2,1fr)}}
+    .rev-item{background:var(--surface2);border-radius:10px;padding:1rem;border:1px solid var(--border);transition:all .35s var(--ease);cursor:pointer}
     .rev-item:hover{border-color:var(--border-hover);transform:translateY(-1px)}
     .rev-item.selected{border-color:rgba(249,115,22,0.28);background:rgba(249,115,22,0.03)}
-    .rev-item.kalshi{border-color:rgba(34,197,94,0.15)}
-    .rev-item.kalshi:hover{border-color:rgba(34,197,94,0.3)}
+    .rev-item.kalshi{border-color:rgba(34,197,94,0.15)}.rev-item.kalshi:hover{border-color:rgba(34,197,94,0.3)}
     .rev-item.kalshi.selected{border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.03)}
-    .rev-src{font-size:.58rem;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.4rem;font-weight:500}
-    .rev-amt{font-size:1.35rem;font-weight:800;letter-spacing:-.5px;margin-bottom:.55rem}
+    .rev-src{font-size:.56rem;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.38rem;font-weight:500}
+    .rev-amt{font-size:1.25rem;font-weight:800;letter-spacing:-.5px;margin-bottom:.5rem}
     .rev-amt.pos{background:linear-gradient(135deg,var(--green),#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .rev-amt.zero{color:rgba(100,116,139,0.45);-webkit-text-fill-color:rgba(100,116,139,0.45)}
-    .rev-bar-track{height:2px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-bottom:.65rem}
+    .rev-amt.zero{color:rgba(100,116,139,0.42);-webkit-text-fill-color:rgba(100,116,139,0.42)}
+    .rev-bar-track{height:2px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-bottom:.6rem}
     .rev-bar-fill{height:100%;border-radius:2px;width:0%;transition:width 1.4s var(--ease)}
     .card.is-visible .rev-bar-fill{width:var(--rbw)}
     .rev-bar-fill.green{background:linear-gradient(90deg,var(--green),rgba(34,197,94,0.3))}
     .rev-bar-fill.gray{background:linear-gradient(90deg,rgba(100,116,139,0.35),rgba(100,116,139,0.08))}
     .rev-detail{max-height:0;overflow:hidden;opacity:0;transition:max-height .3s var(--ease),opacity .3s,margin-top .3s}
-    .rev-detail.open{max-height:130px;opacity:1;margin-top:.45rem;padding-top:.5rem;border-top:1px solid var(--border)}
-    .rev-dr{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.64rem;padding:.18rem 0}
+    .rev-detail.open{max-height:130px;opacity:1;margin-top:.42rem;padding-top:.48rem;border-top:1px solid var(--border)}
+    .rev-dr{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.62rem;padding:.16rem 0}
     .rev-dr .lbl{color:var(--dim)}.rev-dr .val{color:var(--white)}
 
-    /* ── TOAST ── */
+    /* ═══ DATA STATUS BAR ═══ */
+    .data-status{display:flex;align-items:center;gap:.5rem;padding:.45rem .75rem;background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.12);border-radius:8px;margin-bottom:1.25rem;font-family:var(--mono);font-size:.58rem}
+    .ds-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .ds-dot.live{background:var(--green);animation:pdot 2s ease infinite}
+    .ds-dot.polling{background:var(--yellow)}
+    .ds-dot.offline{background:var(--red)}
+    .ds-label{color:var(--dim)}
+    .ds-val{color:var(--white)}
+    .ds-config-btn{margin-left:auto;background:transparent;border:1px solid rgba(6,182,212,0.2);border-radius:4px;color:var(--cyan);font-family:var(--mono);font-size:.54rem;padding:.12rem .45rem;cursor:pointer;transition:all .2s}
+    .ds-config-btn:hover{background:rgba(6,182,212,0.1)}
+
+    /* ═══ COMMAND BAR ═══ */
+    .cmd-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:500;display:none;align-items:flex-start;justify-content:center;padding-top:12vh}
+    .cmd-overlay.open{display:flex}
+    .cmd-box{width:100%;max-width:560px;background:rgba(13,13,20,0.98);border:1px solid var(--border-hover);border-radius:14px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.6)}
+    .cmd-input-wrap{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;border-bottom:1px solid var(--border)}
+    .cmd-input-icon{color:var(--dim);flex-shrink:0}
+    .cmd-input{flex:1;background:transparent;border:none;outline:none;color:var(--white);font-family:var(--mono);font-size:.88rem;caret-color:var(--cyan)}
+    .cmd-input::placeholder{color:var(--dim)}
+    .cmd-esc{font-family:var(--mono);font-size:.52rem;color:var(--dim);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:.12rem .4rem}
+    .cmd-results{max-height:340px;overflow-y:auto}
+    .cmd-section-label{font-family:var(--mono);font-size:.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--dim);padding:.6rem 1rem .3rem}
+    .cmd-item{display:flex;align-items:center;gap:.75rem;padding:.55rem 1rem;cursor:pointer;transition:background .15s;border-radius:0}
+    .cmd-item:hover,.cmd-item.selected{background:rgba(6,182,212,0.08)}
+    .cmd-item-icon{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem}
+    .cmd-item-label{font-size:.78rem;color:var(--white)}
+    .cmd-item-sub{font-family:var(--mono);font-size:.6rem;color:var(--dim);margin-top:.1rem}
+    .cmd-item-kbd{margin-left:auto;font-family:var(--mono);font-size:.52rem;color:var(--dim);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:.1rem .35rem}
+    .cmd-footer{padding:.5rem 1rem;border-top:1px solid var(--border);display:flex;gap:1.25rem}
+    .cmd-hint{display:flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.52rem;color:var(--dim)}
+    .cmd-hint kbd{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:.08rem .3rem;font-size:.5rem}
+
+    /* ═══ MODALS ═══ */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:400;display:none;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:rgba(13,13,20,0.99);border:1px solid var(--border-hover);border-radius:16px;padding:1.75rem;width:100%;max-width:460px;box-shadow:0 24px 70px rgba(0,0,0,0.5)}
+    .modal-title{font-family:var(--mono);font-size:.85rem;font-weight:700;margin-bottom:.35rem;color:var(--white)}
+    .modal-sub{font-size:.72rem;color:var(--dim);margin-bottom:1.25rem}
+    .modal-field{margin-bottom:.85rem}
+    .modal-label{font-family:var(--mono);font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:.35rem;display:block}
+    .modal-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:.55rem .75rem;color:var(--white);font-family:var(--mono);font-size:.75rem;outline:none;transition:border-color .2s}
+    .modal-input:focus{border-color:rgba(6,182,212,0.4)}
+    .modal-input::placeholder{color:var(--dim)}
+    .modal-select{width:100%;background:rgba(10,10,15,0.9);border:1px solid var(--border);border-radius:8px;padding:.55rem .75rem;color:var(--white);font-family:var(--mono);font-size:.75rem;outline:none;cursor:pointer}
+    .modal-actions{display:flex;gap:.6rem;margin-top:1.25rem}
+    .modal-btn{flex:1;font-family:var(--mono);font-size:.65rem;font-weight:600;padding:.55rem;border-radius:8px;border:1px solid;cursor:pointer;transition:all .2s var(--ease);text-transform:uppercase;letter-spacing:.5px}
+    .modal-btn.cancel{background:transparent;border-color:var(--border);color:var(--dim)}.modal-btn.cancel:hover{border-color:var(--border-hover);color:var(--white)}
+    .modal-btn.confirm{background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.3);color:var(--cyan)}.modal-btn.confirm:hover{background:rgba(6,182,212,0.18)}
+    .modal-btn.danger{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--red)}.modal-btn.danger:hover{background:rgba(239,68,68,0.18)}
+
+    /* ═══ NOTIFICATION PANEL ═══ */
+    .notif-panel{position:fixed;top:0;right:-360px;width:340px;height:100vh;background:rgba(13,13,20,0.98);backdrop-filter:blur(24px);border-left:1px solid var(--border);z-index:200;transition:right .35s var(--ease);display:flex;flex-direction:column}
+    .notif-panel.open{right:0}
+    .notif-header{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .notif-title{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--white)}
+    .notif-close{background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:1.1rem;transition:color .2s;padding:.2rem}
+    .notif-close:hover{color:var(--white)}
+    .notif-list{flex:1;overflow-y:auto;padding:.75rem}
+    .notif-item{padding:.85rem 1rem;border-radius:10px;border:1px solid var(--border);margin-bottom:.5rem;transition:all .2s;cursor:pointer}
+    .notif-item:hover{border-color:var(--border-hover);background:rgba(255,255,255,0.02)}
+    .notif-item.unread{border-left:3px solid var(--red)}
+    .notif-item.warn{border-left:3px solid var(--orange)}
+    .notif-item.info-notif{border-left:3px solid var(--cyan)}
+    .notif-item-title{font-size:.74rem;font-weight:600;margin-bottom:.2rem}
+    .notif-item-body{font-family:var(--mono);font-size:.62rem;color:var(--dim);line-height:1.5}
+    .notif-item-time{font-family:var(--mono);font-size:.55rem;color:rgba(100,116,139,0.5);margin-top:.35rem}
+    .notif-footer{padding:.85rem 1.25rem;border-top:1px solid var(--border)}
+    .notif-clear-btn{width:100%;font-family:var(--mono);font-size:.6rem;padding:.45rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+    .notif-clear-btn:hover{border-color:var(--border-hover);color:var(--white)}
+
+    /* ═══ AGENT DRILL-DOWN PANEL ═══ */
+    .drill-panel{position:fixed;top:0;right:-480px;width:460px;height:100vh;background:rgba(13,13,20,0.98);backdrop-filter:blur(24px);border-left:1px solid var(--border);z-index:201;transition:right .35s var(--ease);display:flex;flex-direction:column;overflow:hidden}
+    .drill-panel.open{right:0}
+    .drill-header{padding:1.25rem 1.25rem .9rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .drill-title{font-family:var(--mono);font-size:.82rem;font-weight:700}
+    .drill-body{flex:1;overflow-y:auto;padding:1.25rem}
+    .drill-section{margin-bottom:1.25rem}
+    .drill-section-label{font-family:var(--mono);font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:.6rem}
+    .drill-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.9rem}
+    .drill-stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.65rem .75rem}
+    .drill-stat-label{font-family:var(--mono);font-size:.54rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+    .drill-stat-val{font-family:var(--mono);font-size:.88rem;font-weight:700;margin-top:.2rem}
+    .drill-log{font-family:var(--mono);font-size:.65rem;color:var(--dim);line-height:1.7;background:rgba(0,0,0,0.3);border-radius:8px;padding:.75rem;border:1px solid var(--border);max-height:180px;overflow-y:auto}
+    .drill-log-line{padding:.1rem 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .drill-log-line:last-child{border-bottom:none}
+    .drill-log-time{color:var(--cyan);margin-right:.5rem}
+    .drill-actions{display:flex;gap:.5rem}
+    .drill-btn{flex:1;font-family:var(--mono);font-size:.62rem;font-weight:600;padding:.45rem;border-radius:7px;border:1px solid;cursor:pointer;background:transparent;text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+
+    /* ═══ DATA CONFIG MODAL ═══ */
+    .data-info{font-family:var(--mono);font-size:.62rem;color:var(--dim);line-height:1.6;background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.12);border-radius:8px;padding:.75rem;margin-bottom:.9rem}
+
+    /* ═══ KEYBOARD SHORTCUT HINTS ═══ */
+    .kb-hint{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.55rem;color:var(--dim);background:rgba(13,13,20,0.95);border:1px solid var(--border);border-radius:100px;padding:.35rem 1rem;display:flex;gap:1rem;pointer-events:none;opacity:0;transition:opacity .3s;z-index:10}
+    .kb-hint.show{opacity:1}
+    .kb-key{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:.06rem .3rem;font-size:.5rem}
+
+    /* ═══ TOAST ═══ */
     .toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column-reverse;gap:.4rem}
-    .toast{font-family:var(--mono);font-size:.68rem;padding:.55rem 1rem;border-radius:8px;border:1px solid var(--border-hover);background:rgba(8,8,14,0.97);backdrop-filter:blur(16px);color:var(--white);transform:translateX(120%);opacity:0;transition:all .35s var(--ease);max-width:320px}
+    .toast{font-family:var(--mono);font-size:.66rem;padding:.5rem .95rem;border-radius:8px;border:1px solid var(--border-hover);background:rgba(8,8,14,0.97);backdrop-filter:blur(16px);color:var(--white);transform:translateX(120%);opacity:0;transition:all .35s var(--ease);max-width:320px}
     .toast.show{transform:translateX(0);opacity:1}
-    .toast.toast-success{border-left:2px solid var(--green)}
-    .toast.toast-info{border-left:2px solid var(--cyan)}
-    .toast.toast-warning{border-left:2px solid var(--orange)}
-    .toast.toast-error{border-left:2px solid var(--red)}
+    .toast.toast-success{border-left:2px solid var(--green)}.toast.toast-info{border-left:2px solid var(--cyan)}.toast.toast-warning{border-left:2px solid var(--orange)}.toast.toast-error{border-left:2px solid var(--red)}
 
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar{width:3px}
-    ::-webkit-scrollbar-track{background:transparent}
-    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.07);border-radius:3px}
-
-    /* ── REVEAL ── */
-    .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+    /* ═══ MISC ═══ */
+    ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.07);border-radius:3px}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
     .reveal.visible{opacity:1;transform:translateY(0)}
     .rd1{transition-delay:.04s}.rd2{transition-delay:.08s}.rd3{transition-delay:.12s}.rd4{transition-delay:.16s}
-
-    /* ── MOBILE ── */
-    .sidebar-toggle{display:none;position:fixed;top:.85rem;left:.85rem;z-index:200;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:8px;padding:.4rem .5rem;cursor:pointer;flex-direction:column;gap:3px}
-    .sidebar-toggle .b{width:16px;height:2px;background:var(--dim);border-radius:2px;transition:all .3s}
-    @media(max-width:768px){
-      .sidebar{transform:translateX(-100%);transition:transform .35s var(--ease)}
-      .sidebar.open{transform:translateX(0)}
-      .main{margin-left:0}
-      .sidebar-toggle{display:flex}
-      .content{padding:1.25rem 1rem 3rem}
-      .metrics-grid{grid-template-columns:1fr 1fr}
-      .topbar{padding:.75rem 1rem .75rem 3.5rem}
-    }
-
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}.reveal,.spark-path,.chart-line{opacity:1;transform:none;stroke-dashoffset:0}.spark-area,.chart-area,.spark-dot,.tbar-fill,.rev-bar-fill{opacity:1;width:var(--bt,100%)}}
+    .sidebar-toggle{display:none;position:fixed;top:.75rem;left:.75rem;z-index:300;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:8px;padding:.38rem .45rem;cursor:pointer;flex-direction:column;gap:3px}
+    .sidebar-toggle .b{width:15px;height:2px;background:var(--dim);border-radius:2px}
+    @media(max-width:768px){.sidebar{transform:translateX(-100%);transition:transform .3s var(--ease)}.sidebar.mobile-open{transform:translateX(0)}.main{margin-left:0!important}.sidebar-toggle{display:flex}.content{padding:1.2rem .9rem 3rem}.topbar{padding:.75rem 1rem .75rem 3.5rem}.metrics-grid{grid-template-columns:1fr 1fr}.rev-grid{grid-template-columns:1fr 1fr}}
+    @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.reveal,.spark-path,.chart-line{opacity:1;transform:none;stroke-dashoffset:0}.spark-area,.chart-area,.spark-dot,.tbar-fill,.rev-bar-fill{opacity:1}}
   </style>
 </head>
 <body>
 
-<!-- Mobile sidebar toggle -->
-<div class="sidebar-toggle" onclick="toggleSidebar()" id="sb-toggle">
+<!-- Mobile toggle -->
+<div class="sidebar-toggle" id="mob-toggle" onclick="toggleMobileSidebar()">
   <div class="b"></div><div class="b"></div><div class="b"></div>
 </div>
 
-<!-- ════════════ SIDEBAR ════════════ -->
+<!-- ═══════════ SIDEBAR ═══════════ -->
 <aside class="sidebar" id="sidebar">
-
   <div class="sidebar-logo">
-    <div class="logo-mark">CLX<span class="logo-cursor">_</span>COMMAND</div>
-    <div class="logo-sub">Agent Operations Hub</div>
+    <div class="logo-mark">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect width="18" height="18" rx="4" fill="rgba(6,182,212,0.15)"/><text x="3" y="14" font-size="11" font-family="monospace" fill="#06B6D4" font-weight="bold">C</text></svg>
+      <div class="logo-text-wrap">
+        <div>CLX<span class="logo-cursor">_</span>COMMAND</div>
+        <div class="logo-sub">Agent Ops Hub</div>
+      </div>
+    </div>
+    <button class="collapse-btn" onclick="toggleCollapse()" title="Collapse sidebar">
+      <svg class="collapse-icon" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
   </div>
 
   <div class="sidebar-status">
-    <div class="online-pill"><div class="online-dot"></div>ONLINE</div>
+    <div class="online-pill"><div class="online-dot"></div><span>ONLINE</span></div>
     <div class="sidebar-clock" id="clock">--:--:--</div>
+    <button class="notif-btn" onclick="openNotif()" title="Notifications" style="margin-left:auto">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1a4 4 0 014 4v2l1 2H2l1-2V5a4 4 0 014-4z" stroke="currentColor" stroke-width="1.2"/><path d="M5.5 10.5a1 1 0 002 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </button>
   </div>
 
   <nav class="sidebar-nav">
     <div class="nav-section-label">Dashboard</div>
-
     <div class="nav-link active" data-section="metrics-section" onclick="sidebarNav(this)">
       <div class="nav-link-left">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="9" width="3" height="6" rx="1" fill="currentColor" opacity=".5"/><rect x="6" y="5" width="3" height="10" rx="1" fill="currentColor" opacity=".7"/><rect x="11" y="1" width="3" height="14" rx="1" fill="currentColor"/></svg>
@@ -583,176 +436,169 @@
       </div>
       <span class="nav-badge badge-cyan">4</span>
     </div>
-
     <div class="nav-link" data-section="agents-section" onclick="sidebarNav(this)">
       <div class="nav-link-left">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         <span class="nav-label">Agents</span>
       </div>
-      <span class="nav-badge badge-red">5</span>
+      <span class="nav-badge badge-red" id="sb-err-badge">5</span>
     </div>
-
     <div class="nav-link" data-section="feed-section" onclick="sidebarNav(this)">
       <div class="nav-link-left">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         <span class="nav-label">Activity Feed</span>
       </div>
       <span class="nav-badge badge-dim">14</span>
     </div>
-
-    <div class="nav-section-label" style="margin-top:.5rem">Analytics</div>
-
+    <div class="nav-section-label" style="margin-top:.4rem">Analytics</div>
     <div class="nav-link" data-section="perf-section" onclick="sidebarNav(this)">
       <div class="nav-link-left">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M1 12 L4 8 L7 9 L10 4 L13 6 L15 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M1 12L4 8L7 9L10 4L13 6L15 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="nav-label">Performance</span>
       </div>
     </div>
-
     <div class="nav-link" data-section="frameworks-section" onclick="sidebarNav(this)">
       <div class="nav-link-left">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
         <span class="nav-label">Frameworks</span>
       </div>
-      <span class="nav-badge badge-dim" style="background:rgba(249,115,22,0.1);color:var(--orange);border-color:rgba(249,115,22,0.2)">1⚠</span>
+      <span class="nav-badge badge-warn">1⚠</span>
     </div>
-
-    <div class="nav-section-label" style="margin-top:.5rem">Revenue</div>
-
+    <div class="nav-section-label" style="margin-top:.4rem">Revenue</div>
     <div class="nav-link" data-section="revenue-section" onclick="sidebarNav(this)">
       <div class="nav-link-left">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M6 6.5h3a1 1 0 010 2H7a1 1 0 000 2h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v6M6 6.5h3a1 1 0 010 2H7a1 1 0 000 2h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         <span class="nav-label">Revenue</span>
       </div>
       <span class="nav-badge badge-green">$0.85</span>
     </div>
-
   </nav>
 
   <div class="sidebar-kpis">
     <div class="sidebar-kpi-label">Quick Stats</div>
-    <div class="sidebar-kpi-row">
-      <span class="sidebar-kpi-name">Active agents</span>
-      <span class="sidebar-kpi-val" style="color:var(--cyan)">20</span>
-    </div>
-    <div class="sidebar-kpi-row">
-      <span class="sidebar-kpi-name">Tasks today</span>
-      <span class="sidebar-kpi-val" style="color:var(--orange)" id="sb-tasks">47</span>
-    </div>
-    <div class="sidebar-kpi-row">
-      <span class="sidebar-kpi-name">Compliance</span>
-      <span class="sidebar-kpi-val" style="color:var(--green)">6.2/10</span>
-    </div>
-    <div class="sidebar-kpi-row">
-      <span class="sidebar-kpi-name">Revenue</span>
-      <span class="sidebar-kpi-val" style="color:var(--purple)">$0.85</span>
-    </div>
+    <div class="sidebar-kpi-row"><span class="sidebar-kpi-name">Active agents</span><span class="sidebar-kpi-val" style="color:var(--cyan)" id="sb-agents">20</span></div>
+    <div class="sidebar-kpi-row"><span class="sidebar-kpi-name">Tasks today</span><span class="sidebar-kpi-val" style="color:var(--orange)" id="sb-tasks">47</span></div>
+    <div class="sidebar-kpi-row"><span class="sidebar-kpi-name">Compliance</span><span class="sidebar-kpi-val" style="color:var(--green)">6.2/10</span></div>
+    <div class="sidebar-kpi-row"><span class="sidebar-kpi-name">Revenue</span><span class="sidebar-kpi-val" style="color:var(--purple)">$0.85</span></div>
   </div>
-
-  <div class="sidebar-footer">CLX v3.0 &nbsp;·&nbsp; Mar 30 2026</div>
+  <div class="sidebar-footer">CLX v5.0 &nbsp;·&nbsp; Mar 30 2026</div>
 </aside>
 
-<!-- ════════════ MAIN ════════════ -->
-<main class="main">
-
-  <!-- Topbar -->
+<!-- ═══════════ MAIN ═══════════ -->
+<main class="main" id="main">
   <div class="topbar">
-    <div class="topbar-title">CLX / <span id="active-section-name">Overview</span></div>
+    <div class="topbar-left">
+      <div class="topbar-title">CLX / <span id="active-section-name">Overview</span></div>
+      <div class="cmd-search" onclick="openCmd()" title="Cmd+K">
+        <svg class="cmd-search-icon" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span class="cmd-search-text">Search or run command...</span>
+        <span class="cmd-search-kbd">⌘K</span>
+      </div>
+    </div>
     <div class="topbar-actions">
-      <button class="topbar-btn" onclick="showToast('Refreshing all data...','info')">↻ Refresh</button>
-      <button class="topbar-btn primary" onclick="showToast('Spawning new agent swarm...','success')">+ Spawn Swarm</button>
+      <button class="topbar-btn" onclick="exportData()" title="Export JSON">↓ Export</button>
+      <button class="topbar-btn" onclick="openSpawnModal()">+ Spawn Agent</button>
+      <button class="topbar-btn primary" onclick="openDataConfig()">⚡ Connect Data</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ── METRICS ── -->
-    <div id="metrics-section">
-      <div class="section-head">
-        <span class="section-head-label">Key Metrics</span>
-        <div class="section-head-line"></div>
-      </div>
-      <div class="metrics-grid">
+    <!-- Data status bar -->
+    <div class="data-status" id="data-status-bar">
+      <div class="ds-dot polling" id="ds-dot"></div>
+      <span class="ds-label">Data source:</span>
+      <span class="ds-val" id="ds-label-val">Simulated — no API connected</span>
+      <span class="ds-label" style="margin-left:.75rem">Last update:</span>
+      <span class="ds-val" id="ds-last-update">Just now</span>
+      <button class="ds-config-btn" onclick="openDataConfig()">Configure →</button>
+    </div>
 
+    <!-- METRICS -->
+    <div id="metrics-section">
+      <div class="section-head"><span class="section-head-label">Key Metrics</span><div class="section-head-line"></div></div>
+      <div class="metrics-grid">
         <div class="card card-cyan metric-card reveal" onclick="toggleMetric(this)">
           <div class="card-label">Active Agents</div>
           <div class="metric-val grad-cyan"><span id="kpi-agents">20</span><span class="delta delta-flat">= stable</span></div>
           <div class="metric-sub">Swarm: learning-loop-fix</div>
-          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 38" preserveAspectRatio="none"><defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#06B6D4" stop-opacity="0.2"/><stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,30 C30,26 60,28 90,20 C120,14 150,10 180,7 L200,4 L200,38 L0,38 Z" fill="url(#sg1)"/><path class="spark-path" d="M0,30 C30,26 60,28 90,20 C120,14 150,10 180,7 L200,4" stroke="#06B6D4"/><circle class="spark-dot" cx="200" cy="4" r="2.5" fill="#06B6D4"/></svg></div>
+          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 36" preserveAspectRatio="none"><defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#06B6D4" stop-opacity="0.2"/><stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,28 C30,24 60,26 90,18 C120,12 155,9 200,4 L200,36 L0,36 Z" fill="url(#sg1)"/><path class="spark-path" d="M0,28 C30,24 60,26 90,18 C120,12 155,9 200,4" stroke="#06B6D4"/><circle class="spark-dot" cx="200" cy="4" r="2.5" fill="#06B6D4"/></svg></div>
           <div class="metric-breakdown">
-            <div class="breakdown-row"><span class="breakdown-label">Running</span><span class="breakdown-value" style="color:var(--green)">2</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Idle</span><span class="breakdown-value" style="color:var(--yellow)">5</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Completed</span><span class="breakdown-value" style="color:var(--cyan)">2</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Error / Overflow</span><span class="breakdown-value" style="color:var(--red)">5</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Running</span><span class="bdown-val" style="color:var(--green)">2</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Idle</span><span class="bdown-val" style="color:var(--yellow)">5</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Completed</span><span class="bdown-val" style="color:var(--cyan)">2</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Error / Overflow</span><span class="bdown-val" style="color:var(--red)">5</span></div>
           </div>
         </div>
-
         <div class="card card-green metric-card reveal rd1" onclick="toggleMetric(this)">
           <div class="card-label">Compliance Score</div>
-          <div class="metric-val grad-green"><span>6.2</span><span style="font-size:1rem;color:var(--dim);-webkit-text-fill-color:var(--dim)">/10</span><span class="delta delta-up">&#8593; +1.8</span></div>
+          <div class="metric-val grad-green"><span>6.2</span><span style="font-size:.95rem;color:var(--dim);-webkit-text-fill-color:var(--dim)">/10</span><span class="delta delta-up">&#8593; +1.8</span></div>
           <div class="metric-sub">After hook deployment</div>
-          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 38" preserveAspectRatio="none"><defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.18"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,34 C40,32 80,30 110,24 C140,18 165,12 200,7 L200,38 L0,38 Z" fill="url(#sg2)"/><path class="spark-path" d="M0,34 C40,32 80,30 110,24 C140,18 165,12 200,7" stroke="#22C55E"/><circle class="spark-dot" cx="200" cy="7" r="2.5" fill="#22C55E"/></svg></div>
+          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 36" preserveAspectRatio="none"><defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.18"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,32 C40,30 80,28 110,22 C140,16 165,11 200,6 L200,36 L0,36 Z" fill="url(#sg2)"/><path class="spark-path" d="M0,32 C40,30 80,28 110,22 C140,16 165,11 200,6" stroke="#22C55E"/><circle class="spark-dot" cx="200" cy="6" r="2.5" fill="#22C55E"/></svg></div>
           <div class="metric-breakdown">
-            <div class="breakdown-row"><span class="breakdown-label">Hook enforcement</span><span class="breakdown-value" style="color:var(--green)">9/10</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Context discipline</span><span class="breakdown-value" style="color:var(--red)">3/10</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Memory hygiene</span><span class="breakdown-value" style="color:var(--yellow)">5/10</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Hook enforcement</span><span class="bdown-val" style="color:var(--green)">9/10</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Context discipline</span><span class="bdown-val" style="color:var(--red)">3/10</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Memory hygiene</span><span class="bdown-val" style="color:var(--yellow)">5/10</span></div>
           </div>
         </div>
-
         <div class="card card-orange metric-card reveal rd2" onclick="toggleMetric(this)">
           <div class="card-label">Tasks Completed</div>
           <div class="metric-val grad-orange"><span id="kpi-tasks">47</span><span class="delta delta-up">&#8593; +12</span></div>
           <div class="metric-sub">Today (Mar 29&#8211;30)</div>
-          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 38" preserveAspectRatio="none"><defs><linearGradient id="sg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F97316" stop-opacity="0.18"/><stop offset="100%" stop-color="#F97316" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,36 C25,33 50,28 80,22 C110,16 140,10 170,7 L200,3 L200,38 L0,38 Z" fill="url(#sg3)"/><path class="spark-path" d="M0,36 C25,33 50,28 80,22 C110,16 140,10 170,7 L200,3" stroke="#F97316"/><circle class="spark-dot" cx="200" cy="3" r="2.5" fill="#F97316"/></svg></div>
+          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 36" preserveAspectRatio="none"><defs><linearGradient id="sg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F97316" stop-opacity="0.18"/><stop offset="100%" stop-color="#F97316" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,34 C25,30 50,25 80,20 C110,14 140,9 170,6 L200,2 L200,36 L0,36 Z" fill="url(#sg3)"/><path class="spark-path" d="M0,34 C25,30 50,25 80,20 C110,14 140,9 170,6 L200,2" stroke="#F97316"/><circle class="spark-dot" cx="200" cy="2" r="2.5" fill="#F97316"/></svg></div>
           <div class="metric-breakdown">
-            <div class="breakdown-row"><span class="breakdown-label">Engineering</span><span class="breakdown-value">18</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Marketing</span><span class="breakdown-value">12</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Architecture</span><span class="breakdown-value">8</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Engineering</span><span class="bdown-val">18</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Marketing</span><span class="bdown-val">12</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Architecture</span><span class="bdown-val">8</span></div>
           </div>
         </div>
-
         <div class="card card-purple metric-card reveal rd3" onclick="toggleMetric(this)">
           <div class="card-label">Revenue</div>
           <div class="metric-val grad-purple">$<span>0.85</span><span class="delta delta-up">&#8593; +14%</span></div>
           <div class="metric-sub">Kalshi trade</div>
-          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 38" preserveAspectRatio="none"><defs><linearGradient id="sg4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A855F7" stop-opacity="0.18"/><stop offset="100%" stop-color="#A855F7" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,37 L80,37 L110,36 C140,34 165,24 185,16 L200,11 L200,38 L0,38 Z" fill="url(#sg4)"/><path class="spark-path" d="M0,37 L80,37 L110,36 C140,34 165,24 185,16 L200,11" stroke="#A855F7"/><circle class="spark-dot" cx="200" cy="11" r="2.5" fill="#A855F7"/></svg></div>
+          <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 36" preserveAspectRatio="none"><defs><linearGradient id="sg4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A855F7" stop-opacity="0.18"/><stop offset="100%" stop-color="#A855F7" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,35 L75,35 L110,34 C140,32 165,22 185,14 L200,9 L200,36 L0,36 Z" fill="url(#sg4)"/><path class="spark-path" d="M0,35 L75,35 L110,34 C140,32 165,22 185,14 L200,9" stroke="#A855F7"/><circle class="spark-dot" cx="200" cy="9" r="2.5" fill="#A855F7"/></svg></div>
           <div class="metric-breakdown">
-            <div class="breakdown-row"><span class="breakdown-label">Kalshi</span><span class="breakdown-value" style="color:var(--green)">+$0.85</span></div>
-            <div class="breakdown-row"><span class="breakdown-label">Gumroad / Etsy / Amazon</span><span class="breakdown-value">$0.00</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Kalshi</span><span class="bdown-val" style="color:var(--green)">+$0.85</span></div>
+            <div class="bdown-row"><span class="bdown-lbl">Gumroad / Etsy / Amazon</span><span class="bdown-val">$0.00</span></div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── AGENTS + FEED ── -->
+    <!-- AGENTS + FEED -->
     <div class="two-col">
-
       <div class="card card-purple reveal" id="agents-section">
-        <div class="card-label">Agent Registry</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+          <div class="card-label" style="margin-bottom:0">Agent Registry</div>
+          <div style="display:flex;gap:.4rem">
+            <button class="topbar-btn" style="font-size:.54rem;padding:.2rem .55rem" onclick="exportAgents()">↓ CSV</button>
+            <button class="topbar-btn primary" style="font-size:.54rem;padding:.2rem .55rem" onclick="openSpawnModal()">+ Spawn</button>
+          </div>
+        </div>
         <div class="agent-list" id="agent-list"></div>
       </div>
-
       <div class="card card-cyan reveal rd1" id="feed-section">
-        <div class="card-label">Activity Feed</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+          <div class="card-label" style="margin-bottom:0">Activity Feed</div>
+          <button class="topbar-btn" style="font-size:.54rem;padding:.2rem .55rem" onclick="exportFeed()">↓ JSON</button>
+        </div>
         <div class="feed-filter-bar">
           <div class="feed-filter active" data-type="all" onclick="filterFeed(this)">All</div>
           <div class="feed-filter" data-type="success" onclick="filterFeed(this)">Success</div>
           <div class="feed-filter" data-type="info" onclick="filterFeed(this)">Info</div>
           <div class="feed-filter" data-type="error" onclick="filterFeed(this)">Errors</div>
+          <div class="feed-filter" data-type="warning" onclick="filterFeed(this)">Warnings</div>
         </div>
         <div class="feed" id="feed-list"></div>
       </div>
-
     </div>
 
-    <!-- ── PERFORMANCE + FRAMEWORKS ── -->
+    <!-- PERF + FRAMEWORKS -->
     <div class="three-col">
-
       <div class="card card-cyan reveal" id="perf-section">
         <div class="perf-head">
           <div>
-            <div class="card-label" style="margin-bottom:.3rem">CLX Performance — 7 Day</div>
+            <div class="card-label" style="margin-bottom:.28rem">CLX Performance — 7 Day</div>
             <div class="perf-legend">
               <div class="leg"><div class="leg-dot" style="background:var(--cyan)"></div>Tasks</div>
               <div class="leg"><div class="leg-dot" style="background:var(--purple)"></div>Agents</div>
@@ -774,41 +620,40 @@
               <div class="ct-row"><div class="ct-dot" style="background:var(--green)"></div><span class="ct-lbl">Revenue</span><span class="ct-val" id="ct-rev">-</span></div>
             </div>
           </div>
-          <svg class="perf-svg" viewBox="0 0 400 140" preserveAspectRatio="none">
+          <svg class="perf-svg" viewBox="0 0 400 135" preserveAspectRatio="none">
             <defs>
               <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#06B6D4" stop-opacity="0.16"/><stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/></linearGradient>
               <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A855F7" stop-opacity="0.12"/><stop offset="100%" stop-color="#A855F7" stop-opacity="0"/></linearGradient>
               <linearGradient id="cg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.12"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient>
             </defs>
-            <line x1="0" y1="28" x2="400" y2="28" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
-            <line x1="0" y1="56" x2="400" y2="56" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
-            <line x1="0" y1="84" x2="400" y2="84" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
-            <line x1="0" y1="112" x2="400" y2="112" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
-            <path class="chart-area" d="M0,138 L57,138 L114,138 L171,138 L228,138 L285,134 L342,128 L400,104 L400,140 L0,140 Z" fill="url(#cg3)"/>
-            <path class="chart-line" style="transition-delay:.35s" d="M0,138 L57,138 L114,138 L171,138 L228,138 L285,134 L342,128 L400,104" stroke="#22C55E"/>
-            <path class="chart-area" d="M0,92 L57,88 L114,84 L171,80 L228,76 L285,68 L342,60 L400,50 L400,140 L0,140 Z" fill="url(#cg2)"/>
-            <path class="chart-line" style="transition-delay:.18s" d="M0,92 L57,88 L114,84 L171,80 L228,76 L285,68 L342,60 L400,50" stroke="#A855F7"/>
-            <path class="chart-area" d="M0,116 L57,104 L114,90 L171,78 L228,62 L285,46 L342,32 L400,14 L400,140 L0,140 Z" fill="url(#cg1)"/>
-            <path class="chart-line" d="M0,116 L57,104 L114,90 L171,78 L228,62 L285,46 L342,32 L400,14" stroke="#06B6D4"/>
-            <rect x="0"   y="0" width="57"  height="140" fill="transparent" onmouseenter="showTip(0,event)" onmouseleave="hideTip()"/>
-            <rect x="57"  y="0" width="57"  height="140" fill="transparent" onmouseenter="showTip(1,event)" onmouseleave="hideTip()"/>
-            <rect x="114" y="0" width="57"  height="140" fill="transparent" onmouseenter="showTip(2,event)" onmouseleave="hideTip()"/>
-            <rect x="171" y="0" width="57"  height="140" fill="transparent" onmouseenter="showTip(3,event)" onmouseleave="hideTip()"/>
-            <rect x="228" y="0" width="57"  height="140" fill="transparent" onmouseenter="showTip(4,event)" onmouseleave="hideTip()"/>
-            <rect x="285" y="0" width="57"  height="140" fill="transparent" onmouseenter="showTip(5,event)" onmouseleave="hideTip()"/>
-            <rect x="342" y="0" width="29"  height="140" fill="transparent" onmouseenter="showTip(6,event)" onmouseleave="hideTip()"/>
-            <rect x="371" y="0" width="29"  height="140" fill="transparent" onmouseenter="showTip(7,event)" onmouseleave="hideTip()"/>
+            <line x1="0" y1="27" x2="400" y2="27" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
+            <line x1="0" y1="54" x2="400" y2="54" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
+            <line x1="0" y1="81" x2="400" y2="81" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
+            <line x1="0" y1="108" x2="400" y2="108" stroke="rgba(255,255,255,0.028)" stroke-width="1"/>
+            <path class="chart-area" d="M0,133 L57,133 L114,133 L171,133 L228,133 L285,130 L342,124 L400,100 L400,135 L0,135 Z" fill="url(#cg3)"/>
+            <path class="chart-line" style="transition-delay:.35s" d="M0,133 L57,133 L114,133 L171,133 L228,133 L285,130 L342,124 L400,100" stroke="#22C55E"/>
+            <path class="chart-area" d="M0,88 L57,84 L114,80 L171,76 L228,72 L285,64 L342,56 L400,46 L400,135 L0,135 Z" fill="url(#cg2)"/>
+            <path class="chart-line" style="transition-delay:.18s" d="M0,88 L57,84 L114,80 L171,76 L228,72 L285,64 L342,56 L400,46" stroke="#A855F7"/>
+            <path class="chart-area" d="M0,110 L57,98 L114,85 L171,73 L228,57 L285,41 L342,27 L400,10 L400,135 L0,135 Z" fill="url(#cg1)"/>
+            <path class="chart-line" d="M0,110 L57,98 L114,85 L171,73 L228,57 L285,41 L342,27 L400,10" stroke="#06B6D4"/>
+            <rect x="0"   y="0" width="57"  height="135" fill="transparent" onmouseenter="showTip(0,event)" onmouseleave="hideTip()"/>
+            <rect x="57"  y="0" width="57"  height="135" fill="transparent" onmouseenter="showTip(1,event)" onmouseleave="hideTip()"/>
+            <rect x="114" y="0" width="57"  height="135" fill="transparent" onmouseenter="showTip(2,event)" onmouseleave="hideTip()"/>
+            <rect x="171" y="0" width="57"  height="135" fill="transparent" onmouseenter="showTip(3,event)" onmouseleave="hideTip()"/>
+            <rect x="228" y="0" width="57"  height="135" fill="transparent" onmouseenter="showTip(4,event)" onmouseleave="hideTip()"/>
+            <rect x="285" y="0" width="57"  height="135" fill="transparent" onmouseenter="showTip(5,event)" onmouseleave="hideTip()"/>
+            <rect x="342" y="0" width="29"  height="135" fill="transparent" onmouseenter="showTip(6,event)" onmouseleave="hideTip()"/>
+            <rect x="371" y="0" width="29"  height="135" fill="transparent" onmouseenter="showTip(7,event)" onmouseleave="hideTip()"/>
           </svg>
         </div>
         <div class="perf-xlabels">
           <span class="perf-xlabel">Mon</span><span class="perf-xlabel">Tue</span><span class="perf-xlabel">Wed</span><span class="perf-xlabel">Thu</span><span class="perf-xlabel">Fri</span><span class="perf-xlabel">Sat</span><span class="perf-xlabel">Sun</span><span class="perf-xlabel" style="color:var(--cyan)">Today</span>
         </div>
       </div>
-
       <div class="card card-green reveal rd1" id="frameworks-section">
-        <div class="card-label" style="margin-bottom:.75rem">Framework Status</div>
+        <div class="card-label" style="margin-bottom:.7rem">Framework Status</div>
         <div class="fw-grid" id="fw-grid"></div>
-        <div style="padding-top:.85rem;border-top:1px solid var(--border)">
+        <div style="padding-top:.8rem;border-top:1px solid var(--border)">
           <div class="tdist-label">Task Distribution</div>
           <div class="tbar-row"><span class="tbar-name">Engineering</span><div class="tbar-track"><div class="tbar-fill" style="--bt:58%;background:linear-gradient(90deg,var(--cyan),rgba(6,182,212,0.2));transition-delay:.1s"></div></div><span class="tbar-count">18</span></div>
           <div class="tbar-row"><span class="tbar-name">Marketing</span><div class="tbar-track"><div class="tbar-fill" style="--bt:38%;background:linear-gradient(90deg,var(--purple),rgba(168,85,247,0.2));transition-delay:.2s"></div></div><span class="tbar-count">12</span></div>
@@ -817,43 +662,176 @@
           <div class="tbar-row"><span class="tbar-name">Debugging</span><div class="tbar-track"><div class="tbar-fill" style="--bt:12%;background:linear-gradient(90deg,var(--red),rgba(239,68,68,0.2));transition-delay:.5s"></div></div><span class="tbar-count">4</span></div>
         </div>
       </div>
-
     </div>
 
-    <!-- ── REVENUE ── -->
+    <!-- REVENUE -->
     <div id="revenue-section">
-      <div class="section-head">
-        <span class="section-head-label">Revenue Channels</span>
-        <div class="section-head-line"></div>
-      </div>
+      <div class="section-head"><span class="section-head-label">Revenue Channels</span><div class="section-head-line"></div></div>
       <div class="card card-orange reveal">
         <div class="rev-grid" id="rev-grid"></div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</main><!-- /main -->
+  </div>
+</main>
+
+<!-- ═══════════ COMMAND BAR ═══════════ -->
+<div class="cmd-overlay" id="cmd-overlay" onclick="closeCmd(event)">
+  <div class="cmd-box" onclick="event.stopPropagation()">
+    <div class="cmd-input-wrap">
+      <svg class="cmd-input-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#64748B" stroke-width="1.5"/><path d="M10.5 10.5l3 3" stroke="#64748B" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input class="cmd-input" id="cmd-input" placeholder="Search agents, sections, actions..." autocomplete="off" oninput="updateCmdResults(this.value)" onkeydown="handleCmdKey(event)"/>
+      <span class="cmd-esc" onclick="closeCmd()">ESC</span>
+    </div>
+    <div class="cmd-results" id="cmd-results"></div>
+    <div class="cmd-footer">
+      <div class="cmd-hint"><kbd>↑↓</kbd> navigate</div>
+      <div class="cmd-hint"><kbd>Enter</kbd> select</div>
+      <div class="cmd-hint"><kbd>Esc</kbd> close</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SPAWN MODAL ═══════════ -->
+<div class="modal-overlay" id="spawn-modal">
+  <div class="modal">
+    <div class="modal-title">+ Spawn New Agent</div>
+    <div class="modal-sub">Configure and launch a new agent into the CLX swarm</div>
+    <div class="modal-field">
+      <label class="modal-label">Agent Name</label>
+      <input class="modal-input" id="spawn-name" placeholder="e.g. seo-optimizer-2" autocomplete="off"/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Domain</label>
+      <select class="modal-select" id="spawn-domain">
+        <option value="engineering">Engineering</option>
+        <option value="marketing">Marketing / SEO</option>
+        <option value="architecture">Architecture</option>
+        <option value="automation">Automation</option>
+        <option value="debugging">Debugging</option>
+        <option value="research">Research</option>
+        <option value="business">Business</option>
+        <option value="quality">Quality</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Initial Task / Prompt</label>
+      <input class="modal-input" id="spawn-task" placeholder="e.g. Analyze competitor SEO strategy for reset method niche" autocomplete="off"/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Model</label>
+      <select class="modal-select" id="spawn-model">
+        <option value="haiku">Claude Haiku (fast, swarm)</option>
+        <option value="sonnet">Claude Sonnet (balanced)</option>
+        <option value="opus">Claude Opus (complex tasks)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal('spawn-modal')">Cancel</button>
+      <button class="modal-btn confirm" onclick="spawnAgent()">Launch Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ KILL MODAL ═══════════ -->
+<div class="modal-overlay" id="kill-modal">
+  <div class="modal">
+    <div class="modal-title" id="kill-modal-title">Stop Agent</div>
+    <div class="modal-sub" id="kill-modal-sub">This will terminate the agent process. Unsaved state will be lost.</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal('kill-modal')">Cancel</button>
+      <button class="modal-btn danger" id="kill-confirm-btn" onclick="confirmKill()">Stop Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DATA CONFIG MODAL ═══════════ -->
+<div class="modal-overlay" id="data-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-title">⚡ Connect Real Data</div>
+    <div class="modal-sub">Wire your CLX dashboard to live agent data sources</div>
+    <div class="data-info">
+      The dashboard polls your Telegram bot every 30s to pull /status data from your running Claude agents. Paste your bot token below to activate real-time updates.
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Telegram Bot Token</label>
+      <input class="modal-input" id="tg-token" placeholder="1234567890:ABCdefGHIjklMNOpqrSTUvwxYZ" autocomplete="off" type="password"/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Chat ID (where /status is sent)</label>
+      <input class="modal-input" id="tg-chat-id" placeholder="-100xxxxxxxxxx or your personal chat id" autocomplete="off"/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Poll Interval</label>
+      <select class="modal-select" id="poll-interval">
+        <option value="15">Every 15 seconds</option>
+        <option value="30" selected>Every 30 seconds</option>
+        <option value="60">Every 60 seconds</option>
+        <option value="300">Every 5 minutes</option>
+      </select>
+    </div>
+    <div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);margin-bottom:.9rem;line-height:1.6">
+      Token stored in localStorage only. Never sent to any server except Telegram's API directly from your browser.
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal('data-modal')">Cancel</button>
+      <button class="modal-btn confirm" onclick="saveDataConfig()">Connect & Start Polling</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ NOTIFICATION PANEL ═══════════ -->
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-header">
+    <div class="notif-title">Notifications</div>
+    <button class="notif-close" onclick="closeNotif()">&#x2715;</button>
+  </div>
+  <div class="notif-list" id="notif-list"></div>
+  <div class="notif-footer">
+    <button class="notif-clear-btn" onclick="clearNotifs()">Clear all</button>
+  </div>
+</div>
+
+<!-- ═══════════ AGENT DRILL-DOWN ═══════════ -->
+<div class="drill-panel" id="drill-panel">
+  <div class="drill-header">
+    <div class="drill-title" id="drill-title">Agent Detail</div>
+    <button class="notif-close" onclick="closeDrill()">&#x2715;</button>
+  </div>
+  <div class="drill-body" id="drill-body"></div>
+</div>
+
+<!-- KB hint -->
+<div class="kb-hint" id="kb-hint">
+  <span><span class="kb-key">⌘K</span> command</span>
+  <span><span class="kb-key">1-5</span> sections</span>
+  <span><span class="kb-key">N</span> notifications</span>
+  <span><span class="kb-key">Esc</span> close</span>
+</div>
 
 <div class="toast-container" id="toast-container"></div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────
-const agentData=[
-  {name:'coordinator-1',domain:'architecture',status:'RUNNING',sc:'s-running',uptime:'4h 12m',tasks:23,memory:'142 MB',lastAction:'Routing swarm consensus',pid:8421},
-  {name:'hooks-enforcer',domain:'engineering',status:'IDLE',sc:'s-idle',uptime:'3h 45m',tasks:8,memory:'67 MB',lastAction:'Deployed PreCompact hooks',pid:8422},
-  {name:'compaction-survivor',domain:'engineering',status:'IDLE',sc:'s-idle',uptime:'2h 20m',tasks:5,memory:'54 MB',lastAction:'Survived last compaction cycle',pid:8423},
-  {name:'claude-md-redesign',domain:'architecture',status:'COMPLETED',sc:'s-completed',uptime:'1h 55m',tasks:12,memory:'89 MB',lastAction:'Rewrote .claude.md to 95 gates',pid:8424},
-  {name:'precompact-hook',domain:'engineering',status:'COMPLETED',sc:'s-completed',uptime:'1h 30m',tasks:6,memory:'45 MB',lastAction:'Deployed hooks to settings.json',pid:8425},
-  {name:'n8n-automation',domain:'automation',status:'IDLE',sc:'s-idle',uptime:'5h 10m',tasks:0,memory:'32 MB',lastAction:'Waiting for workflow config',pid:8426},
-  {name:'telegram-debug',domain:'debugging',status:'ERROR',sc:'s-error',uptime:'0h 0m',tasks:3,memory:'128 MB',lastAction:'409 conflict: mode-controller.py',pid:8427},
-  {name:'gemini-king-mode',domain:'research',status:'CTX OVERFLOW',sc:'s-error',uptime:'0h 0m',tasks:0,memory:'210 MB',lastAction:'Failed: context overflow',pid:8428},
-  {name:'memory-tiers',domain:'architecture',status:'CTX OVERFLOW',sc:'s-error',uptime:'0h 0m',tasks:0,memory:'188 MB',lastAction:'Failed: context overflow',pid:8429},
-  {name:'seo-deployer',domain:'marketing',status:'COMPLETED',sc:'s-completed',uptime:'2h 10m',tasks:9,memory:'61 MB',lastAction:'Deployed SEO + schema.org',pid:8430},
-  {name:'self-audit',domain:'quality',status:'CTX OVERFLOW',sc:'s-error',uptime:'0h 0m',tasks:0,memory:'198 MB',lastAction:'Failed: context overflow',pid:8431},
-  {name:'business-reliability',domain:'business',status:'IDLE',sc:'s-idle',uptime:'4h 0m',tasks:7,memory:'56 MB',lastAction:'Monitoring revenue channels',pid:8433},
-  {name:'consensus-builder',domain:'architecture',status:'WAITING',sc:'s-running',uptime:'2h 15m',tasks:4,memory:'92 MB',lastAction:'Awaiting quorum from 3 agents',pid:8434}
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+let agentData=[
+  {name:'coordinator-1',domain:'architecture',status:'RUNNING',sc:'s-running',uptime:'4h 12m',tasks:23,memory:'142 MB',lastAction:'Routing swarm consensus',pid:8421,logs:['05:25 Routing swarm consensus to 6 agents','05:20 Received quorum signal from hooks-enforcer','05:15 Spawned learning-loop-fix swarm','05:10 Initialized session with 20 agents','05:00 Session started']},
+  {name:'hooks-enforcer',domain:'engineering',status:'IDLE',sc:'s-idle',uptime:'3h 45m',tasks:8,memory:'67 MB',lastAction:'Deployed PreCompact hooks',pid:8422,logs:['05:22 Deployed PreCompact + SessionStart hooks','05:18 Validated settings.json','05:10 Loaded hook templates']},
+  {name:'compaction-survivor',domain:'engineering',status:'IDLE',sc:'s-idle',uptime:'2h 20m',tasks:5,memory:'54 MB',lastAction:'Survived last compaction cycle',pid:8423,logs:['04:50 Survived compaction cycle #3','04:30 Context at 78%, monitoring','04:00 Started monitoring loop']},
+  {name:'claude-md-redesign',domain:'architecture',status:'COMPLETED',sc:'s-completed',uptime:'1h 55m',tasks:12,memory:'89 MB',lastAction:'Rewrote .claude.md to 95 gates',pid:8424,logs:['05:25 Task complete: 209 lines → 95 gates','05:15 Draft v3 with hook enforcement','05:05 Analysis of existing gates']},
+  {name:'precompact-hook',domain:'engineering',status:'COMPLETED',sc:'s-completed',uptime:'1h 30m',tasks:6,memory:'45 MB',lastAction:'Deployed hooks to settings.json',pid:8425,logs:['05:22 Verified hooks in settings.json','05:20 Hook injection complete','05:15 Reading hook templates']},
+  {name:'n8n-automation',domain:'automation',status:'IDLE',sc:'s-idle',uptime:'5h 10m',tasks:0,memory:'32 MB',lastAction:'Waiting for workflow config',pid:8426,logs:['03:00 Waiting for workflow configuration','02:00 n8n API connected','01:00 Agent initialized']},
+  {name:'telegram-debug',domain:'debugging',status:'ERROR',sc:'s-error',uptime:'0h 0m',tasks:3,memory:'128 MB',lastAction:'409 conflict: mode-controller.py',pid:8427,logs:['ERROR: 409 Conflict on mode-controller.py','Attempted 3 retry cycles','Bot collision detected with existing instance']},
+  {name:'gemini-king-mode',domain:'research',status:'CTX OVERFLOW',sc:'s-error',uptime:'0h 0m',tasks:0,memory:'210 MB',lastAction:'Failed: context overflow',pid:8428,logs:['FATAL: Context window exceeded (210k tokens)','Context-mode not enforced','Prompt engineering task aborted']},
+  {name:'memory-tiers',domain:'architecture',status:'CTX OVERFLOW',sc:'s-error',uptime:'0h 0m',tasks:0,memory:'188 MB',lastAction:'Failed: context overflow',pid:8429,logs:['FATAL: Context overflow at 188k tokens','Structured memory design incomplete']},
+  {name:'seo-deployer',domain:'marketing',status:'COMPLETED',sc:'s-completed',uptime:'2h 10m',tasks:9,memory:'61 MB',lastAction:'Deployed SEO + schema.org',pid:8430,logs:['01:50 SEO package deployed successfully','01:45 Generated schema.org markup','01:40 Meta tags written']},
+  {name:'self-audit',domain:'quality',status:'CTX OVERFLOW',sc:'s-error',uptime:'0h 0m',tasks:0,memory:'198 MB',lastAction:'Failed: context overflow',pid:8431,logs:['FATAL: Context overflow at 198k tokens']},
+  {name:'business-reliability',domain:'business',status:'IDLE',sc:'s-idle',uptime:'4h 0m',tasks:7,memory:'56 MB',lastAction:'Monitoring revenue channels',pid:8433,logs:['Monitoring Kalshi, Gumroad, Etsy, Amazon','Revenue alert threshold: $1.00','Watching 4 channels']},
+  {name:'consensus-builder',domain:'architecture',status:'WAITING',sc:'s-running',uptime:'2h 15m',tasks:4,memory:'92 MB',lastAction:'Awaiting quorum from 3 agents',pid:8434,logs:['Awaiting quorum signal from 3 agents','2/3 agents responded','Consensus protocol initialized']}
 ];
-const feedData=[
+
+let feedData=[
   {time:'05:25',msg:'claude-md-redesign: Rewrote .claude.md — 209 lines to 95 enforceable gates',type:'success',detail:'Reduced from 209 to 95 lines. Added PreCompact, SessionStart, PostEdit hook gates.'},
   {time:'05:22',msg:'precompact-hook: Deployed PreCompact + SessionStart hooks to settings.json',type:'success',detail:'Hooks registered in ~/.claude/settings.json. PreCompact triggers at 80% context.'},
   {time:'05:21',msg:'6 Haiku agents failed: context overflow — need context-mode enforcement',type:'error',detail:'Agents: gemini-king-mode, memory-tiers, self-audit, session-management + 2 swarm workers.'},
@@ -862,41 +840,143 @@ const feedData=[
   {time:'04:27',msg:'Obsidian brainstorm session logged: 15 timestamped entries',type:'info',detail:'Topics: agent replication, context-mode enforcement, hook intelligence.'},
   {time:'02:40',msg:'Tweet posted on @casbattle with storefront link preview',type:'success',detail:'Tweet included OG card from theresetmethod.live.'},
   {time:'02:20',msg:'Instagram bio updated: theresetmethod.live',type:'success',detail:'Bio link changed from linktr.ee to direct domain.'},
-  {time:'01:55',msg:'Google Search Console: property verified + sitemap submitted',type:'success',detail:'DNS TXT verification passed. Sitemap at /sitemap.xml submitted with 12 URLs.'},
+  {time:'01:55',msg:'Google Search Console: property verified + sitemap submitted',type:'success',detail:'DNS TXT verification passed. Sitemap submitted with 12 URLs.'},
   {time:'01:50',msg:'SEO deployed: meta tags, schema.org, OG cards, robots.txt',type:'success',detail:'Full SEO package including JSON-LD Product schema.'},
   {time:'01:20',msg:'Etsy: 3 listings published on TheResetPrintables',type:'success',detail:'$2.99 / $4.99 / $9.99. All with SEO-optimized tags.'},
   {time:'01:00',msg:'Storefront v3 deployed: awwwards-level redesign',type:'success',detail:'Glassmorphism, scroll animations, responsive grid, dark theme.'},
   {time:'00:45',msg:'DNS configured: CNAME www + A record at Vercel',type:'success',detail:'A record 76.76.21.21, CNAME www -> cname.vercel-dns.com.'},
   {time:'00:30',msg:'Pinterest Day 3 warmup: 10 repins across 3 search terms',type:'success',detail:'Search terms: budget planner, habit tracker, self improvement printable.'}
 ];
+
 const frameworkData=[
   {name:'Telegram',status:'Connected',cls:'active',pulse:'on',desc:'10 cmds registered.'},
-  {name:'Obsidian',status:'Port 22360',cls:'active',pulse:'on',desc:'Local REST API.'},
-  {name:'Ruflo',status:'20 agents',cls:'active',pulse:'on',desc:'Agent orchestration.'},
-  {name:'Chrome',status:'10 tabs',cls:'active',pulse:'on',desc:'Claude-in-Chrome ext.'},
-  {name:'pyautogui',status:'Available',cls:'active',pulse:'on',desc:'GUI automation fallback.'},
+  {name:'Obsidian',status:'Port 22360',cls:'active',pulse:'on',desc:'Local REST API on port 22360.'},
+  {name:'Ruflo',status:'20 agents',cls:'active',pulse:'on',desc:'Agent orchestration. 20 agents active.'},
+  {name:'Chrome',status:'10 tabs',cls:'active',pulse:'on',desc:'Claude-in-Chrome ext active.'},
+  {name:'pyautogui',status:'Available',cls:'active',pulse:'on',desc:'Python GUI automation fallback.'},
   {name:'Context-Mode',status:'Not enforced',cls:'warning',pulse:'warn',desc:'HIGH priority — prevents ctx overflow.'},
   {name:'n8n',status:'No workflows',cls:'inactive',pulse:'off',desc:'No workflows configured.'},
-  {name:'Frameforge',status:'Not active',cls:'inactive',pulse:'off',desc:'Video prod framework.'},
+  {name:'Frameforge',status:'Not active',cls:'inactive',pulse:'off',desc:'Remotion video prod framework.'},
   {name:'GSD',status:'Not active',cls:'inactive',pulse:'off',desc:'Phase-based workflow engine.'}
 ];
+
 const revenueData=[
   {source:'Kalshi',amount:'+$0.85',cls:'kalshi',ac:'pos',bc:'green',bw:'85%',detail:[{l:'Open positions',v:'2'},{l:'Win rate',v:'67%'},{l:'Today P&L',v:'+$0.85'},{l:'Best trade',v:'Weather YES +14%'}]},
   {source:'Gumroad',amount:'$0.00',cls:'',ac:'zero',bc:'gray',bw:'3%',detail:[{l:'Products listed',v:'4'},{l:'Views today',v:'12'},{l:'Conversion',v:'0%'},{l:'Status',v:'Live, needs traffic'}]},
   {source:'Etsy',amount:'$0.00',cls:'',ac:'zero',bc:'gray',bw:'2%',detail:[{l:'Listings',v:'3'},{l:'Views today',v:'5'},{l:'Favorites',v:'1'},{l:'Status',v:'Warming up'}]},
   {source:'Amazon Aff.',amount:'$0.00',cls:'',ac:'zero',bc:'gray',bw:'1%',detail:[{l:'Links placed',v:'6'},{l:'Clicks today',v:'3'},{l:'Conversions',v:'0'},{l:'Status',v:'Needs traffic'}]}
 ];
+
 const chartDays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun','Today'];
 const chartT=[5,8,10,14,18,22,35,47];
 const chartA=[8,8,10,12,14,16,18,20];
 const chartR=[0,0,0,0,0,0,0,0.85];
 
-// ── RENDER ────────────────────────────────────────────
+let notifications=[
+  {title:'CTX OVERFLOW x4',body:'4 agents exceeded context limit. Enable Context-Mode to prevent. Affected: gemini-king-mode, memory-tiers, self-audit, session-management',time:'05:21',type:'unread'},
+  {title:'Telegram conflict: 409',body:'telegram-debug agent hit a 409 conflict on mode-controller.py. Bot instance collision — check for duplicate running bots.',time:'05:18',type:'unread'},
+  {title:'Swarm launched',body:'20 agents spawned for learning-loop-fix brainstorm via Ruflo orchestrator.',time:'05:17',type:'info-notif'},
+  {title:'.claude.md rewritten',body:'claude-md-redesign completed: 209 lines reduced to 95 enforceable gates. Compliance score expected +1.8.',time:'05:25',type:'info-notif'},
+  {title:'Revenue: Kalshi +$0.85',body:'Kalshi trade closed: Weather YES contract at +14%. First successful trade.',time:'04:00',type:'warn'}
+];
+
+// ═══════════════════════════════════════
+// REAL DATA POLLING LAYER
+// ═══════════════════════════════════════
+let pollingInterval=null;
+let dataConfig={token:'',chatId:'',interval:30};
+
+function loadDataConfig(){
+  const saved=localStorage.getItem('clx_data_config');
+  if(saved){
+    dataConfig=JSON.parse(saved);
+    if(dataConfig.token&&dataConfig.chatId){
+      startPolling();
+    }
+  }
+}
+
+function saveDataConfig(){
+  const token=document.getElementById('tg-token').value.trim();
+  const chatId=document.getElementById('tg-chat-id').value.trim();
+  const interval=parseInt(document.getElementById('poll-interval').value);
+  if(!token||!chatId){showToast('Token and Chat ID required','warning');return;}
+  dataConfig={token,chatId,interval};
+  localStorage.setItem('clx_data_config',JSON.stringify(dataConfig));
+  closeModal('data-modal');
+  startPolling();
+  showToast('Data connection configured — polling started','success');
+}
+
+async function pollTelegram(){
+  if(!dataConfig.token||!dataConfig.chatId) return;
+  try{
+    const url=`https://api.telegram.org/bot${dataConfig.token}/getUpdates?limit=10&offset=-10`;
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.ok&&data.result.length>0){
+      processUpdates(data.result);
+      updateDataStatus('live','Live — Telegram API');
+    }
+  }catch(e){
+    updateDataStatus('offline','Error connecting to Telegram');
+    console.warn('Telegram poll error:',e);
+  }
+}
+
+function processUpdates(updates){
+  const newItems=[];
+  updates.forEach(u=>{
+    const msg=u.message||u.channel_post;
+    if(!msg||!msg.text) return;
+    const text=msg.text;
+    const time=new Date(msg.date*1000).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+    if(text.includes('/status')||text.includes('agent')||text.includes('task')){
+      const type=text.includes('error')||text.includes('fail')?'error':text.includes('complete')||text.includes('success')?'success':'info';
+      const exists=feedData.some(f=>f.msg===text.slice(0,80));
+      if(!exists){newItems.push({time,msg:text.slice(0,100),type,detail:text});}
+    }
+  });
+  if(newItems.length>0){
+    feedData=[...newItems,...feedData].slice(0,30);
+    renderFeed();
+    showToast(`${newItems.length} new update(s) from Telegram`,'info');
+  }
+  const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+  document.getElementById('ds-last-update').textContent=now;
+}
+
+function startPolling(){
+  if(pollingInterval) clearInterval(pollingInterval);
+  pollTelegram();
+  pollingInterval=setInterval(pollTelegram,dataConfig.interval*1000);
+  updateDataStatus('live',`Live — Telegram bot (every ${dataConfig.interval}s)`);
+}
+
+function updateDataStatus(state,label){
+  const dot=document.getElementById('ds-dot');
+  const lbl=document.getElementById('ds-label-val');
+  dot.className='ds-dot '+state;
+  lbl.textContent=label;
+}
+
+function openDataConfig(){
+  if(dataConfig.token) document.getElementById('tg-token').value=dataConfig.token;
+  if(dataConfig.chatId) document.getElementById('tg-chat-id').value=dataConfig.chatId;
+  openModal('data-modal');
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
 function renderAgents(){
   document.getElementById('agent-list').innerHTML=agentData.map((a,i)=>`
     <div class="agent-row" onclick="toggleAgent(${i})" id="ar-${i}">
       <div><div class="agent-name">${a.name}</div><div class="agent-domain">${a.domain}</div></div>
-      <span class="agent-status ${a.sc}">${a.status}</span>
+      <div class="agent-row-right">
+        <span class="agent-status ${a.sc}">${a.status}</span>
+        <button class="agent-drill-btn" onclick="event.stopPropagation();openDrill(${i})" title="Full detail">⤢</button>
+      </div>
     </div>
     <div class="agent-detail" id="ad-${i}">
       <div class="agent-detail-grid">
@@ -905,21 +985,28 @@ function renderAgents(){
         <div><div class="adl">Memory</div><div class="adv">${a.memory}</div></div>
         <div><div class="adl">PID</div><div class="adv">${a.pid}</div></div>
       </div>
-      <div style="margin-top:.45rem;font-family:var(--mono);font-size:.63rem;color:var(--dim)">Last: ${a.lastAction}</div>
+      <div style="margin-top:.4rem;font-family:var(--mono);font-size:.6rem;color:var(--dim)">Last: ${a.lastAction}</div>
       <div class="agent-actions">
         <button class="aab restart" onclick="event.stopPropagation();agentAction('${a.name}','restart')">Restart</button>
-        <button class="aab stop" onclick="event.stopPropagation();agentAction('${a.name}','stop')">Stop</button>
-        <button class="aab logs" onclick="event.stopPropagation();agentAction('${a.name}','logs')">Logs</button>
+        <button class="aab stop" onclick="event.stopPropagation();openKillModal(${i})">Stop</button>
+        <button class="aab logs" onclick="event.stopPropagation();openDrill(${i})">Logs</button>
       </div>
     </div>`).join('');
 }
-function renderFeed(){
-  document.getElementById('feed-list').innerHTML=feedData.map((f,i)=>`
+
+function renderFeed(filter='all'){
+  const items=filter==='all'?feedData:feedData.filter(f=>f.type===filter);
+  if(items.length===0){
+    document.getElementById('feed-list').innerHTML=`<div class="empty-state"><div class="empty-state-icon">&#x2205;</div>No ${filter!=='all'?filter+' ':''}events found</div>`;
+    return;
+  }
+  document.getElementById('feed-list').innerHTML=items.map((f,i)=>`
     <div class="feed-item ${f.type}" data-ft="${f.type}" onclick="toggleFeed(${i})">
       <span class="feed-time">${f.time}</span>
       <div><div class="feed-msg">${f.msg}</div><div class="feed-detail" id="fd-${i}">${f.detail}</div></div>
     </div>`).join('');
 }
+
 function renderFw(){
   document.getElementById('fw-grid').innerHTML=frameworkData.map((fw,i)=>`
     <div class="fw-pill ${fw.cls}" onclick="fwClick(${i})" title="${fw.desc}">
@@ -927,6 +1014,7 @@ function renderFw(){
       <div class="fw-pstatus">${fw.status}</div>
     </div>`).join('');
 }
+
 function renderRev(){
   document.getElementById('rev-grid').innerHTML=revenueData.map((r,i)=>`
     <div class="rev-item ${r.cls}" onclick="toggleRev(${i})" id="ri-${i}">
@@ -937,15 +1025,31 @@ function renderRev(){
     </div>`).join('');
 }
 
-// ── INTERACTIONS ──────────────────────────────────────
-const sectionNames={
-  'metrics-section':'Overview',
-  'agents-section':'Agent Registry',
-  'feed-section':'Activity Feed',
-  'perf-section':'Performance',
-  'frameworks-section':'Frameworks',
-  'revenue-section':'Revenue'
-};
+function renderNotifs(){
+  const list=document.getElementById('notif-list');
+  const unread=notifications.filter(n=>n.type==='unread').length;
+  document.getElementById('notif-dot').style.display=unread>0?'block':'none';
+  if(notifications.length===0){list.innerHTML='<div class="empty-state"><div class="empty-state-icon">&#x1F514;</div>No notifications</div>';return;}
+  list.innerHTML=notifications.map((n,i)=>`
+    <div class="notif-item ${n.type}" onclick="ackNotif(${i})">
+      <div class="notif-item-title">${n.title}</div>
+      <div class="notif-item-body">${n.body}</div>
+      <div class="notif-item-time">${n.time}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════
+const sectionNames={'metrics-section':'Overview','agents-section':'Agent Registry','feed-section':'Activity Feed','perf-section':'Performance','frameworks-section':'Frameworks','revenue-section':'Revenue'};
+
+let sidebarCollapsed=false;
+function toggleCollapse(){
+  sidebarCollapsed=!sidebarCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
+  document.getElementById('main').classList.toggle('collapsed',sidebarCollapsed);
+}
+function toggleMobileSidebar(){document.getElementById('sidebar').classList.toggle('mobile-open')}
 
 function sidebarNav(el){
   const id=el.getAttribute('data-section');
@@ -953,78 +1057,92 @@ function sidebarNav(el){
   el.classList.add('active');
   document.getElementById('active-section-name').textContent=sectionNames[id]||'Dashboard';
   document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
-  // close mobile sidebar
-  if(window.innerWidth<=768){
-    document.getElementById('sidebar').classList.remove('open');
-  }
+  if(window.innerWidth<=768) document.getElementById('sidebar').classList.remove('mobile-open');
 }
 
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('open');
-}
-
-// Scroll spy
 const scrollSpy=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      const id=e.target.id;
-      document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
-      const link=document.querySelector(`.nav-link[data-section="${id}"]`);
-      if(link)link.classList.add('active');
-      document.getElementById('active-section-name').textContent=sectionNames[id]||'Dashboard';
-    }
-  });
+  entries.forEach(e=>{if(e.isIntersecting){const id=e.target.id;document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));const l=document.querySelector(`.nav-link[data-section="${id}"]`);if(l)l.classList.add('active');document.getElementById('active-section-name').textContent=sectionNames[id]||'Dashboard';}});
 },{threshold:0.25,rootMargin:'-60px 0px -40% 0px'});
 
-['metrics-section','agents-section','feed-section','perf-section','frameworks-section','revenue-section'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el)scrollSpy.observe(el);
-});
+['metrics-section','agents-section','feed-section','perf-section','frameworks-section','revenue-section'].forEach(id=>{const el=document.getElementById(id);if(el)scrollSpy.observe(el);});
 
-function toggleMetric(card){
-  const b=card.querySelector('.metric-breakdown'),was=b.classList.contains('open');
-  document.querySelectorAll('.metric-breakdown').forEach(x=>x.classList.remove('open'));
-  if(!was)b.classList.add('open');
-}
+function toggleMetric(card){const b=card.querySelector('.metric-breakdown'),was=b.classList.contains('open');document.querySelectorAll('.metric-breakdown').forEach(x=>x.classList.remove('open'));if(!was)b.classList.add('open');}
+
 function toggleAgent(i){
   const d=document.getElementById(`ad-${i}`),r=document.getElementById(`ar-${i}`),was=d.classList.contains('open');
   document.querySelectorAll('.agent-detail').forEach(x=>x.classList.remove('open'));
   document.querySelectorAll('.agent-row').forEach(x=>x.classList.remove('expanded'));
   if(!was){d.classList.add('open');r.classList.add('expanded');}
 }
+
 function agentAction(name,action){
-  const m={restart:{t:`Restarting ${name}...`,type:'info'},stop:{t:`Stopping ${name}...`,type:'warning'},logs:{t:`Fetching logs for ${name}...`,type:'info'}};
-  showToast(m[action].t,m[action].type);
-  setTimeout(()=>{
-    if(action==='restart')showToast(`${name} restarted successfully`,'success');
-    if(action==='stop')showToast(`${name} stopped`,'warning');
-    if(action==='logs')showToast(`${name}: last 50 lines loaded`,'success');
-  },1200);
+  const m={restart:{t:`Restarting ${name}...`,type:'info'},logs:{t:`Opening logs for ${name}...`,type:'info'}};
+  showToast(m[action]?.t||'Action triggered',m[action]?.type||'info');
 }
+
+let killTarget=null;
+function openKillModal(i){
+  killTarget=i;
+  document.getElementById('kill-modal-title').textContent=`Stop: ${agentData[i].name}`;
+  document.getElementById('kill-modal-sub').textContent=`This will terminate ${agentData[i].name} (PID ${agentData[i].pid}). Unsaved state will be lost.`;
+  openModal('kill-modal');
+}
+function confirmKill(){
+  if(killTarget!==null){
+    const name=agentData[killTarget].name;
+    agentData[killTarget].status='STOPPED';agentData[killTarget].sc='s-idle';
+    renderAgents();
+    addFeedItem({time:nowTime(),msg:`${name}: Agent stopped by user`,type:'warning',detail:`PID ${agentData[killTarget].pid} terminated.`});
+    showToast(`${name} stopped`,'warning');
+    killTarget=null;
+  }
+  closeModal('kill-modal');
+}
+
+function openSpawnModal(){openModal('spawn-modal');}
+function spawnAgent(){
+  const name=document.getElementById('spawn-name').value.trim();
+  const domain=document.getElementById('spawn-domain').value;
+  const task=document.getElementById('spawn-task').value.trim();
+  const model=document.getElementById('spawn-model').value;
+  if(!name){showToast('Agent name required','warning');return;}
+  const newAgent={name,domain,status:'RUNNING',sc:'s-running',uptime:'0h 0m',tasks:0,memory:'0 MB',lastAction:task||'Initializing...',pid:Math.floor(Math.random()*1000)+9000,logs:[`${nowTime()} Agent spawned: ${name}`,`Model: ${model}`,`Domain: ${domain}`,task?`Task: ${task}`:'']} ;
+  agentData.unshift(newAgent);
+  renderAgents();
+  addFeedItem({time:nowTime(),msg:`${name}: Agent spawned (${model}, ${domain})`,type:'success',detail:task||'No initial task set.'});
+  showToast(`${name} launched successfully`,'success');
+  document.getElementById('spawn-name').value='';document.getElementById('spawn-task').value='';
+  closeModal('spawn-modal');
+}
+
+let activeFilter='all';
 function filterFeed(el){
-  const type=el.getAttribute('data-type');
+  activeFilter=el.getAttribute('data-type');
   document.querySelectorAll('.feed-filter').forEach(f=>f.classList.remove('active'));
   el.classList.add('active');
-  document.querySelectorAll('.feed-item').forEach(item=>item.classList.toggle('hidden',type!=='all'&&item.getAttribute('data-ft')!==type));
+  renderFeed(activeFilter);
 }
+
 function toggleFeed(i){
-  const d=document.getElementById(`fd-${i}`),was=d.classList.contains('open');
+  const filtered=activeFilter==='all'?feedData:feedData.filter(f=>f.type===activeFilter);
+  const d=document.getElementById(`fd-${i}`);if(!d)return;
+  const was=d.classList.contains('open');
   document.querySelectorAll('.feed-detail').forEach(x=>x.classList.remove('open'));
   document.querySelectorAll('.feed-item').forEach(x=>x.classList.remove('highlighted'));
   if(!was){d.classList.add('open');d.closest('.feed-item').classList.add('highlighted');}
 }
+
 function fwClick(i){const fw=frameworkData[i];showToast(`${fw.name}: ${fw.status} — ${fw.desc}`,fw.cls==='active'?'success':fw.cls==='warning'?'warning':'info');}
+
 function toggleRev(i){
   const d=document.getElementById(`rd-${i}`),it=document.getElementById(`ri-${i}`),was=d.classList.contains('open');
   document.querySelectorAll('.rev-detail').forEach(x=>x.classList.remove('open'));
   document.querySelectorAll('.rev-item').forEach(x=>x.classList.remove('selected'));
   if(!was){d.classList.add('open');it.classList.add('selected');}
 }
-function switchTab(el,tab){
-  document.querySelectorAll('.perf-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  showToast(`Showing ${tab.toUpperCase()} performance data`,'info');
-}
+
+function switchTab(el,tab){document.querySelectorAll('.perf-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');showToast(`Showing ${tab.toUpperCase()} performance data`,'info');}
+
 function showTip(i,e){
   const tip=document.getElementById('chart-tip'),wrap=document.getElementById('perf-wrap');
   const rect=wrap.getBoundingClientRect(),x=e.clientX-rect.left;
@@ -1037,6 +1155,137 @@ function showTip(i,e){
 }
 function hideTip(){document.getElementById('chart-tip').classList.remove('visible');}
 
+// ═══ NOTIFICATIONS ═══
+function openNotif(){document.getElementById('notif-panel').classList.add('open');}
+function closeNotif(){document.getElementById('notif-panel').classList.remove('open');}
+function ackNotif(i){notifications[i].type='info-notif';renderNotifs();showToast('Notification acknowledged','info');}
+function clearNotifs(){notifications=[];renderNotifs();showToast('All notifications cleared','info');}
+
+// ═══ DRILL-DOWN ═══
+function openDrill(i){
+  const a=agentData[i];
+  document.getElementById('drill-title').textContent=a.name;
+  document.getElementById('drill-body').innerHTML=`
+    <div class="drill-section">
+      <div class="drill-section-label">Status</div>
+      <div class="drill-stat-grid">
+        <div class="drill-stat"><div class="drill-stat-label">Status</div><div class="drill-stat-val" style="font-size:.75rem"><span class="agent-status ${a.sc}" style="font-size:.65rem">${a.status}</span></div></div>
+        <div class="drill-stat"><div class="drill-stat-label">Uptime</div><div class="drill-stat-val">${a.uptime}</div></div>
+        <div class="drill-stat"><div class="drill-stat-label">Tasks</div><div class="drill-stat-val" style="color:var(--cyan)">${a.tasks}</div></div>
+        <div class="drill-stat"><div class="drill-stat-label">Memory</div><div class="drill-stat-val">${a.memory}</div></div>
+        <div class="drill-stat"><div class="drill-stat-label">PID</div><div class="drill-stat-val">${a.pid}</div></div>
+        <div class="drill-stat"><div class="drill-stat-label">Domain</div><div class="drill-stat-val">${a.domain}</div></div>
+      </div>
+    </div>
+    <div class="drill-section">
+      <div class="drill-section-label">Last Action</div>
+      <div style="font-family:var(--mono);font-size:.68rem;color:var(--white);padding:.6rem .75rem;background:rgba(0,0,0,0.25);border-radius:8px;border:1px solid var(--border)">${a.lastAction}</div>
+    </div>
+    <div class="drill-section">
+      <div class="drill-section-label">Log Trace</div>
+      <div class="drill-log">${(a.logs||[]).map(l=>`<div class="drill-log-line">${l.startsWith('0')||l.startsWith('ERROR')||l.startsWith('FATAL')?`<span class="drill-log-time">${l.split(' ')[0]}</span>${l.slice(l.split(' ')[0].length)}`:l}</div>`).join('')}</div>
+    </div>
+    <div class="drill-section">
+      <div class="drill-section-label">Actions</div>
+      <div class="drill-actions">
+        <button class="drill-btn" style="color:var(--green);border-color:rgba(34,197,94,0.3)" onclick="agentAction('${a.name}','restart');closeDrill()">↻ Restart</button>
+        <button class="drill-btn" style="color:var(--red);border-color:rgba(239,68,68,0.3)" onclick="openKillModal(${i});closeDrill()">&#x25A0; Stop</button>
+        <button class="drill-btn" style="color:var(--cyan);border-color:rgba(6,182,212,0.3)" onclick="copyToClipboard(JSON.stringify(agentData[${i}],null,2));showToast('Agent data copied','success')">&#x2398; Copy JSON</button>
+      </div>
+    </div>`;
+  document.getElementById('drill-panel').classList.add('open');
+}
+function closeDrill(){document.getElementById('drill-panel').classList.remove('open');}
+
+// ═══ COMMAND BAR ═══
+const cmdActions=[
+  {label:'Go to Metrics',sub:'Jump to metrics section',icon:'📊',action:()=>{document.querySelector('[data-section="metrics-section"]').click();closeCmd();},kbd:'1'},
+  {label:'Go to Agents',sub:'Jump to agent registry',icon:'🤖',action:()=>{document.querySelector('[data-section="agents-section"]').click();closeCmd();},kbd:'2'},
+  {label:'Go to Feed',sub:'Jump to activity feed',icon:'📋',action:()=>{document.querySelector('[data-section="feed-section"]').click();closeCmd();},kbd:'3'},
+  {label:'Go to Performance',sub:'Jump to performance chart',icon:'📈',action:()=>{document.querySelector('[data-section="perf-section"]').click();closeCmd();},kbd:'4'},
+  {label:'Go to Revenue',sub:'Jump to revenue channels',icon:'💰',action:()=>{document.querySelector('[data-section="revenue-section"]').click();closeCmd();},kbd:'5'},
+  {label:'Spawn New Agent',sub:'Launch a new agent into the swarm',icon:'⚡',action:()=>{openSpawnModal();closeCmd();}},
+  {label:'Connect Real Data',sub:'Configure Telegram bot polling',icon:'🔌',action:()=>{openDataConfig();closeCmd();}},
+  {label:'Open Notifications',sub:`${notifications.filter(n=>n.type==='unread').length} unread`,icon:'🔔',action:()=>{openNotif();closeCmd();}},
+  {label:'Export All Data',sub:'Download dashboard data as JSON',icon:'⬇️',action:()=>{exportData();closeCmd();}},
+  {label:'Toggle Sidebar',sub:'Collapse or expand sidebar',icon:'◀',action:()=>{toggleCollapse();closeCmd();}},
+];
+
+let cmdSelected=0;
+function openCmd(){
+  document.getElementById('cmd-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('cmd-input').focus(),50);
+  updateCmdResults('');
+  showKbHint();
+}
+function closeCmd(e){if(e&&e.target!==document.getElementById('cmd-overlay'))return;document.getElementById('cmd-overlay').classList.remove('open');document.getElementById('cmd-input').value='';}
+
+function updateCmdResults(q){
+  const results=q?cmdActions.filter(a=>a.label.toLowerCase().includes(q.toLowerCase())||a.sub.toLowerCase().includes(q.toLowerCase())):cmdActions;
+  // Also search agents
+  const agentResults=q?agentData.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())):[];
+  cmdSelected=0;
+  let html='';
+  if(results.length>0){
+    html+=`<div class="cmd-section-label">Actions</div>`;
+    html+=results.map((r,i)=>`<div class="cmd-item ${i===0?'selected':''}" data-idx="${i}" onclick="r_${i}=cmdActions.find(a=>a.label==='${r.label.replace(/'/g,"\\'")}');r_${i}&&r_${i}.action()" onmouseenter="cmdSelected=${i};highlightCmd()"><div class="cmd-item-icon">${r.icon}</div><div><div class="cmd-item-label">${r.label}</div><div class="cmd-item-sub">${r.sub}</div></div>${r.kbd?`<span class="cmd-item-kbd">${r.kbd}</span>`:''}</div>`).join('');
+  }
+  if(agentResults.length>0){
+    html+=`<div class="cmd-section-label">Agents</div>`;
+    html+=agentResults.map(a=>`<div class="cmd-item" onclick="openDrill(${agentData.indexOf(a)});closeCmd()"><div class="cmd-item-icon">🤖</div><div><div class="cmd-item-label">${a.name}</div><div class="cmd-item-sub">${a.domain} — ${a.status}</div></div></div>`).join('');
+  }
+  if(!html) html='<div class="empty-state" style="padding:1.5rem">No results</div>';
+  document.getElementById('cmd-results').innerHTML=html;
+  // Bind action clicks properly
+  results.forEach((r,i)=>{
+    const el=document.getElementById('cmd-results').querySelectorAll('.cmd-item')[i];
+    if(el) el.onclick=r.action;
+  });
+}
+
+function highlightCmd(){
+  document.querySelectorAll('#cmd-results .cmd-item').forEach((el,i)=>el.classList.toggle('selected',i===cmdSelected));
+}
+
+function handleCmdKey(e){
+  const items=document.querySelectorAll('#cmd-results .cmd-item');
+  if(e.key==='ArrowDown'){e.preventDefault();cmdSelected=Math.min(cmdSelected+1,items.length-1);highlightCmd();}
+  else if(e.key==='ArrowUp'){e.preventDefault();cmdSelected=Math.max(cmdSelected-1,0);highlightCmd();}
+  else if(e.key==='Enter'){e.preventDefault();if(items[cmdSelected])items[cmdSelected].click();}
+  else if(e.key==='Escape'){document.getElementById('cmd-overlay').classList.remove('open');}
+}
+
+// ═══ MODALS ═══
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ═══ EXPORT ═══
+function exportData(){
+  const data={timestamp:new Date().toISOString(),agents:agentData,feed:feedData,frameworks:frameworkData,revenue:revenueData};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='clx-dashboard-export.json';a.click();URL.revokeObjectURL(url);
+  showToast('Dashboard data exported','success');
+}
+function exportFeed(){
+  const blob=new Blob([JSON.stringify(feedData,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='clx-feed-export.json';a.click();URL.revokeObjectURL(url);
+  showToast('Feed exported as JSON','success');
+}
+function exportAgents(){
+  const csv=['name,domain,status,uptime,tasks,memory,pid',...agentData.map(a=>`${a.name},${a.domain},${a.status},${a.uptime},${a.tasks},${a.memory},${a.pid}`)].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='clx-agents.csv';a.click();URL.revokeObjectURL(url);
+  showToast('Agents exported as CSV','success');
+}
+
+function copyToClipboard(text){navigator.clipboard?.writeText(text);}
+
+// ═══ HELPERS ═══
+function nowTime(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});}
+
+function addFeedItem(item){feedData.unshift(item);renderFeed(activeFilter);}
+
+// ═══ TOAST ═══
 function showToast(msg,type='info'){
   const c=document.getElementById('toast-container'),t=document.createElement('div');
   t.className=`toast toast-${type}`;t.textContent=msg;c.appendChild(t);
@@ -1044,29 +1293,61 @@ function showToast(msg,type='info'){
   setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),350);},2800);
 }
 
-// Clock
+// ═══ CLOCK ═══
 function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});}
 setInterval(updateClock,1000);updateClock();
 
-// Live tick
+// ═══ LIVE TICK ═══
 function liveTick(){
-  if(Math.random()>0.85){
+  if(Math.random()>0.82){
     const el=document.getElementById('kpi-tasks'),sb=document.getElementById('sb-tasks');
     if(el){const v=parseInt(el.textContent)+1;el.textContent=v;if(sb)sb.textContent=v;}
-    showToast('New task completed by coordinator-1','success');
+    addFeedItem({time:nowTime(),msg:'coordinator-1: Task completed — consensus routing step',type:'success',detail:'Swarm consensus routing task completed successfully.'});
+    showToast('New task completed','success');
   }
 }
-setInterval(liveTick,12000);
+setInterval(liveTick,15000);
 
-// Reveal + is-visible observer
+// ═══ KEYBOARD SHORTCUTS ═══
+let kbHintTimer=null;
+function showKbHint(){
+  const h=document.getElementById('kb-hint');h.classList.add('show');
+  clearTimeout(kbHintTimer);kbHintTimer=setTimeout(()=>h.classList.remove('show'),3500);
+}
+
+document.addEventListener('keydown',e=>{
+  const tag=document.activeElement.tagName.toLowerCase();
+  const inInput=tag==='input'||tag==='textarea'||tag==='select';
+  if(e.key==='Escape'){
+    document.getElementById('cmd-overlay').classList.remove('open');
+    document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
+    closeNotif();closeDrill();
+    return;
+  }
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openCmd();return;}
+  if(inInput) return;
+  if(e.key==='/'||e.key==='k'){e.preventDefault();openCmd();}
+  else if(e.key==='1'){document.querySelector('[data-section="metrics-section"]')?.click();}
+  else if(e.key==='2'){document.querySelector('[data-section="agents-section"]')?.click();}
+  else if(e.key==='3'){document.querySelector('[data-section="feed-section"]')?.click();}
+  else if(e.key==='4'){document.querySelector('[data-section="perf-section"]')?.click();}
+  else if(e.key==='5'){document.querySelector('[data-section="revenue-section"]')?.click();}
+  else if(e.key==='n'||e.key==='N'){openNotif();}
+  else if(e.key==='['||e.key===']'){toggleCollapse();}
+  else if(e.key==='?'){showKbHint();}
+});
+
+// Show hints on first load
+setTimeout(showKbHint, 1500);
+
+// ═══ REVEAL ═══
 const revObs=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){e.target.classList.add('visible','is-visible');revObs.unobserve(e.target);}
-  });
-},{threshold:0.06,rootMargin:'0px 0px -30px 0px'});
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible','is-visible');revObs.unobserve(e.target);}});
+},{threshold:0.05,rootMargin:'0px 0px -20px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
 
-renderAgents();renderFeed();renderFw();renderRev();
+// ═══ INIT ═══
+renderAgents();renderFeed();renderFw();renderRev();renderNotifs();loadDataConfig();
 </script>
 </body>
 </html>
