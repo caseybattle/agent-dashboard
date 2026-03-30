@@ -506,9 +506,9 @@
 
     <!-- Data status bar -->
     <div class="data-status" id="data-status-bar">
-      <div class="ds-dot polling" id="ds-dot"></div>
+      <div class="ds-dot live" id="ds-dot"></div>
       <span class="ds-label">Data source:</span>
-      <span class="ds-val" id="ds-label-val">Simulated — no API connected</span>
+      <span class="ds-val" id="ds-label-val">Connecting to @Claude_AGI_bot...</span>
       <span class="ds-label" style="margin-left:.75rem">Last update:</span>
       <span class="ds-val" id="ds-last-update">Just now</span>
       <button class="ds-config-btn" onclick="openDataConfig()">Configure →</button>
@@ -887,49 +887,17 @@ let pollingInterval=null;
 let dataConfig={token:'',chatId:'',interval:30};
 
 function loadDataConfig(){
-  // Auto-load from localStorage, or use known token
+  // Hardcoded CLX credentials — @Claude_AGI_bot, Casey @CLX_B
+  dataConfig.token='8759765711:AAERfXknaJbTAuAS1j_2J_jiC3D9Co8VDhI';
+  dataConfig.chatId='1193970195';
+  dataConfig.interval=30;
+  // Allow override from localStorage
   const saved=localStorage.getItem('clx_data_config');
   if(saved){
     const parsed=JSON.parse(saved);
-    if(parsed.token&&parsed.chatId){
-      dataConfig=parsed;
-      startPolling();
-      return;
-    }
+    if(parsed.token&&parsed.chatId) dataConfig=parsed;
   }
-  // Pre-configure with known bot token — awaiting chat ID
-  dataConfig.token='8759765711:AAERfXknaJbTAuAS1j_2J_jiC3D9Co8VDhI';
-  // Chat ID will be discovered from first message or set manually
-  discoverChatId();
-}
-
-async function discoverChatId(){
-  if(!dataConfig.token) return;
-  try{
-    const res=await fetch(`https://api.telegram.org/bot${dataConfig.token}/getUpdates?limit=5&offset=-5`);
-    const data=await res.json();
-    if(data.ok&&data.result.length>0){
-      // Find the most recent message with a chat ID
-      for(const upd of data.result.reverse()){
-        const msg=upd.message||upd.channel_post||upd.edited_message;
-        if(msg&&msg.chat&&msg.chat.id){
-          dataConfig.chatId=String(msg.chat.id);
-          localStorage.setItem('clx_data_config',JSON.stringify(dataConfig));
-          updateDataStatus('live',`Live — @Claude_AGI_bot (chat ${dataConfig.chatId})`);
-          startPolling();
-          showToast('Telegram connected — live data active!','success');
-          addNotification({title:'Telegram Connected',body:`@Claude_AGI_bot connected. Chat ID: ${dataConfig.chatId}. Polling every 30s.`,time:nowTime(),type:'info-notif'});
-          return;
-        }
-      }
-    }
-    // No messages yet — polling will retry
-    updateDataStatus('polling','Waiting for first message to @Claude_AGI_bot');
-    // Retry discovery every 10 seconds
-    setTimeout(discoverChatId, 10000);
-  }catch(e){
-    updateDataStatus('offline','Error connecting to @Claude_AGI_bot');
-  }
+  startPolling();
 }
 
 function addNotification(n){
