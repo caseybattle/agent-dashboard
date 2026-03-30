@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLX Agent Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0A0A0F; --surface:#12121A; --surface2:#1A1A28; --border:#2A2A3A;
+      --purple:#A855F7; --cyan:#06B6D4; --orange:#F97316; --green:#22C55E; --red:#EF4444;
+      --yellow:#EAB308; --white:#E2E8F0; --dim:#64748B; --mono:'JetBrains Mono',monospace;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);min-height:100vh}
+
+    /* HEADER */
+    header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--cyan);letter-spacing:1px}
+    .logo span{color:var(--purple)}
+    .header-status{display:flex;gap:1.5rem;align-items:center}
+    .status-pill{display:flex;align-items:center;gap:.4rem;font-size:.75rem;font-family:var(--mono);padding:.3rem .8rem;border-radius:100px;border:1px solid}
+    .status-online{border-color:var(--green);color:var(--green)}
+    .status-online::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .time{font-family:var(--mono);font-size:.8rem;color:var(--dim)}
+
+    /* GRID */
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:1rem;padding:1.5rem 2rem;max-width:1600px;margin:0 auto}
+    @media(max-width:1200px){.grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:768px){.grid{grid-template-columns:1fr}}
+
+    /* CARDS */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .card-purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+    .card-cyan::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+    .card-orange::before{background:linear-gradient(90deg,var(--orange),transparent)}
+    .card-green::before{background:linear-gradient(90deg,var(--green),transparent)}
+    .card-red::before{background:linear-gradient(90deg,var(--red),transparent)}
+    .card-label{font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:1rem;font-family:var(--mono)}
+    .card-value{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:.3rem}
+    .card-sub{font-size:.78rem;color:var(--dim)}
+
+    /* METRIC CARDS */
+    .metrics{grid-column:span 4;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+    @media(max-width:1200px){.metrics{grid-column:span 2;grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:768px){.metrics{grid-column:span 1;grid-template-columns:repeat(2,1fr)}}
+
+    /* AGENT LIST */
+    .agents-card{grid-column:span 2;grid-row:span 2}
+    .agent-list{display:flex;flex-direction:column;gap:.6rem;max-height:400px;overflow-y:auto}
+    .agent-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border);transition:border-color .3s}
+    .agent-row:hover{border-color:var(--purple)}
+    .agent-name{font-family:var(--mono);font-size:.82rem;font-weight:500}
+    .agent-domain{font-size:.7rem;color:var(--dim);margin-top:.15rem}
+    .agent-status{font-family:var(--mono);font-size:.7rem;padding:.2rem .6rem;border-radius:100px;border:1px solid}
+    .s-running{color:var(--green);border-color:var(--green);text-shadow:0 0 8px rgba(34,197,94,.3)}
+    .s-idle{color:var(--yellow);border-color:var(--yellow)}
+    .s-completed{color:var(--cyan);border-color:var(--cyan)}
+    .s-error{color:var(--red);border-color:var(--red)}
+
+    /* TASK FEED */
+    .feed-card{grid-column:span 2;grid-row:span 2}
+    .feed{display:flex;flex-direction:column;gap:.5rem;max-height:400px;overflow-y:auto}
+    .feed-item{display:flex;gap:.8rem;padding:.6rem;border-left:2px solid var(--border);padding-left:1rem}
+    .feed-item.success{border-left-color:var(--green)}
+    .feed-item.info{border-left-color:var(--cyan)}
+    .feed-item.warning{border-left-color:var(--orange)}
+    .feed-item.error{border-left-color:var(--red)}
+    .feed-time{font-family:var(--mono);font-size:.7rem;color:var(--dim);white-space:nowrap;min-width:50px}
+    .feed-msg{font-size:.82rem;color:var(--white);line-height:1.5}
+
+    /* FRAMEWORKS */
+    .fw-card{grid-column:span 2}
+    .fw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+    @media(max-width:768px){.fw-grid{grid-template-columns:repeat(2,1fr)}}
+    .fw-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.8rem;text-align:center;transition:all .3s}
+    .fw-item.active{border-color:var(--green);box-shadow:0 0 15px rgba(34,197,94,.1)}
+    .fw-item.inactive{opacity:.4}
+    .fw-name{font-family:var(--mono);font-size:.75rem;font-weight:600;margin-bottom:.3rem}
+    .fw-status{font-size:.65rem;color:var(--dim)}
+
+    /* REVENUE */
+    .rev-card{grid-column:span 2}
+    .rev-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+    .rev-item{background:var(--surface2);border-radius:10px;padding:1rem;border:1px solid var(--border)}
+    .rev-source{font-size:.7rem;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem}
+    .rev-amount{font-size:1.4rem;font-weight:800}
+    .rev-amount.positive{color:var(--green)}
+    .rev-amount.zero{color:var(--dim)}
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+    /* NEON GLOW */
+    .glow-purple{text-shadow:0 0 10px rgba(168,85,247,.4)}
+    .glow-cyan{text-shadow:0 0 10px rgba(6,182,212,.4)}
+    .glow-green{text-shadow:0 0 10px rgba(34,197,94,.4)}
+    .glow-orange{text-shadow:0 0 10px rgba(249,115,22,.4)}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">CLX<span>_</span>COMMAND</div>
+  <div class="header-status">
+    <div class="status-pill status-online">ONLINE</div>
+    <div class="time" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<div class="grid">
+
+  <!-- METRICS ROW -->
+  <div class="metrics">
+    <div class="card card-cyan">
+      <div class="card-label">Active Agents</div>
+      <div class="card-value glow-cyan">20</div>
+      <div class="card-sub">Swarm: learning-loop-fix</div>
+    </div>
+    <div class="card card-green">
+      <div class="card-label">Compliance Score</div>
+      <div class="card-value glow-green">6.2<span style="font-size:1rem;color:var(--dim)">/10</span></div>
+      <div class="card-sub">Needs improvement</div>
+    </div>
+    <div class="card card-orange">
+      <div class="card-label">Tasks Completed</div>
+      <div class="card-value glow-orange">47</div>
+      <div class="card-sub">Today (Mar 29-30)</div>
+    </div>
+    <div class="card card-purple">
+      <div class="card-label">Revenue</div>
+      <div class="card-value glow-purple">$0.85</div>
+      <div class="card-sub">Kalshi trade +14%</div>
+    </div>
+  </div>
+
+  <!-- AGENTS -->
+  <div class="card card-purple agents-card">
+    <div class="card-label">Agent Registry</div>
+    <div class="agent-list">
+      <div class="agent-row"><div><div class="agent-name">coordinator-1</div><div class="agent-domain">architecture</div></div><span class="agent-status s-running">RUNNING</span></div>
+      <div class="agent-row"><div><div class="agent-name">hooks-enforcer</div><div class="agent-domain">engineering</div></div><span class="agent-status s-idle">IDLE</span></div>
+      <div class="agent-row"><div><div class="agent-name">compaction-survivor</div><div class="agent-domain">engineering</div></div><span class="agent-status s-idle">IDLE</span></div>
+      <div class="agent-row"><div><div class="agent-name">claude-md-redesign</div><div class="agent-domain">architecture</div></div><span class="agent-status s-completed">COMPLETED</span></div>
+      <div class="agent-row"><div><div class="agent-name">precompact-hook</div><div class="agent-domain">engineering</div></div><span class="agent-status s-completed">COMPLETED</span></div>
+      <div class="agent-row"><div><div class="agent-name">n8n-automation</div><div class="agent-domain">automation</div></div><span class="agent-status s-idle">IDLE</span></div>
+      <div class="agent-row"><div><div class="agent-name">telegram-debug</div><div class="agent-domain">debugging</div></div><span class="agent-status s-error">ERROR</span></div>
+      <div class="agent-row"><div><div class="agent-name">obsidian-optimizer</div><div class="agent-domain">knowledge-mgmt</div></div><span class="agent-status s-idle">IDLE</span></div>
+      <div class="agent-row"><div><div class="agent-name">gemini-king-mode</div><div class="agent-domain">research</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
+      <div class="agent-row"><div><div class="agent-name">memory-tiers</div><div class="agent-domain">architecture</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
+      <div class="agent-row"><div><div class="agent-name">self-audit</div><div class="agent-domain">quality</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
+      <div class="agent-row"><div><div class="agent-name">session-management</div><div class="agent-domain">engineering</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
+      <div class="agent-row"><div><div class="agent-name">business-reliability</div><div class="agent-domain">business</div></div><span class="agent-status s-idle">IDLE</span></div>
+      <div class="agent-row"><div><div class="agent-name">consensus-builder</div><div class="agent-domain">architecture</div></div><span class="agent-status s-running">WAITING</span></div>
+    </div>
+  </div>
+
+  <!-- TASK FEED -->
+  <div class="card card-cyan feed-card">
+    <div class="card-label">Activity Feed</div>
+    <div class="feed">
+      <div class="feed-item success"><span class="feed-time">05:25</span><div class="feed-msg">claude-md-redesign: Rewrote .claude.md — 209 lines → 95 enforceable gates</div></div>
+      <div class="feed-item success"><span class="feed-time">05:22</span><div class="feed-msg">precompact-hook: Deployed PreCompact + SessionStart hooks to settings.json</div></div>
+      <div class="feed-item error"><span class="feed-time">05:21</span><div class="feed-msg">6 Haiku agents failed: prompt too long (context overflow — need context-mode)</div></div>
+      <div class="feed-item info"><span class="feed-time">05:17</span><div class="feed-msg">Swarm initialized: 20 agents spawned for learning-loop-fix brainstorm</div></div>
+      <div class="feed-item success"><span class="feed-time">04:54</span><div class="feed-msg">Telegram bot commands updated (10 framework commands set)</div></div>
+      <div class="feed-item info"><span class="feed-time">04:27</span><div class="feed-msg">Obsidian brainstorm session logged: 15 timestamped entries</div></div>
+      <div class="feed-item success"><span class="feed-time">02:40</span><div class="feed-msg">Tweet posted on @casbattle with storefront link preview</div></div>
+      <div class="feed-item success"><span class="feed-time">02:20</span><div class="feed-msg">Instagram bio updated: theresetmethod.live</div></div>
+      <div class="feed-item success"><span class="feed-time">01:55</span><div class="feed-msg">Google Search Console: property verified + sitemap submitted</div></div>
+      <div class="feed-item success"><span class="feed-time">01:50</span><div class="feed-msg">SEO deployed: meta tags, schema.org, OG cards, robots.txt</div></div>
+      <div class="feed-item success"><span class="feed-time">01:48</span><div class="feed-msg">Amazon product images added to 6 tool cards on storefront</div></div>
+      <div class="feed-item success"><span class="feed-time">01:20</span><div class="feed-msg">Etsy: 3 listings published on TheResetPrintables ($2.99/$4.99/$9.99)</div></div>
+      <div class="feed-item success"><span class="feed-time">01:00</span><div class="feed-msg">Storefront v3 deployed: awwwards-level redesign with scroll animations</div></div>
+      <div class="feed-item success"><span class="feed-time">00:45</span><div class="feed-msg">DNS configured: CNAME www + A record @ → Vercel</div></div>
+      <div class="feed-item success"><span class="feed-time">00:38</span><div class="feed-msg">theresetmethod.live deployed to Vercel via GitHub import</div></div>
+      <div class="feed-item success"><span class="feed-time">00:30</span><div class="feed-msg">Pinterest Day 3 warmup: 10 repins across 3 search terms</div></div>
+    </div>
+  </div>
+
+  <!-- FRAMEWORKS -->
+  <div class="card card-green fw-card">
+    <div class="card-label">Framework Status</div>
+    <div class="fw-grid">
+      <div class="fw-item active"><div class="fw-name">Telegram</div><div class="fw-status">Connected</div></div>
+      <div class="fw-item active"><div class="fw-name">Obsidian</div><div class="fw-status">Port 22360</div></div>
+      <div class="fw-item active"><div class="fw-name">Chrome</div><div class="fw-status">10 tabs</div></div>
+      <div class="fw-item inactive"><div class="fw-name">Context-Mode</div><div class="fw-status">Not enforced</div></div>
+      <div class="fw-item active"><div class="fw-name">Ruflo</div><div class="fw-status">20 agents</div></div>
+      <div class="fw-item inactive"><div class="fw-name">n8n</div><div class="fw-status">No workflows</div></div>
+      <div class="fw-item inactive"><div class="fw-name">Frameforge</div><div class="fw-status">Not used</div></div>
+      <div class="fw-item inactive"><div class="fw-name">GSD</div><div class="fw-status">Not active</div></div>
+      <div class="fw-item active"><div class="fw-name">pyautogui</div><div class="fw-status">Available</div></div>
+    </div>
+  </div>
+
+  <!-- REVENUE -->
+  <div class="card card-orange rev-card">
+    <div class="card-label">Revenue Channels</div>
+    <div class="rev-grid">
+      <div class="rev-item"><div class="rev-source">Gumroad</div><div class="rev-amount zero">$0.00</div></div>
+      <div class="rev-item"><div class="rev-source">Etsy</div><div class="rev-amount zero">$0.00</div></div>
+      <div class="rev-item"><div class="rev-source">Kalshi</div><div class="rev-amount positive">+$0.85</div></div>
+      <div class="rev-item"><div class="rev-source">Amazon Aff.</div><div class="rev-amount zero">$0.00</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function updateClock(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-US',{hour12:false})}
+setInterval(updateClock,1000);updateClock();
+</script>
+</body>
+</html>
