@@ -7,994 +7,256 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0A0A0F;
-      --surface: rgba(18, 18, 26, 0.6);
-      --surface-solid: #12121A;
-      --surface2: rgba(26, 26, 40, 0.5);
-      --border: rgba(255, 255, 255, 0.06);
-      --border-hover: rgba(255, 255, 255, 0.12);
-      --purple: #A855F7;
-      --purple-dim: rgba(168, 85, 247, 0.15);
-      --cyan: #06B6D4;
-      --cyan-dim: rgba(6, 182, 212, 0.15);
-      --orange: #F97316;
-      --orange-dim: rgba(249, 115, 22, 0.15);
-      --green: #22C55E;
-      --green-dim: rgba(34, 197, 94, 0.15);
-      --red: #EF4444;
-      --red-dim: rgba(239, 68, 68, 0.15);
-      --yellow: #EAB308;
-      --white: #E2E8F0;
-      --dim: #64748B;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Inter', -apple-system, sans-serif;
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--white);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* === AMBIENT BACKGROUND === */
-    body::before {
-      content: '';
-      position: fixed;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background:
-        radial-gradient(ellipse 600px 400px at 20% 20%, rgba(168, 85, 247, 0.04) 0%, transparent 70%),
-        radial-gradient(ellipse 500px 500px at 80% 80%, rgba(6, 182, 212, 0.03) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 300px at 60% 30%, rgba(249, 115, 22, 0.02) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-      animation: ambientDrift 30s ease-in-out infinite alternate;
-    }
-
-    @keyframes ambientDrift {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      100% { transform: translate(30px, -20px) rotate(2deg); }
-    }
-
-    /* === NOISE TEXTURE OVERLAY === */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.4;
-    }
-
-    /* === HEADER === */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10, 10, 15, 0.7);
-      backdrop-filter: blur(24px) saturate(1.2);
-      -webkit-backdrop-filter: blur(24px) saturate(1.2);
-      border-bottom: 1px solid var(--border);
-      padding: 1.25rem 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.4s var(--ease);
-    }
-
-    .logo {
-      font-family: var(--mono);
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      background: linear-gradient(135deg, var(--cyan), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      cursor: pointer;
-    }
-
-    .logo span {
-      -webkit-text-fill-color: var(--purple);
-      animation: cursorBlink 1.2s step-end infinite;
-    }
-
-    @keyframes cursorBlink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    /* === NAV === */
-    .header-nav {
-      display: flex;
-      gap: 0.25rem;
-      align-items: center;
-    }
-
-    .nav-item {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 1px;
-      color: var(--dim);
-      padding: 0.4rem 0.85rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s var(--ease);
-      border: 1px solid transparent;
-      text-transform: uppercase;
-      user-select: none;
-    }
-
-    .nav-item:hover {
-      color: var(--white);
-      background: rgba(255, 255, 255, 0.04);
-      border-color: var(--border-hover);
-    }
-
-    .nav-item.active {
-      color: var(--cyan);
-      background: var(--cyan-dim);
-      border-color: rgba(6, 182, 212, 0.2);
-    }
-
-    .header-status {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.7rem;
-      font-family: var(--mono);
-      font-weight: 500;
-      padding: 0.4rem 1rem;
-      border-radius: 100px;
-      border: 1px solid;
-      letter-spacing: 1px;
-      transition: all 0.3s var(--ease);
-    }
-
-    .status-online {
-      border-color: rgba(34, 197, 94, 0.3);
-      color: var(--green);
-      background: rgba(34, 197, 94, 0.06);
-    }
-
-    .status-online::before {
-      content: '';
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green), 0 0 16px rgba(34, 197, 94, 0.3);
-      animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes livePulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--green), 0 0 16px rgba(34, 197, 94, 0.3); }
-      50% { opacity: 0.5; box-shadow: 0 0 4px var(--green), 0 0 8px rgba(34, 197, 94, 0.1); }
-    }
-
-    .time {
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      color: var(--dim);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.5px;
-    }
-
-    /* === HAMBURGER (MOBILE) === */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 4px;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 6px;
-      transition: background 0.2s;
-      z-index: 200;
-    }
-
-    .hamburger:hover { background: rgba(255,255,255,0.06); }
-
-    .hamburger .bar {
-      width: 20px;
-      height: 2px;
-      background: var(--dim);
-      border-radius: 2px;
-      transition: all 0.3s var(--ease);
-    }
-
-    .hamburger.open .bar:nth-child(1) { transform: translateY(6px) rotate(45deg); background: var(--cyan); }
-    .hamburger.open .bar:nth-child(2) { opacity: 0; }
-    .hamburger.open .bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); background: var(--cyan); }
-
-    /* === MOBILE NAV DRAWER === */
-    .mobile-drawer {
-      display: none;
-      position: fixed;
-      top: 0;
-      right: -280px;
-      width: 280px;
-      height: 100vh;
-      background: rgba(10, 10, 15, 0.97);
-      backdrop-filter: blur(30px);
-      border-left: 1px solid var(--border);
-      z-index: 150;
-      padding: 5rem 1.5rem 2rem;
-      flex-direction: column;
-      gap: 0.5rem;
-      transition: right 0.4s var(--ease);
-    }
-
-    .mobile-drawer.open { right: 0; }
-
-    .mobile-drawer .nav-item {
-      font-size: 0.85rem;
-      padding: 0.75rem 1rem;
-      width: 100%;
-    }
-
-    .mobile-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 140;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .mobile-overlay.open { opacity: 1; }
-
-    @media (max-width: 900px) {
-      .header-nav { display: none; }
-      .hamburger { display: flex; }
-      .mobile-drawer { display: flex; }
-      header { padding: 1rem 1.5rem; }
-    }
-
-    /* === MAIN GRID === */
-    .grid {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 1.5rem;
-      padding: 2.5rem 3rem 4rem;
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-
-    @media (max-width: 1200px) { .grid { grid-template-columns: 1fr 1fr; padding: 2rem 1.5rem; } }
-    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; padding: 1.5rem 1rem; } }
-
-    /* === GLASS CARD === */
-    .card {
-      background: var(--surface);
-      backdrop-filter: blur(20px) saturate(1.3);
-      -webkit-backdrop-filter: blur(20px) saturate(1.3);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.5s var(--ease);
-    }
-
-    .card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      opacity: 0.8;
-      transition: opacity 0.4s var(--ease);
-    }
-
-    .card:hover::before { opacity: 1; }
-
-    .card-purple::before { background: linear-gradient(90deg, var(--purple), transparent 80%); }
-    .card-cyan::before { background: linear-gradient(90deg, var(--cyan), transparent 80%); }
-    .card-orange::before { background: linear-gradient(90deg, var(--orange), transparent 80%); }
-    .card-green::before { background: linear-gradient(90deg, var(--green), transparent 80%); }
-    .card-red::before { background: linear-gradient(90deg, var(--red), transparent 80%); }
-
-    .card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 120px;
-      opacity: 0;
-      transition: opacity 0.5s var(--ease);
-      pointer-events: none;
-    }
-
-    .card:hover::after { opacity: 1; }
-
-    .card-purple::after { background: radial-gradient(ellipse at top left, rgba(168, 85, 247, 0.06) 0%, transparent 70%); }
-    .card-cyan::after { background: radial-gradient(ellipse at top left, rgba(6, 182, 212, 0.06) 0%, transparent 70%); }
-    .card-orange::after { background: radial-gradient(ellipse at top left, rgba(249, 115, 22, 0.06) 0%, transparent 70%); }
-    .card-green::after { background: radial-gradient(ellipse at top left, rgba(34, 197, 94, 0.06) 0%, transparent 70%); }
-
-    .card-label {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-bottom: 1.25rem;
-      font-family: var(--mono);
-    }
-
-    .card-value {
-      font-size: 2.8rem;
-      font-weight: 800;
-      letter-spacing: -2px;
-      margin-bottom: 0.5rem;
-      line-height: 1;
-      font-family: var(--sans);
-    }
-
-    .card-sub {
-      font-size: 0.78rem;
-      color: var(--dim);
-      font-weight: 400;
-      line-height: 1.5;
-    }
-
-    /* === GRADIENT TEXT === */
-    .grad-cyan { background: linear-gradient(135deg, var(--cyan), #67E8F9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .grad-green { background: linear-gradient(135deg, var(--green), #86EFAC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .grad-orange { background: linear-gradient(135deg, var(--orange), #FDBA74); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .grad-purple { background: linear-gradient(135deg, var(--purple), #C084FC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    /* === METRIC CARDS === */
-    .metrics {
-      grid-column: span 4;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-    }
-
-    @media (max-width: 1200px) { .metrics { grid-column: span 2; grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 768px) { .metrics { grid-column: span 1; grid-template-columns: repeat(2, 1fr); } }
-
-    .metrics .card {
-      padding: 1.75rem 2rem;
-      cursor: pointer;
-    }
-
-    .card-value span {
-      font-size: 1rem;
-      color: var(--dim);
-      -webkit-text-fill-color: var(--dim);
-      font-weight: 500;
-      letter-spacing: 0;
-    }
-
-    /* === METRIC BREAKDOWN PANEL === */
-    .metric-breakdown {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s var(--ease), margin-top 0.3s var(--ease), opacity 0.3s;
-      opacity: 0;
-      margin-top: 0;
-    }
-
-    .metric-breakdown.open {
-      max-height: 300px;
-      opacity: 1;
-      margin-top: 1rem;
-    }
-
-    .breakdown-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.45rem 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.75rem;
-    }
-
-    .breakdown-row:last-child { border-bottom: none; }
-
-    .breakdown-label { color: var(--dim); font-family: var(--mono); font-size: 0.7rem; }
-    .breakdown-value { color: var(--white); font-family: var(--mono); font-weight: 600; font-size: 0.75rem; }
-
-    /* === AGENT LIST === */
-    .agents-card { grid-column: span 2; grid-row: span 2; }
-
-    .agent-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-height: 440px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .agent-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.85rem 1.15rem;
-      background: var(--surface2);
-      backdrop-filter: blur(10px);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      transition: all 0.35s var(--ease);
-      cursor: pointer;
-    }
-
-    .agent-row:hover {
-      border-color: rgba(168, 85, 247, 0.25);
-      background: rgba(168, 85, 247, 0.04);
-      transform: translateX(4px);
-      box-shadow: 0 4px 24px rgba(168, 85, 247, 0.06);
-    }
-
-    .agent-row.expanded {
-      border-color: rgba(168, 85, 247, 0.35);
-      background: rgba(168, 85, 247, 0.06);
-    }
-
-    .agent-name {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-    }
-
-    .agent-domain {
-      font-size: 0.68rem;
-      color: var(--dim);
-      margin-top: 0.2rem;
-      font-weight: 400;
-    }
-
-    .agent-status {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      font-weight: 600;
-      padding: 0.25rem 0.75rem;
-      border-radius: 100px;
-      border: 1px solid;
-      letter-spacing: 0.5px;
-      transition: all 0.3s var(--ease);
-      white-space: nowrap;
-    }
-
-    .s-running { color: var(--green); border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.08); box-shadow: 0 0 12px rgba(34, 197, 94, 0.1); animation: statusGlow 2.5s ease-in-out infinite; }
-    @keyframes statusGlow { 0%, 100% { box-shadow: 0 0 12px rgba(34, 197, 94, 0.1); } 50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); } }
-    .s-idle { color: var(--yellow); border-color: rgba(234, 179, 8, 0.2); background: rgba(234, 179, 8, 0.05); }
-    .s-completed { color: var(--cyan); border-color: rgba(6, 182, 212, 0.2); background: rgba(6, 182, 212, 0.05); }
-    .s-error { color: var(--red); border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); animation: errorPulse 3s ease-in-out infinite; }
-    @keyframes errorPulse { 0%, 100% { background: rgba(239, 68, 68, 0.05); } 50% { background: rgba(239, 68, 68, 0.1); } }
-
-    /* === AGENT DETAIL PANEL === */
-    .agent-detail {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s var(--ease), padding 0.3s, opacity 0.3s;
-      opacity: 0;
-      background: rgba(10, 10, 15, 0.5);
-      border-radius: 0 0 14px 14px;
-      margin-top: -0.25rem;
-      margin-bottom: 0.25rem;
-      border: 1px solid transparent;
-      border-top: none;
-    }
-
-    .agent-detail.open {
-      max-height: 250px;
-      padding: 1rem 1.15rem;
-      opacity: 1;
-      border-color: rgba(168, 85, 247, 0.15);
-    }
-
-    .agent-detail-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.6rem;
-    }
-
-    .agent-detail-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    .agent-detail-label {
-      font-family: var(--mono);
-      font-size: 0.6rem;
-      color: var(--dim);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .agent-detail-value {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--white);
-    }
-
-    .agent-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .agent-action-btn {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      font-weight: 600;
-      padding: 0.35rem 0.75rem;
-      border-radius: 8px;
-      border: 1px solid;
-      cursor: pointer;
-      transition: all 0.25s var(--ease);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: transparent;
-    }
-
-    .agent-action-btn.restart {
-      color: var(--green);
-      border-color: rgba(34, 197, 94, 0.3);
-    }
-    .agent-action-btn.restart:hover {
-      background: rgba(34, 197, 94, 0.1);
-      border-color: rgba(34, 197, 94, 0.5);
-    }
-
-    .agent-action-btn.stop {
-      color: var(--red);
-      border-color: rgba(239, 68, 68, 0.3);
-    }
-    .agent-action-btn.stop:hover {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.5);
-    }
-
-    .agent-action-btn.logs {
-      color: var(--cyan);
-      border-color: rgba(6, 182, 212, 0.3);
-    }
-    .agent-action-btn.logs:hover {
-      background: rgba(6, 182, 212, 0.1);
-      border-color: rgba(6, 182, 212, 0.5);
-    }
-
-    /* === TASK FEED === */
-    .feed-card { grid-column: span 2; grid-row: span 2; }
-
-    .feed-filter-bar {
-      display: flex;
-      gap: 0.35rem;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .feed-filter {
-      font-family: var(--mono);
-      font-size: 0.6rem;
-      font-weight: 600;
-      padding: 0.3rem 0.65rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.25s var(--ease);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--dim);
-      background: transparent;
-      user-select: none;
-    }
-
-    .feed-filter:hover { border-color: var(--border-hover); color: var(--white); }
-    .feed-filter.active { color: var(--cyan); border-color: rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.08); }
-
-    .feed {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .feed-item {
-      display: flex;
-      gap: 1rem;
-      padding: 0.75rem 1rem;
-      border-left: 2px solid var(--border);
-      border-radius: 0 10px 10px 0;
-      transition: all 0.35s var(--ease);
-      cursor: pointer;
-    }
-
-    .feed-item:hover {
-      background: rgba(255, 255, 255, 0.015);
-      transform: translateX(3px);
-    }
-
-    .feed-item.success { border-left-color: var(--green); }
-    .feed-item.success:hover { background: rgba(34, 197, 94, 0.03); }
-    .feed-item.info { border-left-color: var(--cyan); }
-    .feed-item.info:hover { background: rgba(6, 182, 212, 0.03); }
-    .feed-item.warning { border-left-color: var(--orange); }
-    .feed-item.warning:hover { background: rgba(249, 115, 22, 0.03); }
-    .feed-item.error { border-left-color: var(--red); }
-    .feed-item.error:hover { background: rgba(239, 68, 68, 0.03); }
-
-    .feed-item.hidden { display: none; }
-
-    .feed-item.highlighted {
-      background: rgba(6, 182, 212, 0.06);
-      border-left-width: 3px;
-    }
-
-    .feed-time {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--dim);
-      white-space: nowrap;
-      min-width: 48px;
-      padding-top: 2px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .feed-content { flex: 1; }
-
-    .feed-msg {
-      font-size: 0.8rem;
-      color: rgba(226, 232, 240, 0.85);
-      line-height: 1.6;
-      font-weight: 400;
-    }
-
-    .feed-detail {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s var(--ease), opacity 0.3s;
-      opacity: 0;
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--dim);
-      line-height: 1.7;
-    }
-
-    .feed-detail.open {
-      max-height: 120px;
-      opacity: 1;
-      margin-top: 0.4rem;
-      padding-top: 0.4rem;
-      border-top: 1px solid var(--border);
-    }
-
-    /* === FRAMEWORKS === */
-    .fw-card { grid-column: span 2; }
-
-    .fw-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-    }
-
-    @media (max-width: 768px) { .fw-grid { grid-template-columns: repeat(2, 1fr); } }
-
-    .fw-item {
-      background: var(--surface2);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1rem;
-      text-align: center;
-      transition: all 0.4s var(--ease);
-      cursor: pointer;
-    }
-
-    .fw-item.active { border-color: rgba(34, 197, 94, 0.15); }
-    .fw-item.active:hover { border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.04); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34, 197, 94, 0.06); }
-    .fw-item.inactive { opacity: 0.35; }
-    .fw-item.inactive:hover { opacity: 0.6; transform: translateY(-1px); }
-
-    .fw-item.selected {
-      border-color: rgba(6, 182, 212, 0.4) !important;
-      background: rgba(6, 182, 212, 0.06) !important;
-      opacity: 1 !important;
-    }
-
-    .fw-name {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-      letter-spacing: 0.3px;
-    }
-
-    .fw-status {
-      font-size: 0.65rem;
-      color: var(--dim);
-      font-weight: 400;
-    }
-
-    .fw-item.active .fw-status { color: rgba(34, 197, 94, 0.6); }
-
-    .fw-item.active .fw-name::before {
-      content: '';
-      display: inline-block;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--green);
-      margin-right: 6px;
-      vertical-align: middle;
-      box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
-      animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    /* Framework detail tooltip */
-    .fw-tooltip {
-      position: fixed;
-      z-index: 200;
-      background: rgba(10, 10, 15, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border-hover);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      max-width: 280px;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.25s, transform 0.25s var(--ease);
-    }
-
-    .fw-tooltip.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .fw-tooltip-title {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
-      color: var(--cyan);
-    }
-
-    .fw-tooltip-desc {
-      font-size: 0.72rem;
-      color: var(--dim);
-      line-height: 1.5;
-    }
-
-    /* === REVENUE === */
-    .rev-card { grid-column: span 2; }
-
-    .rev-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-    }
-
-    .rev-item {
-      background: var(--surface2);
-      backdrop-filter: blur(10px);
-      border-radius: 14px;
-      padding: 1.25rem;
-      border: 1px solid var(--border);
-      transition: all 0.4s var(--ease);
-      cursor: pointer;
-      position: relative;
-    }
-
-    .rev-item:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-1px);
-    }
-
-    .rev-item.selected {
-      border-color: rgba(249, 115, 22, 0.3);
-      background: rgba(249, 115, 22, 0.04);
-    }
-
-    .rev-source {
-      font-size: 0.65rem;
-      color: var(--dim);
-      font-family: var(--mono);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 0.6rem;
-      font-weight: 500;
-    }
-
-    .rev-amount {
-      font-size: 1.5rem;
-      font-weight: 800;
-      font-family: var(--sans);
-      letter-spacing: -0.5px;
-    }
-
-    .rev-amount.positive {
-      background: linear-gradient(135deg, var(--green), #86EFAC);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .rev-amount.zero { color: var(--dim); }
-
-    .rev-detail {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.3s var(--ease), opacity 0.3s, margin-top 0.3s;
-    }
-
-    .rev-detail.open {
-      max-height: 150px;
-      opacity: 1;
-      margin-top: 0.75rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .rev-detail-row {
-      display: flex;
-      justify-content: space-between;
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      padding: 0.2rem 0;
-    }
-
-    .rev-detail-row .label { color: var(--dim); }
-    .rev-detail-row .val { color: var(--white); }
-
-    /* === TOAST === */
-    .toast-container {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      z-index: 300;
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 0.5rem;
-    }
-
-    .toast {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      padding: 0.65rem 1.1rem;
-      border-radius: 10px;
-      border: 1px solid var(--border-hover);
-      background: rgba(10, 10, 15, 0.95);
-      backdrop-filter: blur(20px);
-      color: var(--white);
-      transform: translateX(120%);
-      opacity: 0;
-      transition: all 0.4s var(--ease);
-      max-width: 340px;
-    }
-
-    .toast.show {
-      transform: translateX(0);
-      opacity: 1;
-    }
-
-    .toast.toast-success { border-left: 3px solid var(--green); }
-    .toast.toast-info { border-left: 3px solid var(--cyan); }
-    .toast.toast-warning { border-left: 3px solid var(--orange); }
-    .toast.toast-error { border-left: 3px solid var(--red); }
-
-    /* === SCROLLBAR === */
-    ::-webkit-scrollbar { width: 3px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
-
-    /* === SCROLL REVEAL ANIMATIONS === */
-    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.05s; }
-    .reveal-delay-2 { transition-delay: 0.1s; }
-    .reveal-delay-3 { transition-delay: 0.15s; }
-    .reveal-delay-4 { transition-delay: 0.2s; }
-
-    .metrics .card:nth-child(1) { transition-delay: 0s; }
-    .metrics .card:nth-child(2) { transition-delay: 0.06s; }
-    .metrics .card:nth-child(3) { transition-delay: 0.12s; }
-    .metrics .card:nth-child(4) { transition-delay: 0.18s; }
-
-    /* === FOOTER === */
-    .footer {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 0 3rem 2.5rem;
-      font-size: 0.65rem;
-      color: rgba(100, 116, 139, 0.5);
-      font-family: var(--mono);
-      letter-spacing: 1px;
-    }
-
-    /* === SELECTION === */
-    ::selection { background: rgba(168, 85, 247, 0.25); color: var(--white); }
-
-    /* === REDUCED MOTION === */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-      .reveal { opacity: 1; transform: none; }
-    }
+    :root{--bg:#0A0A0F;--surface:rgba(18,18,26,0.6);--surface2:rgba(26,26,40,0.5);--border:rgba(255,255,255,0.06);--border-hover:rgba(255,255,255,0.12);--purple:#A855F7;--purple-dim:rgba(168,85,247,0.15);--cyan:#06B6D4;--cyan-dim:rgba(6,182,212,0.15);--orange:#F97316;--orange-dim:rgba(249,115,22,0.15);--green:#22C55E;--green-dim:rgba(34,197,94,0.15);--red:#EF4444;--yellow:#EAB308;--white:#E2E8F0;--dim:#64748B;--mono:'JetBrains Mono',monospace;--sans:'Inter',-apple-system,sans-serif;--ease:cubic-bezier(0.16,1,0.3,1);--ease-out:cubic-bezier(0.33,1,0.68,1)}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:var(--sans);background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse 600px 400px at 20% 20%,rgba(168,85,247,0.04) 0%,transparent 70%),radial-gradient(ellipse 500px 500px at 80% 80%,rgba(6,182,212,0.03) 0%,transparent 70%);pointer-events:none;z-index:0;animation:ambientDrift 30s ease-in-out infinite alternate}
+    @keyframes ambientDrift{0%{transform:translate(0,0) rotate(0deg)}100%{transform:translate(30px,-20px) rotate(2deg)}}
+    body::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:0.4}
+    header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.7);backdrop-filter:blur(24px) saturate(1.2);-webkit-backdrop-filter:blur(24px) saturate(1.2);border-bottom:1px solid var(--border);padding:1.25rem 3rem;display:flex;justify-content:space-between;align-items:center;transition:all 0.4s var(--ease)}
+    .logo{font-family:var(--mono);font-size:1.15rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer}
+    .logo span{-webkit-text-fill-color:var(--purple);animation:cursorBlink 1.2s step-end infinite}
+    @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+    .header-nav{display:flex;gap:.25rem;align-items:center}
+    .nav-item{font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:1px;color:var(--dim);padding:.4rem .85rem;border-radius:8px;cursor:pointer;transition:all .3s var(--ease);border:1px solid transparent;text-transform:uppercase;user-select:none}
+    .nav-item:hover{color:var(--white);background:rgba(255,255,255,0.04);border-color:var(--border-hover)}
+    .nav-item.active{color:var(--cyan);background:var(--cyan-dim);border-color:rgba(6,182,212,0.2)}
+    .header-status{display:flex;gap:1.5rem;align-items:center}
+    .status-pill{display:flex;align-items:center;gap:.5rem;font-size:.7rem;font-family:var(--mono);font-weight:500;padding:.4rem 1rem;border-radius:100px;border:1px solid;letter-spacing:1px;transition:all .3s var(--ease)}
+    .status-online{border-color:rgba(34,197,94,0.3);color:var(--green);background:rgba(34,197,94,0.06)}
+    .status-online::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green),0 0 16px rgba(34,197,94,0.3);animation:livePulse 2s cubic-bezier(0.4,0,0.6,1) infinite}
+    @keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--green),0 0 16px rgba(34,197,94,0.3)}50%{opacity:.5;box-shadow:0 0 4px var(--green),0 0 8px rgba(34,197,94,0.1)}}
+    .time{font-family:var(--mono);font-size:.8rem;color:var(--dim);font-variant-numeric:tabular-nums;letter-spacing:.5px}
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;border-radius:6px;transition:background .2s;z-index:200}
+    .hamburger:hover{background:rgba(255,255,255,0.06)}
+    .hamburger .bar{width:20px;height:2px;background:var(--dim);border-radius:2px;transition:all .3s var(--ease)}
+    .hamburger.open .bar:nth-child(1){transform:translateY(6px) rotate(45deg);background:var(--cyan)}
+    .hamburger.open .bar:nth-child(2){opacity:0}
+    .hamburger.open .bar:nth-child(3){transform:translateY(-6px) rotate(-45deg);background:var(--cyan)}
+    .mobile-drawer{display:none;position:fixed;top:0;right:-280px;width:280px;height:100vh;background:rgba(10,10,15,0.97);backdrop-filter:blur(30px);border-left:1px solid var(--border);z-index:150;padding:5rem 1.5rem 2rem;flex-direction:column;gap:.5rem;transition:right .4s var(--ease)}
+    .mobile-drawer.open{right:0}
+    .mobile-drawer .nav-item{font-size:.85rem;padding:.75rem 1rem;width:100%}
+    .mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:140;opacity:0;transition:opacity .3s}
+    .mobile-overlay.open{opacity:1}
+    @media(max-width:900px){.header-nav{display:none}.hamburger{display:flex}.mobile-drawer{display:flex}header{padding:1rem 1.5rem}}
+    .grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1.5rem;padding:2.5rem 3rem 4rem;max-width:1600px;margin:0 auto}
+    @media(max-width:1200px){.grid{grid-template-columns:1fr 1fr;padding:2rem 1.5rem}}
+    @media(max-width:768px){.grid{grid-template-columns:1fr;padding:1.5rem 1rem}}
+    .card{background:var(--surface);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden;transition:all .5s var(--ease)}
+    .card:hover{border-color:var(--border-hover);transform:translateY(-2px);box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;opacity:.8;transition:opacity .4s var(--ease)}
+    .card:hover::before{opacity:1}
+    .card-purple::before{background:linear-gradient(90deg,var(--purple),transparent 80%)}
+    .card-cyan::before{background:linear-gradient(90deg,var(--cyan),transparent 80%)}
+    .card-orange::before{background:linear-gradient(90deg,var(--orange),transparent 80%)}
+    .card-green::before{background:linear-gradient(90deg,var(--green),transparent 80%)}
+    .card::after{content:'';position:absolute;top:0;left:0;right:0;height:120px;opacity:0;transition:opacity .5s var(--ease);pointer-events:none}
+    .card:hover::after{opacity:1}
+    .card-purple::after{background:radial-gradient(ellipse at top left,rgba(168,85,247,0.06) 0%,transparent 70%)}
+    .card-cyan::after{background:radial-gradient(ellipse at top left,rgba(6,182,212,0.06) 0%,transparent 70%)}
+    .card-orange::after{background:radial-gradient(ellipse at top left,rgba(249,115,22,0.06) 0%,transparent 70%)}
+    .card-green::after{background:radial-gradient(ellipse at top left,rgba(34,197,94,0.06) 0%,transparent 70%)}
+    .card-label{font-size:.65rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:1.25rem;font-family:var(--mono)}
+    .card-value{font-size:2.8rem;font-weight:800;letter-spacing:-2px;margin-bottom:.5rem;line-height:1;font-family:var(--sans)}
+    .card-sub{font-size:.78rem;color:var(--dim);font-weight:400;line-height:1.5}
+    .grad-cyan{background:linear-gradient(135deg,var(--cyan),#67E8F9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .grad-green{background:linear-gradient(135deg,var(--green),#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .grad-orange{background:linear-gradient(135deg,var(--orange),#FDBA74);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .grad-purple{background:linear-gradient(135deg,var(--purple),#C084FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .delta{display:inline-flex;align-items:center;gap:.2rem;font-size:.64rem;font-family:var(--mono);font-weight:600;padding:.14rem .45rem;border-radius:5px;margin-left:.4rem;vertical-align:middle;letter-spacing:.3px}
+    .delta-up{color:var(--green);background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2)}
+    .delta-down{color:var(--red);background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.15)}
+    .delta-flat{color:var(--dim);background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.15)}
+    .sparkline-wrap{margin-top:1rem;height:42px}
+    .sparkline{width:100%;height:42px;overflow:visible;display:block}
+    .spark-path{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:500;stroke-dashoffset:500;transition:stroke-dashoffset 1.6s cubic-bezier(0.16,1,0.3,1) .3s}
+    .spark-area{opacity:0;transition:opacity .6s ease 1s}
+    .spark-dot{opacity:0;transition:opacity .3s ease 1.5s}
+    .card.is-visible .spark-path{stroke-dashoffset:0}
+    .card.is-visible .spark-area{opacity:1}
+    .card.is-visible .spark-dot{opacity:1}
+    .metrics{grid-column:span 4;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+    @media(max-width:1200px){.metrics{grid-column:span 2;grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:768px){.metrics{grid-column:span 1;grid-template-columns:repeat(2,1fr)}}
+    .metrics .card{padding:1.75rem 2rem;cursor:pointer}
+    .card-value span{font-size:1rem;color:var(--dim);-webkit-text-fill-color:var(--dim);font-weight:500;letter-spacing:0}
+    .metric-breakdown{max-height:0;overflow:hidden;transition:max-height .4s var(--ease),margin-top .3s,opacity .3s;opacity:0;margin-top:0}
+    .metric-breakdown.open{max-height:300px;opacity:1;margin-top:1rem}
+    .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.75rem}
+    .breakdown-row:last-child{border-bottom:none}
+    .breakdown-label{color:var(--dim);font-family:var(--mono);font-size:.7rem}
+    .breakdown-value{color:var(--white);font-family:var(--mono);font-weight:600;font-size:.75rem}
+    .agents-card{grid-column:span 2;grid-row:span 2}
+    .agent-list{display:flex;flex-direction:column;gap:.5rem;max-height:440px;overflow-y:auto;padding-right:4px}
+    .agent-row{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1.15rem;background:var(--surface2);backdrop-filter:blur(10px);border-radius:14px;border:1px solid var(--border);transition:all .35s var(--ease);cursor:pointer}
+    .agent-row:hover{border-color:rgba(168,85,247,0.25);background:rgba(168,85,247,0.04);transform:translateX(4px);box-shadow:0 4px 24px rgba(168,85,247,0.06)}
+    .agent-row.expanded{border-color:rgba(168,85,247,0.35);background:rgba(168,85,247,0.06)}
+    .agent-name{font-family:var(--mono);font-size:.82rem;font-weight:500;letter-spacing:.3px}
+    .agent-domain{font-size:.68rem;color:var(--dim);margin-top:.2rem}
+    .agent-status{font-family:var(--mono);font-size:.65rem;font-weight:600;padding:.25rem .75rem;border-radius:100px;border:1px solid;letter-spacing:.5px;transition:all .3s var(--ease);white-space:nowrap}
+    .s-running{color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08);animation:statusGlow 2.5s ease-in-out infinite}
+    @keyframes statusGlow{0%,100%{box-shadow:0 0 12px rgba(34,197,94,0.1)}50%{box-shadow:0 0 20px rgba(34,197,94,0.2)}}
+    .s-idle{color:var(--yellow);border-color:rgba(234,179,8,0.2);background:rgba(234,179,8,0.05)}
+    .s-completed{color:var(--cyan);border-color:rgba(6,182,212,0.2);background:rgba(6,182,212,0.05)}
+    .s-error{color:var(--red);border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.05);animation:errorPulse 3s ease-in-out infinite}
+    @keyframes errorPulse{0%,100%{background:rgba(239,68,68,0.05)}50%{background:rgba(239,68,68,0.1)}}
+    .agent-detail{max-height:0;overflow:hidden;transition:max-height .4s var(--ease),padding .3s,opacity .3s;opacity:0;background:rgba(10,10,15,0.5);border-radius:0 0 14px 14px;margin-top:-.25rem;margin-bottom:.25rem;border:1px solid transparent;border-top:none}
+    .agent-detail.open{max-height:250px;padding:1rem 1.15rem;opacity:1;border-color:rgba(168,85,247,0.15)}
+    .agent-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+    .agent-detail-item{display:flex;flex-direction:column;gap:.15rem}
+    .agent-detail-label{font-family:var(--mono);font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+    .agent-detail-value{font-family:var(--mono);font-size:.75rem;color:var(--white)}
+    .agent-actions{display:flex;gap:.5rem;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+    .agent-action-btn{font-family:var(--mono);font-size:.65rem;font-weight:600;padding:.35rem .75rem;border-radius:8px;border:1px solid;cursor:pointer;transition:all .25s var(--ease);text-transform:uppercase;letter-spacing:.5px;background:transparent}
+    .agent-action-btn.restart{color:var(--green);border-color:rgba(34,197,94,0.3)}
+    .agent-action-btn.restart:hover{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.5)}
+    .agent-action-btn.stop{color:var(--red);border-color:rgba(239,68,68,0.3)}
+    .agent-action-btn.stop:hover{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.5)}
+    .agent-action-btn.logs{color:var(--cyan);border-color:rgba(6,182,212,0.3)}
+    .agent-action-btn.logs:hover{background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.5)}
+    .feed-card{grid-column:span 2;grid-row:span 2}
+    .feed-filter-bar{display:flex;gap:.35rem;margin-bottom:.75rem;flex-wrap:wrap}
+    .feed-filter{font-family:var(--mono);font-size:.6rem;font-weight:600;padding:.3rem .65rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:all .25s var(--ease);text-transform:uppercase;letter-spacing:.5px;color:var(--dim);background:transparent;user-select:none}
+    .feed-filter:hover{border-color:var(--border-hover);color:var(--white)}
+    .feed-filter.active{color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08)}
+    .feed{display:flex;flex-direction:column;gap:.35rem;max-height:400px;overflow-y:auto;padding-right:4px}
+    .feed-item{display:flex;gap:1rem;padding:.75rem 1rem;border-left:2px solid var(--border);border-radius:0 10px 10px 0;transition:all .35s var(--ease);cursor:pointer}
+    .feed-item:hover{background:rgba(255,255,255,0.015);transform:translateX(3px)}
+    .feed-item.success{border-left-color:var(--green)}.feed-item.success:hover{background:rgba(34,197,94,0.03)}
+    .feed-item.info{border-left-color:var(--cyan)}.feed-item.info:hover{background:rgba(6,182,212,0.03)}
+    .feed-item.warning{border-left-color:var(--orange)}.feed-item.warning:hover{background:rgba(249,115,22,0.03)}
+    .feed-item.error{border-left-color:var(--red)}.feed-item.error:hover{background:rgba(239,68,68,0.03)}
+    .feed-item.hidden{display:none}
+    .feed-item.highlighted{background:rgba(6,182,212,0.06);border-left-width:3px}
+    .feed-time{font-family:var(--mono);font-size:.68rem;color:var(--dim);white-space:nowrap;min-width:48px;padding-top:2px;font-variant-numeric:tabular-nums}
+    .feed-content{flex:1}
+    .feed-msg{font-size:.8rem;color:rgba(226,232,240,0.85);line-height:1.6}
+    .feed-detail{max-height:0;overflow:hidden;transition:max-height .3s var(--ease),opacity .3s;opacity:0;font-family:var(--mono);font-size:.7rem;color:var(--dim);line-height:1.7}
+    .feed-detail.open{max-height:120px;opacity:1;margin-top:.4rem;padding-top:.4rem;border-top:1px solid var(--border)}
+    .perf-card{grid-column:span 2}
+    .perf-chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .perf-legend{display:flex;gap:1rem}
+    .legend-item{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.6rem;color:var(--dim)}
+    .legend-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .perf-tabs{display:flex;gap:.25rem}
+    .perf-tab{font-family:var(--mono);font-size:.58rem;font-weight:600;padding:.22rem .55rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;color:var(--dim);background:transparent;text-transform:uppercase;letter-spacing:.5px;transition:all .2s var(--ease);user-select:none}
+    .perf-tab:hover{border-color:var(--border-hover);color:var(--white)}
+    .perf-tab.active{color:var(--cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08)}
+    .perf-svg-wrap{position:relative;height:160px}
+    .perf-svg{width:100%;height:160px;overflow:visible;display:block}
+    .chart-line{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1000;stroke-dashoffset:1000;transition:stroke-dashoffset 1.8s cubic-bezier(0.16,1,0.3,1)}
+    .chart-area{opacity:0;transition:opacity .8s ease .8s}
+    .card.is-visible .chart-line{stroke-dashoffset:0}
+    .card.is-visible .chart-area{opacity:1}
+    .perf-x-labels{display:flex;justify-content:space-between;margin-top:.5rem;padding:0 4px}
+    .perf-x-label{font-family:var(--mono);font-size:.56rem;color:var(--dim)}
+    .chart-tip{position:absolute;background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);border:1px solid var(--border-hover);border-radius:10px;padding:.55rem .85rem;font-family:var(--mono);font-size:.65rem;white-space:nowrap;pointer-events:none;opacity:0;transform:translateX(-50%);transition:opacity .15s;z-index:50;top:-8px}
+    .chart-tip.visible{opacity:1}
+    .chart-tip-day{color:var(--dim);font-size:.58rem;margin-bottom:.25rem}
+    .chart-tip-rows{display:flex;flex-direction:column;gap:.18rem}
+    .chart-tip-row{display:flex;align-items:center;gap:.4rem}
+    .chart-tip-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .chart-tip-label{color:var(--dim)}
+    .chart-tip-val{color:var(--white);font-weight:600;margin-left:auto;padding-left:.75rem}
+    .fw-card{grid-column:span 2}
+    .fw-compact-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:1.25rem}
+    @media(max-width:768px){.fw-compact-grid{grid-template-columns:1fr 1fr}}
+    .fw-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;transition:all .35s var(--ease);cursor:pointer}
+    .fw-pill.active{border-color:rgba(34,197,94,0.2);background:rgba(34,197,94,0.04)}
+    .fw-pill.active:hover{border-color:rgba(34,197,94,0.35);transform:translateY(-1px)}
+    .fw-pill.warning{border-color:rgba(249,115,22,0.2);background:rgba(249,115,22,0.03)}
+    .fw-pill.inactive{opacity:.38}
+    .fw-pill.inactive:hover{opacity:.6}
+    .fw-pill-name{font-family:var(--mono);font-size:.7rem;font-weight:600;display:flex;align-items:center;gap:.4rem}
+    .fw-pulse{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .fw-pulse.on{background:var(--green);box-shadow:0 0 6px var(--green);animation:livePulse 2s cubic-bezier(0.4,0,0.6,1) infinite}
+    .fw-pulse.warn{background:var(--orange);box-shadow:0 0 6px var(--orange)}
+    .fw-pulse.off{background:var(--dim)}
+    .fw-pill-status{font-size:.58rem;color:var(--dim);font-family:var(--mono);margin-top:.15rem}
+    .fw-pill.active .fw-pill-status{color:rgba(34,197,94,0.65)}
+    .fw-pill.warning .fw-pill-status{color:rgba(249,115,22,0.7)}
+    .task-dist-label{font-family:var(--mono);font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:.6rem}
+    .task-bar-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.45rem}
+    .task-bar-name{font-family:var(--mono);font-size:.6rem;color:var(--dim);width:80px;flex-shrink:0}
+    .task-bar-track{flex:1;height:4px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden}
+    .task-bar-fill{height:100%;border-radius:4px;width:0%;transition:width 1.2s cubic-bezier(0.16,1,0.3,1)}
+    .card.is-visible .task-bar-fill{width:var(--bar-target)}
+    .task-bar-count{font-family:var(--mono);font-size:.62rem;color:var(--white);width:20px;text-align:right;flex-shrink:0}
+    .rev-card{grid-column:span 2}
+    .rev-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+    .rev-item{background:var(--surface2);backdrop-filter:blur(10px);border-radius:14px;padding:1.25rem;border:1px solid var(--border);transition:all .4s var(--ease);cursor:pointer;position:relative;overflow:hidden}
+    .rev-item:hover{border-color:var(--border-hover);transform:translateY(-1px);box-shadow:0 8px 30px rgba(0,0,0,0.2)}
+    .rev-item.selected{border-color:rgba(249,115,22,0.3);background:rgba(249,115,22,0.04)}
+    .rev-item.kalshi{border-color:rgba(34,197,94,0.15)}
+    .rev-item.kalshi:hover{border-color:rgba(34,197,94,0.3)}
+    .rev-item.kalshi.selected{border-color:rgba(34,197,94,0.35);background:rgba(34,197,94,0.04)}
+    .rev-source{font-size:.62rem;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem;font-weight:500}
+    .rev-amount{font-size:1.5rem;font-weight:800;letter-spacing:-.5px;margin-bottom:.65rem}
+    .rev-amount.positive{background:linear-gradient(135deg,var(--green),#86EFAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .rev-amount.zero{color:rgba(100,116,139,0.5);-webkit-text-fill-color:rgba(100,116,139,0.5)}
+    .rev-bar-track{height:3px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;margin-bottom:.75rem}
+    .rev-bar-fill{height:100%;border-radius:4px;width:0%;transition:width 1.4s cubic-bezier(0.16,1,0.3,1)}
+    .card.is-visible .rev-bar-fill{width:var(--rev-bar-w)}
+    .rev-bar-fill.green{background:linear-gradient(90deg,var(--green),rgba(34,197,94,0.35))}
+    .rev-bar-fill.gray{background:linear-gradient(90deg,rgba(100,116,139,0.4),rgba(100,116,139,0.1))}
+    .rev-detail{max-height:0;overflow:hidden;opacity:0;transition:max-height .3s var(--ease),opacity .3s,margin-top .3s}
+    .rev-detail.open{max-height:150px;opacity:1;margin-top:.5rem;padding-top:.6rem;border-top:1px solid var(--border)}
+    .rev-detail-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.68rem;padding:.2rem 0}
+    .rev-detail-row .label{color:var(--dim)}
+    .rev-detail-row .val{color:var(--white)}
+    .toast-container{position:fixed;bottom:2rem;right:2rem;z-index:300;display:flex;flex-direction:column-reverse;gap:.5rem}
+    .toast{font-family:var(--mono);font-size:.72rem;padding:.65rem 1.1rem;border-radius:10px;border:1px solid var(--border-hover);background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);color:var(--white);transform:translateX(120%);opacity:0;transition:all .4s var(--ease);max-width:340px}
+    .toast.show{transform:translateX(0);opacity:1}
+    .toast.toast-success{border-left:3px solid var(--green)}
+    .toast.toast-info{border-left:3px solid var(--cyan)}
+    .toast.toast-warning{border-left:3px solid var(--orange)}
+    .toast.toast-error{border-left:3px solid var(--red)}
+    ::-webkit-scrollbar{width:3px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:4px}
+    ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.15)}
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .metrics .card:nth-child(1){transition-delay:0s}
+    .metrics .card:nth-child(2){transition-delay:.07s}
+    .metrics .card:nth-child(3){transition-delay:.14s}
+    .metrics .card:nth-child(4){transition-delay:.21s}
+    .footer{position:relative;z-index:2;text-align:center;padding:0 3rem 2.5rem;font-size:.65rem;color:rgba(100,116,139,0.5);font-family:var(--mono);letter-spacing:1px}
+    ::selection{background:rgba(168,85,247,0.25);color:var(--white)}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}.reveal,.spark-path,.chart-line{opacity:1;transform:none;stroke-dashoffset:0}.spark-area,.chart-area,.spark-dot{opacity:1}}
   </style>
 </head>
 <body>
-
 <header>
   <div class="logo" onclick="scrollToTop()">CLX<span>_</span>COMMAND</div>
   <nav class="header-nav">
     <div class="nav-item active" data-section="metrics-section" onclick="navTo(this)">Metrics</div>
     <div class="nav-item" data-section="agents-section" onclick="navTo(this)">Agents</div>
     <div class="nav-item" data-section="feed-section" onclick="navTo(this)">Feed</div>
-    <div class="nav-item" data-section="frameworks-section" onclick="navTo(this)">Frameworks</div>
+    <div class="nav-item" data-section="perf-section" onclick="navTo(this)">Performance</div>
     <div class="nav-item" data-section="revenue-section" onclick="navTo(this)">Revenue</div>
   </nav>
   <div class="header-status">
     <div class="status-pill status-online">ONLINE</div>
     <div class="time" id="clock">--:--:--</div>
-    <div class="hamburger" onclick="toggleMobileMenu()">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-    </div>
+    <div class="hamburger" onclick="toggleMobileMenu()"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
   </div>
 </header>
-
-<!-- Mobile drawer -->
 <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
 <div class="mobile-drawer">
-  <div class="nav-item active" data-section="metrics-section" onclick="navTo(this); toggleMobileMenu()">Metrics</div>
-  <div class="nav-item" data-section="agents-section" onclick="navTo(this); toggleMobileMenu()">Agents</div>
-  <div class="nav-item" data-section="feed-section" onclick="navTo(this); toggleMobileMenu()">Feed</div>
-  <div class="nav-item" data-section="frameworks-section" onclick="navTo(this); toggleMobileMenu()">Frameworks</div>
-  <div class="nav-item" data-section="revenue-section" onclick="navTo(this); toggleMobileMenu()">Revenue</div>
+  <div class="nav-item active" data-section="metrics-section" onclick="navTo(this);toggleMobileMenu()">Metrics</div>
+  <div class="nav-item" data-section="agents-section" onclick="navTo(this);toggleMobileMenu()">Agents</div>
+  <div class="nav-item" data-section="feed-section" onclick="navTo(this);toggleMobileMenu()">Feed</div>
+  <div class="nav-item" data-section="perf-section" onclick="navTo(this);toggleMobileMenu()">Performance</div>
+  <div class="nav-item" data-section="revenue-section" onclick="navTo(this);toggleMobileMenu()">Revenue</div>
 </div>
-
 <div class="grid">
-
-  <!-- METRICS ROW -->
   <div class="metrics" id="metrics-section">
     <div class="card card-cyan reveal" onclick="toggleMetric(this)">
       <div class="card-label">Active Agents</div>
-      <div class="card-value grad-cyan">20</div>
+      <div class="card-value grad-cyan"><span id="kpi-agents">20</span><span class="delta delta-flat">= stable</span></div>
       <div class="card-sub">Swarm: learning-loop-fix</div>
+      <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 42" preserveAspectRatio="none"><defs><linearGradient id="sg-cyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#06B6D4" stop-opacity="0.22"/><stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,30 C20,28 40,26 60,22 C80,18 100,20 120,16 C140,12 160,10 180,8 L200,5 L200,42 L0,42 Z" fill="url(#sg-cyan)"/><path class="spark-path" d="M0,30 C20,28 40,26 60,22 C80,18 100,20 120,16 C140,12 160,10 180,8 L200,5" stroke="#06B6D4"/><circle class="spark-dot" cx="200" cy="5" r="3" fill="#06B6D4"/></svg></div>
       <div class="metric-breakdown">
         <div class="breakdown-row"><span class="breakdown-label">Running</span><span class="breakdown-value" style="color:var(--green)">2</span></div>
         <div class="breakdown-row"><span class="breakdown-label">Idle</span><span class="breakdown-value" style="color:var(--yellow)">5</span></div>
@@ -1005,8 +267,9 @@
     </div>
     <div class="card card-green reveal" onclick="toggleMetric(this)">
       <div class="card-label">Compliance Score</div>
-      <div class="card-value grad-green">6.2<span>/10</span></div>
-      <div class="card-sub">Needs improvement</div>
+      <div class="card-value grad-green"><span id="kpi-comp">6.2</span><span>/10</span><span class="delta delta-up">&#8593; +1.8 est</span></div>
+      <div class="card-sub">After hook deployment</div>
+      <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 42" preserveAspectRatio="none"><defs><linearGradient id="sg-green" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.2"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,36 C30,34 60,34 90,28 C120,22 150,16 170,12 L200,8 L200,42 L0,42 Z" fill="url(#sg-green)"/><path class="spark-path" d="M0,36 C30,34 60,34 90,28 C120,22 150,16 170,12 L200,8" stroke="#22C55E"/><circle class="spark-dot" cx="200" cy="8" r="3" fill="#22C55E"/></svg></div>
       <div class="metric-breakdown">
         <div class="breakdown-row"><span class="breakdown-label">Hook enforcement</span><span class="breakdown-value" style="color:var(--green)">9/10</span></div>
         <div class="breakdown-row"><span class="breakdown-label">Context discipline</span><span class="breakdown-value" style="color:var(--red)">3/10</span></div>
@@ -1016,8 +279,9 @@
     </div>
     <div class="card card-orange reveal" onclick="toggleMetric(this)">
       <div class="card-label">Tasks Completed</div>
-      <div class="card-value grad-orange">47</div>
-      <div class="card-sub">Today (Mar 29-30)</div>
+      <div class="card-value grad-orange"><span id="kpi-tasks">47</span><span class="delta delta-up">&#8593; +12 today</span></div>
+      <div class="card-sub">Today (Mar 29&#8211;30)</div>
+      <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 42" preserveAspectRatio="none"><defs><linearGradient id="sg-orange" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F97316" stop-opacity="0.2"/><stop offset="100%" stop-color="#F97316" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,38 C20,36 40,30 70,26 C100,22 130,14 160,10 L200,4 L200,42 L0,42 Z" fill="url(#sg-orange)"/><path class="spark-path" d="M0,38 C20,36 40,30 70,26 C100,22 130,14 160,10 L200,4" stroke="#F97316"/><circle class="spark-dot" cx="200" cy="4" r="3" fill="#F97316"/></svg></div>
       <div class="metric-breakdown">
         <div class="breakdown-row"><span class="breakdown-label">Engineering</span><span class="breakdown-value">18</span></div>
         <div class="breakdown-row"><span class="breakdown-label">Marketing / SEO</span><span class="breakdown-value">12</span></div>
@@ -1028,8 +292,9 @@
     </div>
     <div class="card card-purple reveal" onclick="toggleMetric(this)">
       <div class="card-label">Revenue</div>
-      <div class="card-value grad-purple">$0.85</div>
-      <div class="card-sub">Kalshi trade +14%</div>
+      <div class="card-value grad-purple">$<span id="kpi-rev">0.85</span><span class="delta delta-up">&#8593; +14%</span></div>
+      <div class="card-sub">Kalshi trade</div>
+      <div class="sparkline-wrap"><svg class="sparkline" viewBox="0 0 200 42" preserveAspectRatio="none"><defs><linearGradient id="sg-purple" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A855F7" stop-opacity="0.2"/><stop offset="100%" stop-color="#A855F7" stop-opacity="0"/></linearGradient></defs><path class="spark-area" d="M0,40 L70,40 L110,38 C140,36 165,26 185,18 L200,12 L200,42 L0,42 Z" fill="url(#sg-purple)"/><path class="spark-path" d="M0,40 L70,40 L110,38 C140,36 165,26 185,18 L200,12" stroke="#A855F7"/><circle class="spark-dot" cx="200" cy="12" r="3" fill="#A855F7"/></svg></div>
       <div class="metric-breakdown">
         <div class="breakdown-row"><span class="breakdown-label">Kalshi trades</span><span class="breakdown-value" style="color:var(--green)">+$0.85</span></div>
         <div class="breakdown-row"><span class="breakdown-label">Gumroad</span><span class="breakdown-value">$0.00</span></div>
@@ -1039,15 +304,10 @@
       </div>
     </div>
   </div>
-
-  <!-- AGENTS -->
   <div class="card card-purple agents-card reveal" id="agents-section">
     <div class="card-label">Agent Registry</div>
-    <div class="agent-list" id="agent-list">
-    </div>
+    <div class="agent-list" id="agent-list"></div>
   </div>
-
-  <!-- TASK FEED -->
   <div class="card card-cyan feed-card reveal" id="feed-section">
     <div class="card-label">Activity Feed</div>
     <div class="feed-filter-bar">
@@ -1057,407 +317,163 @@
       <div class="feed-filter" data-type="error" onclick="filterFeed(this)">Errors</div>
       <div class="feed-filter" data-type="warning" onclick="filterFeed(this)">Warnings</div>
     </div>
-    <div class="feed" id="feed-list">
+    <div class="feed" id="feed-list"></div>
+  </div>
+  <div class="card card-cyan perf-card reveal" id="perf-section">
+    <div class="perf-chart-header">
+      <div>
+        <div class="card-label" style="margin-bottom:.3rem">CLX Performance</div>
+        <div class="perf-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>Tasks</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Agents</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Revenue</div>
+        </div>
+      </div>
+      <div class="perf-tabs">
+        <div class="perf-tab active" onclick="switchPerfTab(this,'7d')">7D</div>
+        <div class="perf-tab" onclick="switchPerfTab(this,'30d')">30D</div>
+        <div class="perf-tab" onclick="switchPerfTab(this,'all')">All</div>
+      </div>
+    </div>
+    <div class="perf-svg-wrap" id="perf-wrap">
+      <div class="chart-tip" id="chart-tip">
+        <div class="chart-tip-day" id="ct-day">-</div>
+        <div class="chart-tip-rows">
+          <div class="chart-tip-row"><div class="chart-tip-dot" style="background:var(--cyan)"></div><span class="chart-tip-label">Tasks</span><span class="chart-tip-val" id="ct-tasks">-</span></div>
+          <div class="chart-tip-row"><div class="chart-tip-dot" style="background:var(--purple)"></div><span class="chart-tip-label">Agents</span><span class="chart-tip-val" id="ct-agents">-</span></div>
+          <div class="chart-tip-row"><div class="chart-tip-dot" style="background:var(--green)"></div><span class="chart-tip-label">Revenue</span><span class="chart-tip-val" id="ct-rev">-</span></div>
+        </div>
+      </div>
+      <svg class="perf-svg" viewBox="0 0 400 160" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="cg-cyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#06B6D4" stop-opacity="0.18"/><stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/></linearGradient>
+          <linearGradient id="cg-purple" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A855F7" stop-opacity="0.13"/><stop offset="100%" stop-color="#A855F7" stop-opacity="0"/></linearGradient>
+          <linearGradient id="cg-green" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.13"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient>
+        </defs>
+        <line x1="0" y1="32" x2="400" y2="32" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+        <line x1="0" y1="64" x2="400" y2="64" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+        <line x1="0" y1="96" x2="400" y2="96" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+        <line x1="0" y1="128" x2="400" y2="128" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+        <path class="chart-area" d="M0,158 L57,158 L114,158 L171,158 L228,158 L285,155 L342,148 L400,118 L400,160 L0,160 Z" fill="url(#cg-green)"/>
+        <path class="chart-line" style="transition-delay:.4s" d="M0,158 L57,158 L114,158 L171,158 L228,158 L285,155 L342,148 L400,118" stroke="#22C55E"/>
+        <path class="chart-area" d="M0,105 L57,100 L114,96 L171,92 L228,88 L285,80 L342,72 L400,62 L400,160 L0,160 Z" fill="url(#cg-purple)"/>
+        <path class="chart-line" style="transition-delay:.2s" d="M0,105 L57,100 L114,96 L171,92 L228,88 L285,80 L342,72 L400,62" stroke="#A855F7"/>
+        <path class="chart-area" d="M0,130 L57,118 L114,104 L171,90 L228,72 L285,54 L342,38 L400,18 L400,160 L0,160 Z" fill="url(#cg-cyan)"/>
+        <path class="chart-line" d="M0,130 L57,118 L114,104 L171,90 L228,72 L285,54 L342,38 L400,18" stroke="#06B6D4"/>
+        <rect x="0"   y="0" width="57"  height="160" fill="transparent" onmouseenter="showChartTip(0,event)" onmouseleave="hideChartTip()"/>
+        <rect x="57"  y="0" width="57"  height="160" fill="transparent" onmouseenter="showChartTip(1,event)" onmouseleave="hideChartTip()"/>
+        <rect x="114" y="0" width="57"  height="160" fill="transparent" onmouseenter="showChartTip(2,event)" onmouseleave="hideChartTip()"/>
+        <rect x="171" y="0" width="57"  height="160" fill="transparent" onmouseenter="showChartTip(3,event)" onmouseleave="hideChartTip()"/>
+        <rect x="228" y="0" width="57"  height="160" fill="transparent" onmouseenter="showChartTip(4,event)" onmouseleave="hideChartTip()"/>
+        <rect x="285" y="0" width="57"  height="160" fill="transparent" onmouseenter="showChartTip(5,event)" onmouseleave="hideChartTip()"/>
+        <rect x="342" y="0" width="29"  height="160" fill="transparent" onmouseenter="showChartTip(6,event)" onmouseleave="hideChartTip()"/>
+        <rect x="371" y="0" width="29"  height="160" fill="transparent" onmouseenter="showChartTip(7,event)" onmouseleave="hideChartTip()"/>
+      </svg>
+    </div>
+    <div class="perf-x-labels">
+      <span class="perf-x-label">Mon</span><span class="perf-x-label">Tue</span><span class="perf-x-label">Wed</span><span class="perf-x-label">Thu</span><span class="perf-x-label">Fri</span><span class="perf-x-label">Sat</span><span class="perf-x-label">Sun</span><span class="perf-x-label" style="color:var(--cyan)">Today</span>
     </div>
   </div>
-
-  <!-- FRAMEWORKS -->
   <div class="card card-green fw-card reveal" id="frameworks-section">
-    <div class="card-label">Framework Status</div>
-    <div class="fw-grid" id="fw-grid">
+    <div class="card-label" style="margin-bottom:.9rem">Framework Status</div>
+    <div class="fw-compact-grid" id="fw-grid"></div>
+    <div style="padding-top:1rem;border-top:1px solid var(--border)">
+      <div class="task-dist-label">Task Distribution</div>
+      <div class="task-bar-row"><span class="task-bar-name">Engineering</span><div class="task-bar-track"><div class="task-bar-fill" style="--bar-target:58%;background:linear-gradient(90deg,var(--cyan),rgba(6,182,212,0.25));transition-delay:.1s"></div></div><span class="task-bar-count">18</span></div>
+      <div class="task-bar-row"><span class="task-bar-name">Marketing</span><div class="task-bar-track"><div class="task-bar-fill" style="--bar-target:38%;background:linear-gradient(90deg,var(--purple),rgba(168,85,247,0.25));transition-delay:.2s"></div></div><span class="task-bar-count">12</span></div>
+      <div class="task-bar-row"><span class="task-bar-name">Architecture</span><div class="task-bar-track"><div class="task-bar-fill" style="--bar-target:25%;background:linear-gradient(90deg,var(--orange),rgba(249,115,22,0.25));transition-delay:.3s"></div></div><span class="task-bar-count">8</span></div>
+      <div class="task-bar-row"><span class="task-bar-name">Automation</span><div class="task-bar-track"><div class="task-bar-fill" style="--bar-target:16%;background:linear-gradient(90deg,var(--green),rgba(34,197,94,0.25));transition-delay:.4s"></div></div><span class="task-bar-count">5</span></div>
+      <div class="task-bar-row"><span class="task-bar-name">Debugging</span><div class="task-bar-track"><div class="task-bar-fill" style="--bar-target:12%;background:linear-gradient(90deg,var(--red),rgba(239,68,68,0.25));transition-delay:.5s"></div></div><span class="task-bar-count">4</span></div>
     </div>
   </div>
-
-  <!-- REVENUE -->
   <div class="card card-orange rev-card reveal" id="revenue-section">
     <div class="card-label">Revenue Channels</div>
-    <div class="rev-grid" id="rev-grid">
-    </div>
+    <div class="rev-grid" id="rev-grid"></div>
   </div>
-
 </div>
-
-<div class="footer">CLX AGENT COMMAND CENTER v2.0</div>
-
-<!-- Toast container -->
+<div class="footer">CLX AGENT COMMAND CENTER v3.0</div>
 <div class="toast-container" id="toast-container"></div>
-
-<!-- Framework tooltip -->
-<div class="fw-tooltip" id="fw-tooltip">
-  <div class="fw-tooltip-title"></div>
-  <div class="fw-tooltip-desc"></div>
-</div>
-
 <script>
-// ===========================
-// DATA
-// ===========================
-const agentData = [
-  { name: 'coordinator-1', domain: 'architecture', status: 'RUNNING', statusClass: 's-running', uptime: '4h 12m', tasks: 23, memory: '142 MB', lastAction: 'Routing swarm consensus', pid: 8421 },
-  { name: 'hooks-enforcer', domain: 'engineering', status: 'IDLE', statusClass: 's-idle', uptime: '3h 45m', tasks: 8, memory: '67 MB', lastAction: 'Deployed PreCompact hooks', pid: 8422 },
-  { name: 'compaction-survivor', domain: 'engineering', status: 'IDLE', statusClass: 's-idle', uptime: '2h 20m', tasks: 5, memory: '54 MB', lastAction: 'Survived last compaction cycle', pid: 8423 },
-  { name: 'claude-md-redesign', domain: 'architecture', status: 'COMPLETED', statusClass: 's-completed', uptime: '1h 55m', tasks: 12, memory: '89 MB', lastAction: 'Rewrote .claude.md to 95 gates', pid: 8424 },
-  { name: 'precompact-hook', domain: 'engineering', status: 'COMPLETED', statusClass: 's-completed', uptime: '1h 30m', tasks: 6, memory: '45 MB', lastAction: 'Deployed hooks to settings.json', pid: 8425 },
-  { name: 'n8n-automation', domain: 'automation', status: 'IDLE', statusClass: 's-idle', uptime: '5h 10m', tasks: 0, memory: '32 MB', lastAction: 'Waiting for workflow config', pid: 8426 },
-  { name: 'telegram-debug', domain: 'debugging', status: 'ERROR', statusClass: 's-error', uptime: '0h 0m', tasks: 3, memory: '128 MB', lastAction: '409 conflict: mode-controller.py collision', pid: 8427 },
-  { name: 'obsidian-optimizer', domain: 'knowledge-mgmt', status: 'IDLE', statusClass: 's-idle', uptime: '6h 5m', tasks: 15, memory: '78 MB', lastAction: 'Logged 15 brainstorm entries', pid: 8428 },
-  { name: 'gemini-king-mode', domain: 'research', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 2, memory: '256 MB', lastAction: 'Context window exceeded 1M tokens', pid: 8429 },
-  { name: 'memory-tiers', domain: 'architecture', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 1, memory: '312 MB', lastAction: 'Prompt too long for Haiku', pid: 8430 },
-  { name: 'self-audit', domain: 'quality', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 0, memory: '198 MB', lastAction: 'Failed: context overflow', pid: 8431 },
-  { name: 'session-management', domain: 'engineering', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 0, memory: '245 MB', lastAction: 'Failed: context overflow', pid: 8432 },
-  { name: 'business-reliability', domain: 'business', status: 'IDLE', statusClass: 's-idle', uptime: '4h 0m', tasks: 7, memory: '56 MB', lastAction: 'Monitoring revenue channels', pid: 8433 },
-  { name: 'consensus-builder', domain: 'architecture', status: 'WAITING', statusClass: 's-running', uptime: '2h 15m', tasks: 4, memory: '92 MB', lastAction: 'Awaiting quorum from 3 agents', pid: 8434 },
+const agentData=[
+  {name:'coordinator-1',domain:'architecture',status:'RUNNING',statusClass:'s-running',uptime:'4h 12m',tasks:23,memory:'142 MB',lastAction:'Routing swarm consensus',pid:8421},
+  {name:'hooks-enforcer',domain:'engineering',status:'IDLE',statusClass:'s-idle',uptime:'3h 45m',tasks:8,memory:'67 MB',lastAction:'Deployed PreCompact hooks',pid:8422},
+  {name:'compaction-survivor',domain:'engineering',status:'IDLE',statusClass:'s-idle',uptime:'2h 20m',tasks:5,memory:'54 MB',lastAction:'Survived last compaction cycle',pid:8423},
+  {name:'claude-md-redesign',domain:'architecture',status:'COMPLETED',statusClass:'s-completed',uptime:'1h 55m',tasks:12,memory:'89 MB',lastAction:'Rewrote .claude.md to 95 gates',pid:8424},
+  {name:'precompact-hook',domain:'engineering',status:'COMPLETED',statusClass:'s-completed',uptime:'1h 30m',tasks:6,memory:'45 MB',lastAction:'Deployed hooks to settings.json',pid:8425},
+  {name:'n8n-automation',domain:'automation',status:'IDLE',statusClass:'s-idle',uptime:'5h 10m',tasks:0,memory:'32 MB',lastAction:'Waiting for workflow config',pid:8426},
+  {name:'telegram-debug',domain:'debugging',status:'ERROR',statusClass:'s-error',uptime:'0h 0m',tasks:3,memory:'128 MB',lastAction:'409 conflict: mode-controller.py collision',pid:8427},
+  {name:'gemini-king-mode',domain:'research',status:'CTX OVERFLOW',statusClass:'s-error',uptime:'0h 0m',tasks:0,memory:'210 MB',lastAction:'Failed: context overflow',pid:8428},
+  {name:'memory-tiers',domain:'architecture',status:'CTX OVERFLOW',statusClass:'s-error',uptime:'0h 0m',tasks:0,memory:'188 MB',lastAction:'Failed: context overflow',pid:8429},
+  {name:'seo-deployer',domain:'marketing',status:'COMPLETED',statusClass:'s-completed',uptime:'2h 10m',tasks:9,memory:'61 MB',lastAction:'Deployed SEO + schema.org',pid:8430},
+  {name:'self-audit',domain:'quality',status:'CTX OVERFLOW',statusClass:'s-error',uptime:'0h 0m',tasks:0,memory:'198 MB',lastAction:'Failed: context overflow',pid:8431},
+  {name:'business-reliability',domain:'business',status:'IDLE',statusClass:'s-idle',uptime:'4h 0m',tasks:7,memory:'56 MB',lastAction:'Monitoring revenue channels',pid:8433},
+  {name:'consensus-builder',domain:'architecture',status:'WAITING',statusClass:'s-running',uptime:'2h 15m',tasks:4,memory:'92 MB',lastAction:'Awaiting quorum from 3 agents',pid:8434}
 ];
-
-const feedData = [
-  { time: '05:25', msg: 'claude-md-redesign: Rewrote .claude.md \u2014 209 lines \u2192 95 enforceable gates', type: 'success', detail: 'Reduced from 209 to 95 lines. Added PreCompact, SessionStart, and PostEdit hook gates. Compliance score expected to rise from 6.2 to 8+.' },
-  { time: '05:22', msg: 'precompact-hook: Deployed PreCompact + SessionStart hooks to settings.json', type: 'success', detail: 'Hooks registered in ~/.claude/settings.json. PreCompact triggers at 80% context, SessionStart validates memory load.' },
-  { time: '05:21', msg: '6 Haiku agents failed: prompt too long (context overflow \u2014 need context-mode)', type: 'error', detail: 'Agents affected: gemini-king-mode, memory-tiers, self-audit, session-management, plus 2 swarm workers. Root cause: no context-mode enforcement.' },
-  { time: '05:17', msg: 'Swarm initialized: 20 agents spawned for learning-loop-fix brainstorm', type: 'info', detail: 'Ruflo swarm session. 20 Haiku agents with 8-second spawn cycle. Coordinator-1 managing consensus.' },
-  { time: '04:54', msg: 'Telegram bot commands updated (10 framework commands set)', type: 'success', detail: 'Commands: /status, /agents, /feed, /revenue, /frameworks, /spawn, /kill, /restart, /logs, /help' },
-  { time: '04:27', msg: 'Obsidian brainstorm session logged: 15 timestamped entries', type: 'info', detail: 'Brainstorm captured in Obsidian daily note. Topics: agent replication, context-mode enforcement, hook intelligence.' },
-  { time: '02:40', msg: 'Tweet posted on @casbattle with storefront link preview', type: 'success', detail: 'Tweet included OG card from theresetmethod.live. Link preview verified working.' },
-  { time: '02:20', msg: 'Instagram bio updated: theresetmethod.live', type: 'success', detail: 'Bio link changed from linktr.ee to direct domain. Verified link is clickable.' },
-  { time: '01:55', msg: 'Google Search Console: property verified + sitemap submitted', type: 'success', detail: 'DNS TXT verification passed. Sitemap at /sitemap.xml submitted with 12 URLs.' },
-  { time: '01:50', msg: 'SEO deployed: meta tags, schema.org, OG cards, robots.txt', type: 'success', detail: 'Full SEO package: title, description, OG image, Twitter card, JSON-LD Product schema, robots.txt allowing all crawlers.' },
-  { time: '01:48', msg: 'Amazon product images added to 6 tool cards on storefront', type: 'success', detail: '6 affiliate product cards with images, descriptions, and tagged Amazon links.' },
-  { time: '01:20', msg: 'Etsy: 3 listings published on TheResetPrintables ($2.99/$4.99/$9.99)', type: 'success', detail: 'Listings: Budget Reset Planner ($2.99), Habit Tracker Bundle ($4.99), Full Reset Kit ($9.99). All with SEO-optimized tags.' },
-  { time: '01:00', msg: 'Storefront v3 deployed: awwwards-level redesign with scroll animations', type: 'success', detail: 'Complete visual overhaul with glass morphism, GSAP scroll animations, responsive grid, dark theme.' },
-  { time: '00:45', msg: 'DNS configured: CNAME www + A record @ \u2192 Vercel', type: 'success', detail: 'Namecheap DNS: A record 76.76.21.21, CNAME www -> cname.vercel-dns.com. Propagation confirmed.' },
-  { time: '00:38', msg: 'theresetmethod.live deployed to Vercel via GitHub import', type: 'success', detail: 'GitHub repo reset-method-store imported. Auto-deploy on push to main. Build time: 8s.' },
-  { time: '00:30', msg: 'Pinterest Day 3 warmup: 10 repins across 3 search terms', type: 'success', detail: 'Search terms: "budget planner printable", "habit tracker 2024", "self improvement printable". Account warming strategy day 3 of 7.' },
+const feedData=[
+  {time:'05:25',msg:'claude-md-redesign: Rewrote .claude.md — 209 lines to 95 enforceable gates',type:'success',detail:'Reduced from 209 to 95 lines. Added PreCompact, SessionStart, PostEdit hook gates. Compliance score expected to rise from 6.2 to 8+.'},
+  {time:'05:22',msg:'precompact-hook: Deployed PreCompact + SessionStart hooks to settings.json',type:'success',detail:'Hooks registered in ~/.claude/settings.json. PreCompact triggers at 80% context, SessionStart validates memory load.'},
+  {time:'05:21',msg:'6 Haiku agents failed: prompt too long (context overflow — need context-mode)',type:'error',detail:'Agents affected: gemini-king-mode, memory-tiers, self-audit, session-management, plus 2 swarm workers. Root cause: no context-mode enforcement.'},
+  {time:'05:17',msg:'Swarm initialized: 20 agents spawned for learning-loop-fix brainstorm',type:'info',detail:'Ruflo swarm session. 20 Haiku agents with 8-second spawn cycle. Coordinator-1 managing consensus.'},
+  {time:'04:54',msg:'Telegram bot commands updated (10 framework commands set)',type:'success',detail:'Commands: /status, /agents, /feed, /revenue, /frameworks, /spawn, /kill, /restart, /logs, /help'},
+  {time:'04:27',msg:'Obsidian brainstorm session logged: 15 timestamped entries',type:'info',detail:'Brainstorm captured in Obsidian daily note. Topics: agent replication, context-mode enforcement, hook intelligence.'},
+  {time:'02:40',msg:'Tweet posted on @casbattle with storefront link preview',type:'success',detail:'Tweet included OG card from theresetmethod.live. Link preview verified working.'},
+  {time:'02:20',msg:'Instagram bio updated: theresetmethod.live',type:'success',detail:'Bio link changed from linktr.ee to direct domain. Verified link is clickable.'},
+  {time:'01:55',msg:'Google Search Console: property verified + sitemap submitted',type:'success',detail:'DNS TXT verification passed. Sitemap at /sitemap.xml submitted with 12 URLs.'},
+  {time:'01:50',msg:'SEO deployed: meta tags, schema.org, OG cards, robots.txt',type:'success',detail:'Full SEO package: title, description, OG image, Twitter card, JSON-LD Product schema, robots.txt allowing all crawlers.'},
+  {time:'01:20',msg:'Etsy: 3 listings published on TheResetPrintables ($2.99/$4.99/$9.99)',type:'success',detail:'Listings: Budget Reset Planner, Habit Tracker Bundle, Full Reset Kit. All with SEO-optimized tags.'},
+  {time:'01:00',msg:'Storefront v3 deployed: awwwards-level redesign with scroll animations',type:'success',detail:'Complete visual overhaul with glassmorphism, scroll animations, responsive grid, dark theme.'},
+  {time:'00:45',msg:'DNS configured: CNAME www + A record at Vercel',type:'success',detail:'Namecheap DNS: A record 76.76.21.21, CNAME www -> cname.vercel-dns.com. Propagation confirmed.'},
+  {time:'00:30',msg:'Pinterest Day 3 warmup: 10 repins across 3 search terms',type:'success',detail:'Search terms: budget planner printable, habit tracker 2024, self improvement printable. Day 3 of 7.'}
 ];
-
-const frameworkData = [
-  { name: 'Telegram', status: 'Connected', active: true, desc: 'Bot API connected. 10 commands registered. Handles /status, /agents, /feed, /revenue queries. Chat injection via official plugin.' },
-  { name: 'Obsidian', status: 'Port 22360', active: true, desc: 'Local REST API on port 22360. Primary memory/context store. Daily notes, brainstorm logs, project docs.' },
-  { name: 'Chrome', status: '10 tabs', active: true, desc: 'Claude-in-Chrome extension active. 10 open tabs managed. Used for real browser sessions with logged-in accounts.' },
-  { name: 'Context-Mode', status: 'Not enforced', active: false, desc: 'Context-mode CLI not enforced yet. Would prevent context overflow errors affecting 6 agents. Priority: HIGH.' },
-  { name: 'Ruflo', status: '20 agents', active: true, desc: 'Agent orchestration framework. 20 agents in current swarm. Handles spawn, terminate, health checks, consensus.' },
-  { name: 'n8n', status: 'No workflows', active: false, desc: 'Self-hosted automation platform. Installed but no workflows configured yet. Planned for marketing automation.' },
-  { name: 'Frameforge', status: 'Not used', active: false, desc: 'Remotion-based video production framework. Available but not activated for current sprint.' },
-  { name: 'GSD', status: 'Not active', active: false, desc: 'Get Stuff Done workflow engine. Phase-based project management with autonomous execution. Not active this session.' },
-  { name: 'pyautogui', status: 'Available', active: true, desc: 'Python GUI automation. Used as fallback for click automation when MCP browser tools are insufficient.' },
+const frameworkData=[
+  {name:'Telegram',status:'Connected',cls:'active',pulse:'on',desc:'10 cmds registered.'},
+  {name:'Obsidian',status:'Port 22360',cls:'active',pulse:'on',desc:'Local REST API on port 22360.'},
+  {name:'Ruflo',status:'20 agents',cls:'active',pulse:'on',desc:'Agent orchestration. 20 agents active.'},
+  {name:'Chrome',status:'10 tabs',cls:'active',pulse:'on',desc:'Claude-in-Chrome ext active.'},
+  {name:'pyautogui',status:'Available',cls:'active',pulse:'on',desc:'Python GUI automation fallback.'},
+  {name:'Context-Mode',status:'Not enforced',cls:'warning',pulse:'warn',desc:'HIGH priority — prevents ctx overflow.'},
+  {name:'n8n',status:'No workflows',cls:'inactive',pulse:'off',desc:'Installed, no workflows configured.'},
+  {name:'Frameforge',status:'Not active',cls:'inactive',pulse:'off',desc:'Remotion video prod framework.'},
+  {name:'GSD',status:'Not active',cls:'inactive',pulse:'off',desc:'Phase-based workflow engine.'}
 ];
-
-const revenueData = [
-  { source: 'Gumroad', amount: '$0.00', positive: false, detail: [
-    { label: 'Products listed', val: '4' },
-    { label: 'Views today', val: '12' },
-    { label: 'Conversion rate', val: '0%' },
-    { label: 'Status', val: 'Live, needs traffic' },
-  ]},
-  { source: 'Etsy', amount: '$0.00', positive: false, detail: [
-    { label: 'Listings', val: '3' },
-    { label: 'Views today', val: '5' },
-    { label: 'Favorites', val: '1' },
-    { label: 'Status', val: 'New store, warming up' },
-  ]},
-  { source: 'Kalshi', amount: '+$0.85', positive: true, detail: [
-    { label: 'Open positions', val: '2' },
-    { label: 'Win rate', val: '67%' },
-    { label: 'Today P&L', val: '+$0.85' },
-    { label: 'Best trade', val: 'Weather YES +14%' },
-  ]},
-  { source: 'Amazon Aff.', amount: '$0.00', positive: false, detail: [
-    { label: 'Links placed', val: '6' },
-    { label: 'Clicks today', val: '3' },
-    { label: 'Conversions', val: '0' },
-    { label: 'Status', val: 'Needs storefront traffic' },
-  ]},
+const revenueData=[
+  {source:'Kalshi',amount:'+$0.85',cls:'kalshi',amtClass:'positive',barCls:'green',barW:'85%',detail:[{label:'Open positions',val:'2'},{label:'Win rate',val:'67%'},{label:'Today P&L',val:'+$0.85'},{label:'Best trade',val:'Weather YES +14%'}]},
+  {source:'Gumroad',amount:'$0.00',cls:'',amtClass:'zero',barCls:'gray',barW:'3%',detail:[{label:'Products listed',val:'4'},{label:'Views today',val:'12'},{label:'Conversion rate',val:'0%'},{label:'Status',val:'Live, needs traffic'}]},
+  {source:'Etsy',amount:'$0.00',cls:'',amtClass:'zero',barCls:'gray',barW:'2%',detail:[{label:'Listings',val:'3'},{label:'Views today',val:'5'},{label:'Favorites',val:'1'},{label:'Status',val:'New store, warming up'}]},
+  {source:'Amazon Aff.',amount:'$0.00',cls:'',amtClass:'zero',barCls:'gray',barW:'1%',detail:[{label:'Links placed',val:'6'},{label:'Clicks today',val:'3'},{label:'Conversions',val:'0'},{label:'Status',val:'Needs storefront traffic'}]}
 ];
-
-// ===========================
-// RENDER FUNCTIONS
-// ===========================
-function renderAgents() {
-  const list = document.getElementById('agent-list');
-  list.innerHTML = agentData.map((a, i) => `
-    <div class="agent-row" onclick="toggleAgent(${i})" id="agent-row-${i}">
-      <div>
-        <div class="agent-name">${a.name}</div>
-        <div class="agent-domain">${a.domain}</div>
-      </div>
-      <span class="agent-status ${a.statusClass}">${a.status}</span>
-    </div>
-    <div class="agent-detail" id="agent-detail-${i}">
-      <div class="agent-detail-grid">
-        <div class="agent-detail-item"><span class="agent-detail-label">Uptime</span><span class="agent-detail-value">${a.uptime}</span></div>
-        <div class="agent-detail-item"><span class="agent-detail-label">Tasks</span><span class="agent-detail-value">${a.tasks}</span></div>
-        <div class="agent-detail-item"><span class="agent-detail-label">Memory</span><span class="agent-detail-value">${a.memory}</span></div>
-        <div class="agent-detail-item"><span class="agent-detail-label">PID</span><span class="agent-detail-value">${a.pid}</span></div>
-      </div>
-      <div style="margin-top:0.5rem;font-family:var(--mono);font-size:0.68rem;color:var(--dim);">Last: ${a.lastAction}</div>
-      <div class="agent-actions">
-        <button class="agent-action-btn restart" onclick="event.stopPropagation(); agentAction('${a.name}', 'restart')">Restart</button>
-        <button class="agent-action-btn stop" onclick="event.stopPropagation(); agentAction('${a.name}', 'stop')">Stop</button>
-        <button class="agent-action-btn logs" onclick="event.stopPropagation(); agentAction('${a.name}', 'logs')">Logs</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderFeed() {
-  const list = document.getElementById('feed-list');
-  list.innerHTML = feedData.map((f, i) => `
-    <div class="feed-item ${f.type}" data-feed-type="${f.type}" onclick="toggleFeedItem(${i})">
-      <span class="feed-time">${f.time}</span>
-      <div class="feed-content">
-        <div class="feed-msg">${f.msg}</div>
-        <div class="feed-detail" id="feed-detail-${i}">${f.detail}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderFrameworks() {
-  const grid = document.getElementById('fw-grid');
-  grid.innerHTML = frameworkData.map((fw, i) => `
-    <div class="fw-item ${fw.active ? 'active' : 'inactive'}"
-         onclick="selectFramework(${i})"
-         onmouseenter="showFwTooltip(event, ${i})"
-         onmouseleave="hideFwTooltip()">
-      <div class="fw-name">${fw.name}</div>
-      <div class="fw-status">${fw.status}</div>
-    </div>
-  `).join('');
-}
-
-function renderRevenue() {
-  const grid = document.getElementById('rev-grid');
-  grid.innerHTML = revenueData.map((r, i) => `
-    <div class="rev-item" onclick="toggleRevenue(${i})" id="rev-item-${i}">
-      <div class="rev-source">${r.source}</div>
-      <div class="rev-amount ${r.positive ? 'positive' : 'zero'}">${r.amount}</div>
-      <div class="rev-detail" id="rev-detail-${i}">
-        ${r.detail.map(d => `<div class="rev-detail-row"><span class="label">${d.label}</span><span class="val">${d.val}</span></div>`).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-// ===========================
-// INTERACTIONS
-// ===========================
-
-// --- Clock ---
-function updateClock() {
-  const d = new Date();
-  document.getElementById('clock').textContent = d.toLocaleTimeString('en-US', { hour12: false });
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// --- Scroll to top ---
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// --- Nav scrolling ---
-function navTo(el) {
-  const sectionId = el.getAttribute('data-section');
-  const section = document.getElementById(sectionId);
-  if (section) {
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  // Update active state in both desktop and mobile navs
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelectorAll(`.nav-item[data-section="${sectionId}"]`).forEach(n => n.classList.add('active'));
-}
-
-// --- Highlight active nav on scroll ---
-const sectionIds = ['metrics-section', 'agents-section', 'feed-section', 'frameworks-section', 'revenue-section'];
-const navObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.id;
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll(`.nav-item[data-section="${id}"]`).forEach(n => n.classList.add('active'));
-    }
-  });
-}, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
-
-// --- Mobile menu ---
-function toggleMobileMenu() {
-  const hamburger = document.querySelector('.hamburger');
-  const drawer = document.querySelector('.mobile-drawer');
-  const overlay = document.querySelector('.mobile-overlay');
-  const isOpen = drawer.classList.contains('open');
-
-  hamburger.classList.toggle('open');
-  drawer.classList.toggle('open');
-  overlay.classList.toggle('open');
-  overlay.style.display = isOpen ? 'none' : 'block';
-}
-
-// --- Metric card breakdown toggle ---
-function toggleMetric(card) {
-  const breakdown = card.querySelector('.metric-breakdown');
-  const wasOpen = breakdown.classList.contains('open');
-  // Close all
-  document.querySelectorAll('.metric-breakdown').forEach(b => b.classList.remove('open'));
-  // Toggle this one
-  if (!wasOpen) {
-    breakdown.classList.add('open');
-  }
-}
-
-// --- Agent expand/collapse ---
-function toggleAgent(index) {
-  const detail = document.getElementById(`agent-detail-${index}`);
-  const row = document.getElementById(`agent-row-${index}`);
-  const wasOpen = detail.classList.contains('open');
-  // Close all
-  document.querySelectorAll('.agent-detail').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.agent-row').forEach(r => r.classList.remove('expanded'));
-  // Toggle this one
-  if (!wasOpen) {
-    detail.classList.add('open');
-    row.classList.add('expanded');
-  }
-}
-
-// --- Agent action buttons ---
-function agentAction(name, action) {
-  const msgs = {
-    restart: { text: `Restarting ${name}...`, type: 'info' },
-    stop: { text: `Stopping ${name}...`, type: 'warning' },
-    logs: { text: `Fetching logs for ${name}...`, type: 'info' },
-  };
-  const m = msgs[action];
-  showToast(m.text, m.type);
-
-  // Simulate completion after delay
-  setTimeout(() => {
-    if (action === 'restart') showToast(`${name} restarted successfully`, 'success');
-    if (action === 'stop') showToast(`${name} stopped`, 'warning');
-    if (action === 'logs') showToast(`${name}: last 50 lines loaded (simulated)`, 'success');
-  }, 1200);
-}
-
-// --- Feed filter ---
-function filterFeed(el) {
-  const type = el.getAttribute('data-type');
-  document.querySelectorAll('.feed-filter').forEach(f => f.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.feed-item').forEach(item => {
-    if (type === 'all' || item.getAttribute('data-feed-type') === type) {
-      item.classList.remove('hidden');
-    } else {
-      item.classList.add('hidden');
-    }
-  });
-}
-
-// --- Feed item expand ---
-function toggleFeedItem(index) {
-  const detail = document.getElementById(`feed-detail-${index}`);
-  const wasOpen = detail.classList.contains('open');
-  document.querySelectorAll('.feed-detail').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.feed-item').forEach(f => f.classList.remove('highlighted'));
-  if (!wasOpen) {
-    detail.classList.add('open');
-    detail.closest('.feed-item').classList.add('highlighted');
-  }
-}
-
-// --- Framework select + tooltip ---
-let selectedFw = -1;
-function selectFramework(index) {
-  const items = document.querySelectorAll('#fw-grid .fw-item');
-  if (selectedFw === index) {
-    items[index].classList.remove('selected');
-    selectedFw = -1;
-    showToast(`${frameworkData[index].name} deselected`, 'info');
-  } else {
-    items.forEach(it => it.classList.remove('selected'));
-    items[index].classList.add('selected');
-    selectedFw = index;
-    const fw = frameworkData[index];
-    const verb = fw.active ? 'Active' : 'Inactive';
-    showToast(`${fw.name}: ${verb} \u2014 ${fw.status}`, fw.active ? 'success' : 'warning');
-  }
-}
-
-function showFwTooltip(e, index) {
-  const tooltip = document.getElementById('fw-tooltip');
-  const fw = frameworkData[index];
-  tooltip.querySelector('.fw-tooltip-title').textContent = fw.name;
-  tooltip.querySelector('.fw-tooltip-desc').textContent = fw.desc;
-  tooltip.style.left = (e.clientX + 12) + 'px';
-  tooltip.style.top = (e.clientY + 12) + 'px';
-  tooltip.classList.add('visible');
-}
-
-function hideFwTooltip() {
-  document.getElementById('fw-tooltip').classList.remove('visible');
-}
-
-// Reposition tooltip on mousemove over fw-grid
-document.addEventListener('mousemove', (e) => {
-  const tooltip = document.getElementById('fw-tooltip');
-  if (tooltip.classList.contains('visible')) {
-    tooltip.style.left = (e.clientX + 12) + 'px';
-    tooltip.style.top = (e.clientY + 12) + 'px';
-  }
-});
-
-// --- Revenue toggle ---
-function toggleRevenue(index) {
-  const detail = document.getElementById(`rev-detail-${index}`);
-  const item = document.getElementById(`rev-item-${index}`);
-  const wasOpen = detail.classList.contains('open');
-  document.querySelectorAll('.rev-detail').forEach(d => d.classList.remove('open'));
-  document.querySelectorAll('.rev-item').forEach(r => r.classList.remove('selected'));
-  if (!wasOpen) {
-    detail.classList.add('open');
-    item.classList.add('selected');
-  }
-}
-
-// --- Toast system ---
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.textContent = message;
-  container.appendChild(toast);
-  // Trigger animation
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => toast.classList.add('show'));
-  });
-  // Auto-remove
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
-}
-
-// ===========================
-// INIT
-// ===========================
-renderAgents();
-renderFeed();
-renderFrameworks();
-renderRevenue();
-
-// Scroll reveal
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-// Nav scroll observer
-sectionIds.forEach(id => {
-  const el = document.getElementById(id);
-  if (el) navObserver.observe(el);
-});
+const chartDays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun','Today'];
+const chartTasks=[5,8,10,14,18,22,35,47];
+const chartAgents=[8,8,10,12,14,16,18,20];
+const chartRev=[0,0,0,0,0,0,0,0.85];
+function renderAgents(){document.getElementById('agent-list').innerHTML=agentData.map((a,i)=>`<div class="agent-row" onclick="toggleAgent(${i})" id="agent-row-${i}"><div><div class="agent-name">${a.name}</div><div class="agent-domain">${a.domain}</div></div><span class="agent-status ${a.statusClass}">${a.status}</span></div><div class="agent-detail" id="agent-detail-${i}"><div class="agent-detail-grid"><div class="agent-detail-item"><span class="agent-detail-label">Uptime</span><span class="agent-detail-value">${a.uptime}</span></div><div class="agent-detail-item"><span class="agent-detail-label">Tasks</span><span class="agent-detail-value">${a.tasks}</span></div><div class="agent-detail-item"><span class="agent-detail-label">Memory</span><span class="agent-detail-value">${a.memory}</span></div><div class="agent-detail-item"><span class="agent-detail-label">PID</span><span class="agent-detail-value">${a.pid}</span></div></div><div style="margin-top:.5rem;font-family:var(--mono);font-size:.68rem;color:var(--dim)">Last: ${a.lastAction}</div><div class="agent-actions"><button class="agent-action-btn restart" onclick="event.stopPropagation();agentAction('${a.name}','restart')">Restart</button><button class="agent-action-btn stop" onclick="event.stopPropagation();agentAction('${a.name}','stop')">Stop</button><button class="agent-action-btn logs" onclick="event.stopPropagation();agentAction('${a.name}','logs')">Logs</button></div></div>`).join('')}
+function renderFeed(){document.getElementById('feed-list').innerHTML=feedData.map((f,i)=>`<div class="feed-item ${f.type}" data-feed-type="${f.type}" onclick="toggleFeedItem(${i})"><span class="feed-time">${f.time}</span><div class="feed-content"><div class="feed-msg">${f.msg}</div><div class="feed-detail" id="feed-detail-${i}">${f.detail}</div></div></div>`).join('')}
+function renderFrameworks(){document.getElementById('fw-grid').innerHTML=frameworkData.map((fw,i)=>`<div class="fw-pill ${fw.cls}" onclick="fwClick(${i})" title="${fw.desc}"><div class="fw-pill-name"><span class="fw-pulse ${fw.pulse}"></span>${fw.name}</div><div class="fw-pill-status">${fw.status}</div></div>`).join('')}
+function renderRevenue(){document.getElementById('rev-grid').innerHTML=revenueData.map((r,i)=>`<div class="rev-item ${r.cls}" onclick="toggleRevenue(${i})" id="rev-item-${i}"><div class="rev-source">${r.source}</div><div class="rev-amount ${r.amtClass}">${r.amount}</div><div class="rev-bar-track"><div class="rev-bar-fill ${r.barCls}" style="--rev-bar-w:${r.barW}"></div></div><div class="rev-detail" id="rev-detail-${i}">${r.detail.map(d=>`<div class="rev-detail-row"><span class="label">${d.label}</span><span class="val">${d.val}</span></div>`).join('')}</div></div>`).join('')}
+function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
+function navTo(el){const id=el.getAttribute('data-section');document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelectorAll(`.nav-item[data-section="${id}"]`).forEach(n=>n.classList.add('active'))}
+const sectionIds=['metrics-section','agents-section','feed-section','perf-section','frameworks-section','revenue-section'];
+const navObserver=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){const id=entry.target.id;document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelectorAll(`.nav-item[data-section="${id}"]`).forEach(n=>n.classList.add('active'))}})},{threshold:0.3,rootMargin:'-80px 0px -40% 0px'});
+function toggleMobileMenu(){const h=document.querySelector('.hamburger'),d=document.querySelector('.mobile-drawer'),o=document.querySelector('.mobile-overlay'),open=d.classList.contains('open');h.classList.toggle('open');d.classList.toggle('open');o.classList.toggle('open');o.style.display=open?'none':'block'}
+function toggleMetric(card){const b=card.querySelector('.metric-breakdown'),was=b.classList.contains('open');document.querySelectorAll('.metric-breakdown').forEach(x=>x.classList.remove('open'));if(!was)b.classList.add('open')}
+function toggleAgent(i){const d=document.getElementById(`agent-detail-${i}`),r=document.getElementById(`agent-row-${i}`),was=d.classList.contains('open');document.querySelectorAll('.agent-detail').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.agent-row').forEach(x=>x.classList.remove('expanded'));if(!was){d.classList.add('open');r.classList.add('expanded')}}
+function agentAction(name,action){const msgs={restart:{text:`Restarting ${name}...`,type:'info'},stop:{text:`Stopping ${name}...`,type:'warning'},logs:{text:`Fetching logs for ${name}...`,type:'info'}};showToast(msgs[action].text,msgs[action].type);setTimeout(()=>{if(action==='restart')showToast(`${name} restarted successfully`,'success');if(action==='stop')showToast(`${name} stopped`,'warning');if(action==='logs')showToast(`${name}: last 50 lines loaded`,'success')},1200)}
+function filterFeed(el){const type=el.getAttribute('data-type');document.querySelectorAll('.feed-filter').forEach(f=>f.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.feed-item').forEach(item=>item.classList.toggle('hidden',type!=='all'&&item.getAttribute('data-feed-type')!==type))}
+function toggleFeedItem(i){const d=document.getElementById(`feed-detail-${i}`),was=d.classList.contains('open');document.querySelectorAll('.feed-detail').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.feed-item').forEach(x=>x.classList.remove('highlighted'));if(!was){d.classList.add('open');d.closest('.feed-item').classList.add('highlighted')}}
+function fwClick(i){const fw=frameworkData[i];showToast(`${fw.name}: ${fw.status} — ${fw.desc}`,fw.cls==='active'?'success':fw.cls==='warning'?'warning':'info')}
+function toggleRevenue(i){const d=document.getElementById(`rev-detail-${i}`),it=document.getElementById(`rev-item-${i}`),was=d.classList.contains('open');document.querySelectorAll('.rev-detail').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.rev-item').forEach(x=>x.classList.remove('selected'));if(!was){d.classList.add('open');it.classList.add('selected')}}
+function switchPerfTab(el,tab){document.querySelectorAll('.perf-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');showToast(`Showing ${tab.toUpperCase()} performance data`,'info')}
+function showChartTip(idx,e){const tip=document.getElementById('chart-tip'),wrap=document.getElementById('perf-wrap'),rect=wrap.getBoundingClientRect(),x=e.clientX-rect.left;tip.style.left=Math.min(Math.max(x,60),rect.width-60)+'px';document.getElementById('ct-day').textContent=`${chartDays[idx]} Mar ${23+idx}`;document.getElementById('ct-tasks').textContent=chartTasks[idx];document.getElementById('ct-agents').textContent=chartAgents[idx];document.getElementById('ct-rev').textContent=`$${chartRev[idx].toFixed(2)}`;tip.classList.add('visible')}
+function hideChartTip(){document.getElementById('chart-tip').classList.remove('visible')}
+function showToast(msg,type='info'){const c=document.getElementById('toast-container'),t=document.createElement('div');t.className=`toast toast-${type}`;t.textContent=msg;c.appendChild(t);requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400)},3000)}
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-US',{hour12:false})}
+setInterval(updateClock,1000);updateClock();
+function liveTick(){const el=document.getElementById('kpi-tasks');if(!el)return;if(Math.random()>0.85){el.textContent=parseInt(el.textContent)+1;showToast('New task completed by coordinator-1','success')}}
+setInterval(liveTick,12000);
+const revealObs=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible','is-visible');revealObs.unobserve(entry.target)}})},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+sectionIds.forEach(id=>{const el=document.getElementById(id);if(el)navObserver.observe(el)});
+renderAgents();renderFeed();renderFrameworks();renderRevenue();
 </script>
 </body>
 </html>
