@@ -887,13 +887,54 @@ let pollingInterval=null;
 let dataConfig={token:'',chatId:'',interval:30};
 
 function loadDataConfig(){
+  // Auto-load from localStorage, or use known token
   const saved=localStorage.getItem('clx_data_config');
   if(saved){
-    dataConfig=JSON.parse(saved);
-    if(dataConfig.token&&dataConfig.chatId){
+    const parsed=JSON.parse(saved);
+    if(parsed.token&&parsed.chatId){
+      dataConfig=parsed;
       startPolling();
+      return;
     }
   }
+  // Pre-configure with known bot token — awaiting chat ID
+  dataConfig.token='8759765711:AAERfXknaJbTAuAS1j_2J_jiC3D9Co8VDhI';
+  // Chat ID will be discovered from first message or set manually
+  discoverChatId();
+}
+
+async function discoverChatId(){
+  if(!dataConfig.token) return;
+  try{
+    const res=await fetch(`https://api.telegram.org/bot${dataConfig.token}/getUpdates?limit=5&offset=-5`);
+    const data=await res.json();
+    if(data.ok&&data.result.length>0){
+      // Find the most recent message with a chat ID
+      for(const upd of data.result.reverse()){
+        const msg=upd.message||upd.channel_post||upd.edited_message;
+        if(msg&&msg.chat&&msg.chat.id){
+          dataConfig.chatId=String(msg.chat.id);
+          localStorage.setItem('clx_data_config',JSON.stringify(dataConfig));
+          updateDataStatus('live',`Live — @Claude_AGI_bot (chat ${dataConfig.chatId})`);
+          startPolling();
+          showToast('Telegram connected — live data active!','success');
+          addNotification({title:'Telegram Connected',body:`@Claude_AGI_bot connected. Chat ID: ${dataConfig.chatId}. Polling every 30s.`,time:nowTime(),type:'info-notif'});
+          return;
+        }
+      }
+    }
+    // No messages yet — polling will retry
+    updateDataStatus('polling','Waiting for first message to @Claude_AGI_bot');
+    // Retry discovery every 10 seconds
+    setTimeout(discoverChatId, 10000);
+  }catch(e){
+    updateDataStatus('offline','Error connecting to @Claude_AGI_bot');
+  }
+}
+
+function addNotification(n){
+  notifications.unshift(n);
+  renderNotifs();
 }
 
 function saveDataConfig(){
@@ -909,41 +950,103 @@ function saveDataConfig(){
 }
 
 async function pollTelegram(){
-  if(!dataConfig.token||!dataConfig.chatId) return;
+  if(!dataConfig.token) return;
   try{
-    const url=`https://api.telegram.org/bot${dataConfig.token}/getUpdates?limit=10&offset=-10`;
+    const offset=localStorage.getItem('clx_tg_offset')||'-10';
+    const url=`https://api.telegram.org/bot${dataConfig.token}/getUpdates?limit=20&offset=${offset}`;
     const res=await fetch(url);
     const data=await res.json();
-    if(data.ok&&data.result.length>0){
-      processUpdates(data.result);
-      updateDataStatus('live','Live — Telegram API');
+    if(data.ok){
+      // If we got chat ID from updates, store it
+      if(data.result.length>0&&!dataConfig.chatId){
+        const msg=data.result[0].message||data.result[0].channel_post;
+        if(msg&&msg.chat) {
+          dataConfig.chatId=String(msg.chat.id);
+          localStorage.setItem('clx_data_config',JSON.stringify(dataConfig));
+          updateDataStatus('live',`Live — @Claude_AGI_bot`);
+        }
+      }
+      if(data.result.length>0){
+        processUpdates(data.result);
+        updateDataStatus('live',`Live — @Claude_AGI_bot`);
+      } else {
+        updateDataStatus('live',`Live — @Claude_AGI_bot (no new messages)`);
+      }
     }
   }catch(e){
-    updateDataStatus('offline','Error connecting to Telegram');
+    updateDataStatus('offline','Error connecting to @Claude_AGI_bot');
     console.warn('Telegram poll error:',e);
   }
 }
 
 function processUpdates(updates){
   const newItems=[];
+  let latestOffset=0;
   updates.forEach(u=>{
-    const msg=u.message||u.channel_post;
+    if(u.update_id>latestOffset) latestOffset=u.update_id;
+    const msg=u.message||u.channel_post||u.edited_message;
     if(!msg||!msg.text) return;
     const text=msg.text;
     const time=new Date(msg.date*1000).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
-    if(text.includes('/status')||text.includes('agent')||text.includes('task')){
-      const type=text.includes('error')||text.includes('fail')?'error':text.includes('complete')||text.includes('success')?'success':'info';
-      const exists=feedData.some(f=>f.msg===text.slice(0,80));
-      if(!exists){newItems.push({time,msg:text.slice(0,100),type,detail:text});}
+
+    // Detect command type and assign feed category
+    let type='info';
+    let displayMsg=text.slice(0,120);
+    let detail=text;
+
+    if(text.includes('error')||text.includes('fail')||text.includes('Error')||text.includes('OVERFLOW')||text.includes('409')) type='error';
+    else if(text.includes('complete')||text.includes('success')||text.includes('deployed')||text.includes('Done')||text.includes('✅')) type='success';
+    else if(text.includes('warn')||text.includes('slow')||text.includes('⚠')) type='warning';
+
+    // Parse /status style responses to update agent data
+    if(text.toLowerCase().startsWith('/status')||text.toLowerCase().includes('status:')) {
+      parseStatusResponse(text);
     }
+    // Parse /report responses
+    if(text.toLowerCase().startsWith('/report')||text.includes('Daily Summary')||text.includes('Tasks:')) {
+      parseReportResponse(text);
+    }
+
+    const exists=feedData.some(f=>f.msg===displayMsg&&f.time===time);
+    if(!exists){newItems.push({time,msg:displayMsg,type,detail});}
   });
+
   if(newItems.length>0){
-    feedData=[...newItems,...feedData].slice(0,30);
-    renderFeed();
-    showToast(`${newItems.length} new update(s) from Telegram`,'info');
+    feedData=[...newItems,...feedData].slice(0,50);
+    renderFeed(activeFilter);
+    showToast(`${newItems.length} new message(s) from @Claude_AGI_bot`,'info');
   }
   const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
   document.getElementById('ds-last-update').textContent=now;
+  // Store next offset to avoid re-processing
+  if(latestOffset>0) localStorage.setItem('clx_tg_offset',latestOffset+1);
+}
+
+function parseStatusResponse(text){
+  // Try to extract agent counts from /status response
+  // Looks for patterns like "Running: 2", "Idle: 5", "Error: 1" etc
+  const runMatch=text.match(/running[:\s]+(\d+)/i);
+  const idleMatch=text.match(/idle[:\s]+(\d+)/i);
+  const taskMatch=text.match(/tasks?[:\s]+(\d+)/i);
+  if(runMatch){
+    const el=document.getElementById('kpi-agents');
+    if(el) el.textContent=runMatch[1];
+  }
+  if(taskMatch){
+    const el=document.getElementById('kpi-tasks');
+    const sb=document.getElementById('sb-tasks');
+    if(el){el.textContent=taskMatch[1];if(sb)sb.textContent=taskMatch[1];}
+  }
+}
+
+function parseReportResponse(text){
+  // Extract task count from report
+  const taskMatch=text.match(/total[:\s]+(\d+)\s*tasks?/i)||text.match(/completed[:\s]+(\d+)/i);
+  if(taskMatch){
+    const el=document.getElementById('kpi-tasks');
+    const sb=document.getElementById('sb-tasks');
+    if(el){el.textContent=taskMatch[1];if(sb)sb.textContent=taskMatch[1];}
+  }
 }
 
 function startPolling(){
