@@ -101,6 +101,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      cursor: pointer;
     }
 
     .logo span {
@@ -111,6 +112,40 @@
     @keyframes cursorBlink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
+    }
+
+    /* === NAV === */
+    .header-nav {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    .nav-item {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: var(--dim);
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      border: 1px solid transparent;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--border-hover);
+    }
+
+    .nav-item.active {
+      color: var(--cyan);
+      background: var(--cyan-dim);
+      border-color: rgba(6, 182, 212, 0.2);
     }
 
     .header-status {
@@ -162,6 +197,77 @@
       letter-spacing: 0.5px;
     }
 
+    /* === HAMBURGER (MOBILE) === */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      z-index: 200;
+    }
+
+    .hamburger:hover { background: rgba(255,255,255,0.06); }
+
+    .hamburger .bar {
+      width: 20px;
+      height: 2px;
+      background: var(--dim);
+      border-radius: 2px;
+      transition: all 0.3s var(--ease);
+    }
+
+    .hamburger.open .bar:nth-child(1) { transform: translateY(6px) rotate(45deg); background: var(--cyan); }
+    .hamburger.open .bar:nth-child(2) { opacity: 0; }
+    .hamburger.open .bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); background: var(--cyan); }
+
+    /* === MOBILE NAV DRAWER === */
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: -280px;
+      width: 280px;
+      height: 100vh;
+      background: rgba(10, 10, 15, 0.97);
+      backdrop-filter: blur(30px);
+      border-left: 1px solid var(--border);
+      z-index: 150;
+      padding: 5rem 1.5rem 2rem;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: right 0.4s var(--ease);
+    }
+
+    .mobile-drawer.open { right: 0; }
+
+    .mobile-drawer .nav-item {
+      font-size: 0.85rem;
+      padding: 0.75rem 1rem;
+      width: 100%;
+    }
+
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 140;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .mobile-overlay.open { opacity: 1; }
+
+    @media (max-width: 900px) {
+      .header-nav { display: none; }
+      .hamburger { display: flex; }
+      .mobile-drawer { display: flex; }
+      header { padding: 1rem 1.5rem; }
+    }
+
     /* === MAIN GRID === */
     .grid {
       position: relative;
@@ -197,7 +303,6 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
-    /* Top accent line */
     .card::before {
       content: '';
       position: absolute;
@@ -217,7 +322,6 @@
     .card-green::before { background: linear-gradient(90deg, var(--green), transparent 80%); }
     .card-red::before { background: linear-gradient(90deg, var(--red), transparent 80%); }
 
-    /* Inner glow on hover */
     .card::after {
       content: '';
       position: absolute;
@@ -264,33 +368,10 @@
     }
 
     /* === GRADIENT TEXT === */
-    .grad-cyan {
-      background: linear-gradient(135deg, var(--cyan), #67E8F9);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .grad-green {
-      background: linear-gradient(135deg, var(--green), #86EFAC);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .grad-orange {
-      background: linear-gradient(135deg, var(--orange), #FDBA74);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .grad-purple {
-      background: linear-gradient(135deg, var(--purple), #C084FC);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+    .grad-cyan { background: linear-gradient(135deg, var(--cyan), #67E8F9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .grad-green { background: linear-gradient(135deg, var(--green), #86EFAC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .grad-orange { background: linear-gradient(135deg, var(--orange), #FDBA74); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .grad-purple { background: linear-gradient(135deg, var(--purple), #C084FC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
     /* === METRIC CARDS === */
     .metrics {
@@ -303,7 +384,10 @@
     @media (max-width: 1200px) { .metrics { grid-column: span 2; grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 768px) { .metrics { grid-column: span 1; grid-template-columns: repeat(2, 1fr); } }
 
-    .metrics .card { padding: 1.75rem 2rem; }
+    .metrics .card {
+      padding: 1.75rem 2rem;
+      cursor: pointer;
+    }
 
     .card-value span {
       font-size: 1rem;
@@ -312,6 +396,35 @@
       font-weight: 500;
       letter-spacing: 0;
     }
+
+    /* === METRIC BREAKDOWN PANEL === */
+    .metric-breakdown {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s var(--ease), margin-top 0.3s var(--ease), opacity 0.3s;
+      opacity: 0;
+      margin-top: 0;
+    }
+
+    .metric-breakdown.open {
+      max-height: 300px;
+      opacity: 1;
+      margin-top: 1rem;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+
+    .breakdown-row:last-child { border-bottom: none; }
+
+    .breakdown-label { color: var(--dim); font-family: var(--mono); font-size: 0.7rem; }
+    .breakdown-value { color: var(--white); font-family: var(--mono); font-weight: 600; font-size: 0.75rem; }
 
     /* === AGENT LIST === */
     .agents-card { grid-column: span 2; grid-row: span 2; }
@@ -335,7 +448,7 @@
       border-radius: 14px;
       border: 1px solid var(--border);
       transition: all 0.35s var(--ease);
-      cursor: default;
+      cursor: pointer;
     }
 
     .agent-row:hover {
@@ -343,6 +456,11 @@
       background: rgba(168, 85, 247, 0.04);
       transform: translateX(4px);
       box-shadow: 0 4px 24px rgba(168, 85, 247, 0.06);
+    }
+
+    .agent-row.expanded {
+      border-color: rgba(168, 85, 247, 0.35);
+      background: rgba(168, 85, 247, 0.06);
     }
 
     .agent-name {
@@ -371,51 +489,143 @@
       white-space: nowrap;
     }
 
-    .s-running {
+    .s-running { color: var(--green); border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.08); box-shadow: 0 0 12px rgba(34, 197, 94, 0.1); animation: statusGlow 2.5s ease-in-out infinite; }
+    @keyframes statusGlow { 0%, 100% { box-shadow: 0 0 12px rgba(34, 197, 94, 0.1); } 50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); } }
+    .s-idle { color: var(--yellow); border-color: rgba(234, 179, 8, 0.2); background: rgba(234, 179, 8, 0.05); }
+    .s-completed { color: var(--cyan); border-color: rgba(6, 182, 212, 0.2); background: rgba(6, 182, 212, 0.05); }
+    .s-error { color: var(--red); border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); animation: errorPulse 3s ease-in-out infinite; }
+    @keyframes errorPulse { 0%, 100% { background: rgba(239, 68, 68, 0.05); } 50% { background: rgba(239, 68, 68, 0.1); } }
+
+    /* === AGENT DETAIL PANEL === */
+    .agent-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s var(--ease), padding 0.3s, opacity 0.3s;
+      opacity: 0;
+      background: rgba(10, 10, 15, 0.5);
+      border-radius: 0 0 14px 14px;
+      margin-top: -0.25rem;
+      margin-bottom: 0.25rem;
+      border: 1px solid transparent;
+      border-top: none;
+    }
+
+    .agent-detail.open {
+      max-height: 250px;
+      padding: 1rem 1.15rem;
+      opacity: 1;
+      border-color: rgba(168, 85, 247, 0.15);
+    }
+
+    .agent-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .agent-detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .agent-detail-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .agent-detail-value {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--white);
+    }
+
+    .agent-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .agent-action-btn {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid;
+      cursor: pointer;
+      transition: all 0.25s var(--ease);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: transparent;
+    }
+
+    .agent-action-btn.restart {
       color: var(--green);
       border-color: rgba(34, 197, 94, 0.3);
-      background: rgba(34, 197, 94, 0.08);
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.1);
-      animation: statusGlow 2.5s ease-in-out infinite;
+    }
+    .agent-action-btn.restart:hover {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.5);
     }
 
-    @keyframes statusGlow {
-      0%, 100% { box-shadow: 0 0 12px rgba(34, 197, 94, 0.1); }
-      50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
-    }
-
-    .s-idle {
-      color: var(--yellow);
-      border-color: rgba(234, 179, 8, 0.2);
-      background: rgba(234, 179, 8, 0.05);
-    }
-
-    .s-completed {
-      color: var(--cyan);
-      border-color: rgba(6, 182, 212, 0.2);
-      background: rgba(6, 182, 212, 0.05);
-    }
-
-    .s-error {
+    .agent-action-btn.stop {
       color: var(--red);
-      border-color: rgba(239, 68, 68, 0.2);
-      background: rgba(239, 68, 68, 0.05);
-      animation: errorPulse 3s ease-in-out infinite;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .agent-action-btn.stop:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.5);
     }
 
-    @keyframes errorPulse {
-      0%, 100% { background: rgba(239, 68, 68, 0.05); }
-      50% { background: rgba(239, 68, 68, 0.1); }
+    .agent-action-btn.logs {
+      color: var(--cyan);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .agent-action-btn.logs:hover {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.5);
     }
 
     /* === TASK FEED === */
     .feed-card { grid-column: span 2; grid-row: span 2; }
 
+    .feed-filter-bar {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .feed-filter {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.25s var(--ease);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--dim);
+      background: transparent;
+      user-select: none;
+    }
+
+    .feed-filter:hover { border-color: var(--border-hover); color: var(--white); }
+    .feed-filter.active { color: var(--cyan); border-color: rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.08); }
+
     .feed {
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
-      max-height: 440px;
+      max-height: 400px;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -427,6 +637,7 @@
       border-left: 2px solid var(--border);
       border-radius: 0 10px 10px 0;
       transition: all 0.35s var(--ease);
+      cursor: pointer;
     }
 
     .feed-item:hover {
@@ -443,6 +654,13 @@
     .feed-item.error { border-left-color: var(--red); }
     .feed-item.error:hover { background: rgba(239, 68, 68, 0.03); }
 
+    .feed-item.hidden { display: none; }
+
+    .feed-item.highlighted {
+      background: rgba(6, 182, 212, 0.06);
+      border-left-width: 3px;
+    }
+
     .feed-time {
       font-family: var(--mono);
       font-size: 0.68rem;
@@ -453,11 +671,32 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .feed-content { flex: 1; }
+
     .feed-msg {
       font-size: 0.8rem;
       color: rgba(226, 232, 240, 0.85);
       line-height: 1.6;
       font-weight: 400;
+    }
+
+    .feed-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s var(--ease), opacity 0.3s;
+      opacity: 0;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--dim);
+      line-height: 1.7;
+    }
+
+    .feed-detail.open {
+      max-height: 120px;
+      opacity: 1;
+      margin-top: 0.4rem;
+      padding-top: 0.4rem;
+      border-top: 1px solid var(--border);
     }
 
     /* === FRAMEWORKS === */
@@ -479,26 +718,18 @@
       padding: 1rem;
       text-align: center;
       transition: all 0.4s var(--ease);
-      cursor: default;
+      cursor: pointer;
     }
 
-    .fw-item.active {
-      border-color: rgba(34, 197, 94, 0.15);
-    }
+    .fw-item.active { border-color: rgba(34, 197, 94, 0.15); }
+    .fw-item.active:hover { border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.04); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34, 197, 94, 0.06); }
+    .fw-item.inactive { opacity: 0.35; }
+    .fw-item.inactive:hover { opacity: 0.6; transform: translateY(-1px); }
 
-    .fw-item.active:hover {
-      border-color: rgba(34, 197, 94, 0.3);
-      background: rgba(34, 197, 94, 0.04);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(34, 197, 94, 0.06);
-    }
-
-    .fw-item.inactive {
-      opacity: 0.35;
-    }
-
-    .fw-item.inactive:hover {
-      opacity: 0.5;
+    .fw-item.selected {
+      border-color: rgba(6, 182, 212, 0.4) !important;
+      background: rgba(6, 182, 212, 0.06) !important;
+      opacity: 1 !important;
     }
 
     .fw-name {
@@ -517,7 +748,6 @@
 
     .fw-item.active .fw-status { color: rgba(34, 197, 94, 0.6); }
 
-    /* Active indicator dot */
     .fw-item.active .fw-name::before {
       content: '';
       display: inline-block;
@@ -529,6 +759,41 @@
       vertical-align: middle;
       box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
       animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Framework detail tooltip */
+    .fw-tooltip {
+      position: fixed;
+      z-index: 200;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-hover);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      max-width: 280px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.25s, transform 0.25s var(--ease);
+    }
+
+    .fw-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .fw-tooltip-title {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      color: var(--cyan);
+    }
+
+    .fw-tooltip-desc {
+      font-size: 0.72rem;
+      color: var(--dim);
+      line-height: 1.5;
     }
 
     /* === REVENUE === */
@@ -547,12 +812,18 @@
       padding: 1.25rem;
       border: 1px solid var(--border);
       transition: all 0.4s var(--ease);
-      cursor: default;
+      cursor: pointer;
+      position: relative;
     }
 
     .rev-item:hover {
       border-color: var(--border-hover);
       transform: translateY(-1px);
+    }
+
+    .rev-item.selected {
+      border-color: rgba(249, 115, 22, 0.3);
+      background: rgba(249, 115, 22, 0.04);
     }
 
     .rev-source {
@@ -581,35 +852,82 @@
 
     .rev-amount.zero { color: var(--dim); }
 
+    .rev-detail {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.3s var(--ease), opacity 0.3s, margin-top 0.3s;
+    }
+
+    .rev-detail.open {
+      max-height: 150px;
+      opacity: 1;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .rev-detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.2rem 0;
+    }
+
+    .rev-detail-row .label { color: var(--dim); }
+    .rev-detail-row .val { color: var(--white); }
+
+    /* === TOAST === */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 300;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-hover);
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      color: var(--white);
+      transform: translateX(120%);
+      opacity: 0;
+      transition: all 0.4s var(--ease);
+      max-width: 340px;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast.toast-success { border-left: 3px solid var(--green); }
+    .toast.toast-info { border-left: 3px solid var(--cyan); }
+    .toast.toast-warning { border-left: 3px solid var(--orange); }
+    .toast.toast-error { border-left: 3px solid var(--red); }
+
     /* === SCROLLBAR === */
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
 
     /* === SCROLL REVEAL ANIMATIONS === */
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: 0.05s; }
     .reveal-delay-2 { transition-delay: 0.1s; }
     .reveal-delay-3 { transition-delay: 0.15s; }
     .reveal-delay-4 { transition-delay: 0.2s; }
 
-    /* === STAGGER CHILDREN === */
     .metrics .card:nth-child(1) { transition-delay: 0s; }
     .metrics .card:nth-child(2) { transition-delay: 0.06s; }
     .metrics .card:nth-child(3) { transition-delay: 0.12s; }
@@ -628,17 +946,11 @@
     }
 
     /* === SELECTION === */
-    ::selection {
-      background: rgba(168, 85, 247, 0.25);
-      color: var(--white);
-    }
+    ::selection { background: rgba(168, 85, 247, 0.25); color: var(--white); }
 
     /* === REDUCED MOTION === */
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
       .reveal { opacity: 1; transform: none; }
     }
   </style>
@@ -646,107 +958,120 @@
 <body>
 
 <header>
-  <div class="logo">CLX<span>_</span>COMMAND</div>
+  <div class="logo" onclick="scrollToTop()">CLX<span>_</span>COMMAND</div>
+  <nav class="header-nav">
+    <div class="nav-item active" data-section="metrics-section" onclick="navTo(this)">Metrics</div>
+    <div class="nav-item" data-section="agents-section" onclick="navTo(this)">Agents</div>
+    <div class="nav-item" data-section="feed-section" onclick="navTo(this)">Feed</div>
+    <div class="nav-item" data-section="frameworks-section" onclick="navTo(this)">Frameworks</div>
+    <div class="nav-item" data-section="revenue-section" onclick="navTo(this)">Revenue</div>
+  </nav>
   <div class="header-status">
     <div class="status-pill status-online">ONLINE</div>
     <div class="time" id="clock">--:--:--</div>
+    <div class="hamburger" onclick="toggleMobileMenu()">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
   </div>
 </header>
+
+<!-- Mobile drawer -->
+<div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-drawer">
+  <div class="nav-item active" data-section="metrics-section" onclick="navTo(this); toggleMobileMenu()">Metrics</div>
+  <div class="nav-item" data-section="agents-section" onclick="navTo(this); toggleMobileMenu()">Agents</div>
+  <div class="nav-item" data-section="feed-section" onclick="navTo(this); toggleMobileMenu()">Feed</div>
+  <div class="nav-item" data-section="frameworks-section" onclick="navTo(this); toggleMobileMenu()">Frameworks</div>
+  <div class="nav-item" data-section="revenue-section" onclick="navTo(this); toggleMobileMenu()">Revenue</div>
+</div>
 
 <div class="grid">
 
   <!-- METRICS ROW -->
-  <div class="metrics">
-    <div class="card card-cyan reveal">
+  <div class="metrics" id="metrics-section">
+    <div class="card card-cyan reveal" onclick="toggleMetric(this)">
       <div class="card-label">Active Agents</div>
       <div class="card-value grad-cyan">20</div>
       <div class="card-sub">Swarm: learning-loop-fix</div>
+      <div class="metric-breakdown">
+        <div class="breakdown-row"><span class="breakdown-label">Running</span><span class="breakdown-value" style="color:var(--green)">2</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Idle</span><span class="breakdown-value" style="color:var(--yellow)">5</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Completed</span><span class="breakdown-value" style="color:var(--cyan)">2</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Error / Overflow</span><span class="breakdown-value" style="color:var(--red)">5</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Other swarm</span><span class="breakdown-value">6</span></div>
+      </div>
     </div>
-    <div class="card card-green reveal">
+    <div class="card card-green reveal" onclick="toggleMetric(this)">
       <div class="card-label">Compliance Score</div>
       <div class="card-value grad-green">6.2<span>/10</span></div>
       <div class="card-sub">Needs improvement</div>
+      <div class="metric-breakdown">
+        <div class="breakdown-row"><span class="breakdown-label">Hook enforcement</span><span class="breakdown-value" style="color:var(--green)">9/10</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Context discipline</span><span class="breakdown-value" style="color:var(--red)">3/10</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Memory hygiene</span><span class="breakdown-value" style="color:var(--yellow)">5/10</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Error recovery</span><span class="breakdown-value" style="color:var(--yellow)">7/10</span></div>
+      </div>
     </div>
-    <div class="card card-orange reveal">
+    <div class="card card-orange reveal" onclick="toggleMetric(this)">
       <div class="card-label">Tasks Completed</div>
       <div class="card-value grad-orange">47</div>
       <div class="card-sub">Today (Mar 29-30)</div>
+      <div class="metric-breakdown">
+        <div class="breakdown-row"><span class="breakdown-label">Engineering</span><span class="breakdown-value">18</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Marketing / SEO</span><span class="breakdown-value">12</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Architecture</span><span class="breakdown-value">8</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Automation</span><span class="breakdown-value">5</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Debugging</span><span class="breakdown-value">4</span></div>
+      </div>
     </div>
-    <div class="card card-purple reveal">
+    <div class="card card-purple reveal" onclick="toggleMetric(this)">
       <div class="card-label">Revenue</div>
       <div class="card-value grad-purple">$0.85</div>
       <div class="card-sub">Kalshi trade +14%</div>
+      <div class="metric-breakdown">
+        <div class="breakdown-row"><span class="breakdown-label">Kalshi trades</span><span class="breakdown-value" style="color:var(--green)">+$0.85</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Gumroad</span><span class="breakdown-value">$0.00</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Etsy</span><span class="breakdown-value">$0.00</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Amazon Aff.</span><span class="breakdown-value">$0.00</span></div>
+        <div class="breakdown-row"><span class="breakdown-label">Total (lifetime)</span><span class="breakdown-value" style="color:var(--green)">$0.85</span></div>
+      </div>
     </div>
   </div>
 
   <!-- AGENTS -->
-  <div class="card card-purple agents-card reveal">
+  <div class="card card-purple agents-card reveal" id="agents-section">
     <div class="card-label">Agent Registry</div>
-    <div class="agent-list">
-      <div class="agent-row"><div><div class="agent-name">coordinator-1</div><div class="agent-domain">architecture</div></div><span class="agent-status s-running">RUNNING</span></div>
-      <div class="agent-row"><div><div class="agent-name">hooks-enforcer</div><div class="agent-domain">engineering</div></div><span class="agent-status s-idle">IDLE</span></div>
-      <div class="agent-row"><div><div class="agent-name">compaction-survivor</div><div class="agent-domain">engineering</div></div><span class="agent-status s-idle">IDLE</span></div>
-      <div class="agent-row"><div><div class="agent-name">claude-md-redesign</div><div class="agent-domain">architecture</div></div><span class="agent-status s-completed">COMPLETED</span></div>
-      <div class="agent-row"><div><div class="agent-name">precompact-hook</div><div class="agent-domain">engineering</div></div><span class="agent-status s-completed">COMPLETED</span></div>
-      <div class="agent-row"><div><div class="agent-name">n8n-automation</div><div class="agent-domain">automation</div></div><span class="agent-status s-idle">IDLE</span></div>
-      <div class="agent-row"><div><div class="agent-name">telegram-debug</div><div class="agent-domain">debugging</div></div><span class="agent-status s-error">ERROR</span></div>
-      <div class="agent-row"><div><div class="agent-name">obsidian-optimizer</div><div class="agent-domain">knowledge-mgmt</div></div><span class="agent-status s-idle">IDLE</span></div>
-      <div class="agent-row"><div><div class="agent-name">gemini-king-mode</div><div class="agent-domain">research</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
-      <div class="agent-row"><div><div class="agent-name">memory-tiers</div><div class="agent-domain">architecture</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
-      <div class="agent-row"><div><div class="agent-name">self-audit</div><div class="agent-domain">quality</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
-      <div class="agent-row"><div><div class="agent-name">session-management</div><div class="agent-domain">engineering</div></div><span class="agent-status s-error">CTX OVERFLOW</span></div>
-      <div class="agent-row"><div><div class="agent-name">business-reliability</div><div class="agent-domain">business</div></div><span class="agent-status s-idle">IDLE</span></div>
-      <div class="agent-row"><div><div class="agent-name">consensus-builder</div><div class="agent-domain">architecture</div></div><span class="agent-status s-running">WAITING</span></div>
+    <div class="agent-list" id="agent-list">
     </div>
   </div>
 
   <!-- TASK FEED -->
-  <div class="card card-cyan feed-card reveal">
+  <div class="card card-cyan feed-card reveal" id="feed-section">
     <div class="card-label">Activity Feed</div>
-    <div class="feed">
-      <div class="feed-item success"><span class="feed-time">05:25</span><div class="feed-msg">claude-md-redesign: Rewrote .claude.md — 209 lines → 95 enforceable gates</div></div>
-      <div class="feed-item success"><span class="feed-time">05:22</span><div class="feed-msg">precompact-hook: Deployed PreCompact + SessionStart hooks to settings.json</div></div>
-      <div class="feed-item error"><span class="feed-time">05:21</span><div class="feed-msg">6 Haiku agents failed: prompt too long (context overflow — need context-mode)</div></div>
-      <div class="feed-item info"><span class="feed-time">05:17</span><div class="feed-msg">Swarm initialized: 20 agents spawned for learning-loop-fix brainstorm</div></div>
-      <div class="feed-item success"><span class="feed-time">04:54</span><div class="feed-msg">Telegram bot commands updated (10 framework commands set)</div></div>
-      <div class="feed-item info"><span class="feed-time">04:27</span><div class="feed-msg">Obsidian brainstorm session logged: 15 timestamped entries</div></div>
-      <div class="feed-item success"><span class="feed-time">02:40</span><div class="feed-msg">Tweet posted on @casbattle with storefront link preview</div></div>
-      <div class="feed-item success"><span class="feed-time">02:20</span><div class="feed-msg">Instagram bio updated: theresetmethod.live</div></div>
-      <div class="feed-item success"><span class="feed-time">01:55</span><div class="feed-msg">Google Search Console: property verified + sitemap submitted</div></div>
-      <div class="feed-item success"><span class="feed-time">01:50</span><div class="feed-msg">SEO deployed: meta tags, schema.org, OG cards, robots.txt</div></div>
-      <div class="feed-item success"><span class="feed-time">01:48</span><div class="feed-msg">Amazon product images added to 6 tool cards on storefront</div></div>
-      <div class="feed-item success"><span class="feed-time">01:20</span><div class="feed-msg">Etsy: 3 listings published on TheResetPrintables ($2.99/$4.99/$9.99)</div></div>
-      <div class="feed-item success"><span class="feed-time">01:00</span><div class="feed-msg">Storefront v3 deployed: awwwards-level redesign with scroll animations</div></div>
-      <div class="feed-item success"><span class="feed-time">00:45</span><div class="feed-msg">DNS configured: CNAME www + A record @ → Vercel</div></div>
-      <div class="feed-item success"><span class="feed-time">00:38</span><div class="feed-msg">theresetmethod.live deployed to Vercel via GitHub import</div></div>
-      <div class="feed-item success"><span class="feed-time">00:30</span><div class="feed-msg">Pinterest Day 3 warmup: 10 repins across 3 search terms</div></div>
+    <div class="feed-filter-bar">
+      <div class="feed-filter active" data-type="all" onclick="filterFeed(this)">All</div>
+      <div class="feed-filter" data-type="success" onclick="filterFeed(this)">Success</div>
+      <div class="feed-filter" data-type="info" onclick="filterFeed(this)">Info</div>
+      <div class="feed-filter" data-type="error" onclick="filterFeed(this)">Errors</div>
+      <div class="feed-filter" data-type="warning" onclick="filterFeed(this)">Warnings</div>
+    </div>
+    <div class="feed" id="feed-list">
     </div>
   </div>
 
   <!-- FRAMEWORKS -->
-  <div class="card card-green fw-card reveal">
+  <div class="card card-green fw-card reveal" id="frameworks-section">
     <div class="card-label">Framework Status</div>
-    <div class="fw-grid">
-      <div class="fw-item active"><div class="fw-name">Telegram</div><div class="fw-status">Connected</div></div>
-      <div class="fw-item active"><div class="fw-name">Obsidian</div><div class="fw-status">Port 22360</div></div>
-      <div class="fw-item active"><div class="fw-name">Chrome</div><div class="fw-status">10 tabs</div></div>
-      <div class="fw-item inactive"><div class="fw-name">Context-Mode</div><div class="fw-status">Not enforced</div></div>
-      <div class="fw-item active"><div class="fw-name">Ruflo</div><div class="fw-status">20 agents</div></div>
-      <div class="fw-item inactive"><div class="fw-name">n8n</div><div class="fw-status">No workflows</div></div>
-      <div class="fw-item inactive"><div class="fw-name">Frameforge</div><div class="fw-status">Not used</div></div>
-      <div class="fw-item inactive"><div class="fw-name">GSD</div><div class="fw-status">Not active</div></div>
-      <div class="fw-item active"><div class="fw-name">pyautogui</div><div class="fw-status">Available</div></div>
+    <div class="fw-grid" id="fw-grid">
     </div>
   </div>
 
   <!-- REVENUE -->
-  <div class="card card-orange rev-card reveal">
+  <div class="card card-orange rev-card reveal" id="revenue-section">
     <div class="card-label">Revenue Channels</div>
-    <div class="rev-grid">
-      <div class="rev-item"><div class="rev-source">Gumroad</div><div class="rev-amount zero">$0.00</div></div>
-      <div class="rev-item"><div class="rev-source">Etsy</div><div class="rev-amount zero">$0.00</div></div>
-      <div class="rev-item"><div class="rev-source">Kalshi</div><div class="rev-amount positive">+$0.85</div></div>
-      <div class="rev-item"><div class="rev-source">Amazon Aff.</div><div class="rev-amount zero">$0.00</div></div>
+    <div class="rev-grid" id="rev-grid">
     </div>
   </div>
 
@@ -754,8 +1079,168 @@
 
 <div class="footer">CLX AGENT COMMAND CENTER v2.0</div>
 
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Framework tooltip -->
+<div class="fw-tooltip" id="fw-tooltip">
+  <div class="fw-tooltip-title"></div>
+  <div class="fw-tooltip-desc"></div>
+</div>
+
 <script>
-// Clock
+// ===========================
+// DATA
+// ===========================
+const agentData = [
+  { name: 'coordinator-1', domain: 'architecture', status: 'RUNNING', statusClass: 's-running', uptime: '4h 12m', tasks: 23, memory: '142 MB', lastAction: 'Routing swarm consensus', pid: 8421 },
+  { name: 'hooks-enforcer', domain: 'engineering', status: 'IDLE', statusClass: 's-idle', uptime: '3h 45m', tasks: 8, memory: '67 MB', lastAction: 'Deployed PreCompact hooks', pid: 8422 },
+  { name: 'compaction-survivor', domain: 'engineering', status: 'IDLE', statusClass: 's-idle', uptime: '2h 20m', tasks: 5, memory: '54 MB', lastAction: 'Survived last compaction cycle', pid: 8423 },
+  { name: 'claude-md-redesign', domain: 'architecture', status: 'COMPLETED', statusClass: 's-completed', uptime: '1h 55m', tasks: 12, memory: '89 MB', lastAction: 'Rewrote .claude.md to 95 gates', pid: 8424 },
+  { name: 'precompact-hook', domain: 'engineering', status: 'COMPLETED', statusClass: 's-completed', uptime: '1h 30m', tasks: 6, memory: '45 MB', lastAction: 'Deployed hooks to settings.json', pid: 8425 },
+  { name: 'n8n-automation', domain: 'automation', status: 'IDLE', statusClass: 's-idle', uptime: '5h 10m', tasks: 0, memory: '32 MB', lastAction: 'Waiting for workflow config', pid: 8426 },
+  { name: 'telegram-debug', domain: 'debugging', status: 'ERROR', statusClass: 's-error', uptime: '0h 0m', tasks: 3, memory: '128 MB', lastAction: '409 conflict: mode-controller.py collision', pid: 8427 },
+  { name: 'obsidian-optimizer', domain: 'knowledge-mgmt', status: 'IDLE', statusClass: 's-idle', uptime: '6h 5m', tasks: 15, memory: '78 MB', lastAction: 'Logged 15 brainstorm entries', pid: 8428 },
+  { name: 'gemini-king-mode', domain: 'research', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 2, memory: '256 MB', lastAction: 'Context window exceeded 1M tokens', pid: 8429 },
+  { name: 'memory-tiers', domain: 'architecture', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 1, memory: '312 MB', lastAction: 'Prompt too long for Haiku', pid: 8430 },
+  { name: 'self-audit', domain: 'quality', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 0, memory: '198 MB', lastAction: 'Failed: context overflow', pid: 8431 },
+  { name: 'session-management', domain: 'engineering', status: 'CTX OVERFLOW', statusClass: 's-error', uptime: '0h 0m', tasks: 0, memory: '245 MB', lastAction: 'Failed: context overflow', pid: 8432 },
+  { name: 'business-reliability', domain: 'business', status: 'IDLE', statusClass: 's-idle', uptime: '4h 0m', tasks: 7, memory: '56 MB', lastAction: 'Monitoring revenue channels', pid: 8433 },
+  { name: 'consensus-builder', domain: 'architecture', status: 'WAITING', statusClass: 's-running', uptime: '2h 15m', tasks: 4, memory: '92 MB', lastAction: 'Awaiting quorum from 3 agents', pid: 8434 },
+];
+
+const feedData = [
+  { time: '05:25', msg: 'claude-md-redesign: Rewrote .claude.md \u2014 209 lines \u2192 95 enforceable gates', type: 'success', detail: 'Reduced from 209 to 95 lines. Added PreCompact, SessionStart, and PostEdit hook gates. Compliance score expected to rise from 6.2 to 8+.' },
+  { time: '05:22', msg: 'precompact-hook: Deployed PreCompact + SessionStart hooks to settings.json', type: 'success', detail: 'Hooks registered in ~/.claude/settings.json. PreCompact triggers at 80% context, SessionStart validates memory load.' },
+  { time: '05:21', msg: '6 Haiku agents failed: prompt too long (context overflow \u2014 need context-mode)', type: 'error', detail: 'Agents affected: gemini-king-mode, memory-tiers, self-audit, session-management, plus 2 swarm workers. Root cause: no context-mode enforcement.' },
+  { time: '05:17', msg: 'Swarm initialized: 20 agents spawned for learning-loop-fix brainstorm', type: 'info', detail: 'Ruflo swarm session. 20 Haiku agents with 8-second spawn cycle. Coordinator-1 managing consensus.' },
+  { time: '04:54', msg: 'Telegram bot commands updated (10 framework commands set)', type: 'success', detail: 'Commands: /status, /agents, /feed, /revenue, /frameworks, /spawn, /kill, /restart, /logs, /help' },
+  { time: '04:27', msg: 'Obsidian brainstorm session logged: 15 timestamped entries', type: 'info', detail: 'Brainstorm captured in Obsidian daily note. Topics: agent replication, context-mode enforcement, hook intelligence.' },
+  { time: '02:40', msg: 'Tweet posted on @casbattle with storefront link preview', type: 'success', detail: 'Tweet included OG card from theresetmethod.live. Link preview verified working.' },
+  { time: '02:20', msg: 'Instagram bio updated: theresetmethod.live', type: 'success', detail: 'Bio link changed from linktr.ee to direct domain. Verified link is clickable.' },
+  { time: '01:55', msg: 'Google Search Console: property verified + sitemap submitted', type: 'success', detail: 'DNS TXT verification passed. Sitemap at /sitemap.xml submitted with 12 URLs.' },
+  { time: '01:50', msg: 'SEO deployed: meta tags, schema.org, OG cards, robots.txt', type: 'success', detail: 'Full SEO package: title, description, OG image, Twitter card, JSON-LD Product schema, robots.txt allowing all crawlers.' },
+  { time: '01:48', msg: 'Amazon product images added to 6 tool cards on storefront', type: 'success', detail: '6 affiliate product cards with images, descriptions, and tagged Amazon links.' },
+  { time: '01:20', msg: 'Etsy: 3 listings published on TheResetPrintables ($2.99/$4.99/$9.99)', type: 'success', detail: 'Listings: Budget Reset Planner ($2.99), Habit Tracker Bundle ($4.99), Full Reset Kit ($9.99). All with SEO-optimized tags.' },
+  { time: '01:00', msg: 'Storefront v3 deployed: awwwards-level redesign with scroll animations', type: 'success', detail: 'Complete visual overhaul with glass morphism, GSAP scroll animations, responsive grid, dark theme.' },
+  { time: '00:45', msg: 'DNS configured: CNAME www + A record @ \u2192 Vercel', type: 'success', detail: 'Namecheap DNS: A record 76.76.21.21, CNAME www -> cname.vercel-dns.com. Propagation confirmed.' },
+  { time: '00:38', msg: 'theresetmethod.live deployed to Vercel via GitHub import', type: 'success', detail: 'GitHub repo reset-method-store imported. Auto-deploy on push to main. Build time: 8s.' },
+  { time: '00:30', msg: 'Pinterest Day 3 warmup: 10 repins across 3 search terms', type: 'success', detail: 'Search terms: "budget planner printable", "habit tracker 2024", "self improvement printable". Account warming strategy day 3 of 7.' },
+];
+
+const frameworkData = [
+  { name: 'Telegram', status: 'Connected', active: true, desc: 'Bot API connected. 10 commands registered. Handles /status, /agents, /feed, /revenue queries. Chat injection via official plugin.' },
+  { name: 'Obsidian', status: 'Port 22360', active: true, desc: 'Local REST API on port 22360. Primary memory/context store. Daily notes, brainstorm logs, project docs.' },
+  { name: 'Chrome', status: '10 tabs', active: true, desc: 'Claude-in-Chrome extension active. 10 open tabs managed. Used for real browser sessions with logged-in accounts.' },
+  { name: 'Context-Mode', status: 'Not enforced', active: false, desc: 'Context-mode CLI not enforced yet. Would prevent context overflow errors affecting 6 agents. Priority: HIGH.' },
+  { name: 'Ruflo', status: '20 agents', active: true, desc: 'Agent orchestration framework. 20 agents in current swarm. Handles spawn, terminate, health checks, consensus.' },
+  { name: 'n8n', status: 'No workflows', active: false, desc: 'Self-hosted automation platform. Installed but no workflows configured yet. Planned for marketing automation.' },
+  { name: 'Frameforge', status: 'Not used', active: false, desc: 'Remotion-based video production framework. Available but not activated for current sprint.' },
+  { name: 'GSD', status: 'Not active', active: false, desc: 'Get Stuff Done workflow engine. Phase-based project management with autonomous execution. Not active this session.' },
+  { name: 'pyautogui', status: 'Available', active: true, desc: 'Python GUI automation. Used as fallback for click automation when MCP browser tools are insufficient.' },
+];
+
+const revenueData = [
+  { source: 'Gumroad', amount: '$0.00', positive: false, detail: [
+    { label: 'Products listed', val: '4' },
+    { label: 'Views today', val: '12' },
+    { label: 'Conversion rate', val: '0%' },
+    { label: 'Status', val: 'Live, needs traffic' },
+  ]},
+  { source: 'Etsy', amount: '$0.00', positive: false, detail: [
+    { label: 'Listings', val: '3' },
+    { label: 'Views today', val: '5' },
+    { label: 'Favorites', val: '1' },
+    { label: 'Status', val: 'New store, warming up' },
+  ]},
+  { source: 'Kalshi', amount: '+$0.85', positive: true, detail: [
+    { label: 'Open positions', val: '2' },
+    { label: 'Win rate', val: '67%' },
+    { label: 'Today P&L', val: '+$0.85' },
+    { label: 'Best trade', val: 'Weather YES +14%' },
+  ]},
+  { source: 'Amazon Aff.', amount: '$0.00', positive: false, detail: [
+    { label: 'Links placed', val: '6' },
+    { label: 'Clicks today', val: '3' },
+    { label: 'Conversions', val: '0' },
+    { label: 'Status', val: 'Needs storefront traffic' },
+  ]},
+];
+
+// ===========================
+// RENDER FUNCTIONS
+// ===========================
+function renderAgents() {
+  const list = document.getElementById('agent-list');
+  list.innerHTML = agentData.map((a, i) => `
+    <div class="agent-row" onclick="toggleAgent(${i})" id="agent-row-${i}">
+      <div>
+        <div class="agent-name">${a.name}</div>
+        <div class="agent-domain">${a.domain}</div>
+      </div>
+      <span class="agent-status ${a.statusClass}">${a.status}</span>
+    </div>
+    <div class="agent-detail" id="agent-detail-${i}">
+      <div class="agent-detail-grid">
+        <div class="agent-detail-item"><span class="agent-detail-label">Uptime</span><span class="agent-detail-value">${a.uptime}</span></div>
+        <div class="agent-detail-item"><span class="agent-detail-label">Tasks</span><span class="agent-detail-value">${a.tasks}</span></div>
+        <div class="agent-detail-item"><span class="agent-detail-label">Memory</span><span class="agent-detail-value">${a.memory}</span></div>
+        <div class="agent-detail-item"><span class="agent-detail-label">PID</span><span class="agent-detail-value">${a.pid}</span></div>
+      </div>
+      <div style="margin-top:0.5rem;font-family:var(--mono);font-size:0.68rem;color:var(--dim);">Last: ${a.lastAction}</div>
+      <div class="agent-actions">
+        <button class="agent-action-btn restart" onclick="event.stopPropagation(); agentAction('${a.name}', 'restart')">Restart</button>
+        <button class="agent-action-btn stop" onclick="event.stopPropagation(); agentAction('${a.name}', 'stop')">Stop</button>
+        <button class="agent-action-btn logs" onclick="event.stopPropagation(); agentAction('${a.name}', 'logs')">Logs</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderFeed() {
+  const list = document.getElementById('feed-list');
+  list.innerHTML = feedData.map((f, i) => `
+    <div class="feed-item ${f.type}" data-feed-type="${f.type}" onclick="toggleFeedItem(${i})">
+      <span class="feed-time">${f.time}</span>
+      <div class="feed-content">
+        <div class="feed-msg">${f.msg}</div>
+        <div class="feed-detail" id="feed-detail-${i}">${f.detail}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderFrameworks() {
+  const grid = document.getElementById('fw-grid');
+  grid.innerHTML = frameworkData.map((fw, i) => `
+    <div class="fw-item ${fw.active ? 'active' : 'inactive'}"
+         onclick="selectFramework(${i})"
+         onmouseenter="showFwTooltip(event, ${i})"
+         onmouseleave="hideFwTooltip()">
+      <div class="fw-name">${fw.name}</div>
+      <div class="fw-status">${fw.status}</div>
+    </div>
+  `).join('');
+}
+
+function renderRevenue() {
+  const grid = document.getElementById('rev-grid');
+  grid.innerHTML = revenueData.map((r, i) => `
+    <div class="rev-item" onclick="toggleRevenue(${i})" id="rev-item-${i}">
+      <div class="rev-source">${r.source}</div>
+      <div class="rev-amount ${r.positive ? 'positive' : 'zero'}">${r.amount}</div>
+      <div class="rev-detail" id="rev-detail-${i}">
+        ${r.detail.map(d => `<div class="rev-detail-row"><span class="label">${d.label}</span><span class="val">${d.val}</span></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===========================
+// INTERACTIONS
+// ===========================
+
+// --- Clock ---
 function updateClock() {
   const d = new Date();
   document.getElementById('clock').textContent = d.toLocaleTimeString('en-US', { hour12: false });
@@ -763,20 +1248,216 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Scroll reveal with IntersectionObserver
-const observer = new IntersectionObserver((entries) => {
+// --- Scroll to top ---
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// --- Nav scrolling ---
+function navTo(el) {
+  const sectionId = el.getAttribute('data-section');
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // Update active state in both desktop and mobile navs
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll(`.nav-item[data-section="${sectionId}"]`).forEach(n => n.classList.add('active'));
+}
+
+// --- Highlight active nav on scroll ---
+const sectionIds = ['metrics-section', 'agents-section', 'feed-section', 'frameworks-section', 'revenue-section'];
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll(`.nav-item[data-section="${id}"]`).forEach(n => n.classList.add('active'));
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
+
+// --- Mobile menu ---
+function toggleMobileMenu() {
+  const hamburger = document.querySelector('.hamburger');
+  const drawer = document.querySelector('.mobile-drawer');
+  const overlay = document.querySelector('.mobile-overlay');
+  const isOpen = drawer.classList.contains('open');
+
+  hamburger.classList.toggle('open');
+  drawer.classList.toggle('open');
+  overlay.classList.toggle('open');
+  overlay.style.display = isOpen ? 'none' : 'block';
+}
+
+// --- Metric card breakdown toggle ---
+function toggleMetric(card) {
+  const breakdown = card.querySelector('.metric-breakdown');
+  const wasOpen = breakdown.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.metric-breakdown').forEach(b => b.classList.remove('open'));
+  // Toggle this one
+  if (!wasOpen) {
+    breakdown.classList.add('open');
+  }
+}
+
+// --- Agent expand/collapse ---
+function toggleAgent(index) {
+  const detail = document.getElementById(`agent-detail-${index}`);
+  const row = document.getElementById(`agent-row-${index}`);
+  const wasOpen = detail.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.agent-detail').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.agent-row').forEach(r => r.classList.remove('expanded'));
+  // Toggle this one
+  if (!wasOpen) {
+    detail.classList.add('open');
+    row.classList.add('expanded');
+  }
+}
+
+// --- Agent action buttons ---
+function agentAction(name, action) {
+  const msgs = {
+    restart: { text: `Restarting ${name}...`, type: 'info' },
+    stop: { text: `Stopping ${name}...`, type: 'warning' },
+    logs: { text: `Fetching logs for ${name}...`, type: 'info' },
+  };
+  const m = msgs[action];
+  showToast(m.text, m.type);
+
+  // Simulate completion after delay
+  setTimeout(() => {
+    if (action === 'restart') showToast(`${name} restarted successfully`, 'success');
+    if (action === 'stop') showToast(`${name} stopped`, 'warning');
+    if (action === 'logs') showToast(`${name}: last 50 lines loaded (simulated)`, 'success');
+  }, 1200);
+}
+
+// --- Feed filter ---
+function filterFeed(el) {
+  const type = el.getAttribute('data-type');
+  document.querySelectorAll('.feed-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.feed-item').forEach(item => {
+    if (type === 'all' || item.getAttribute('data-feed-type') === type) {
+      item.classList.remove('hidden');
+    } else {
+      item.classList.add('hidden');
+    }
+  });
+}
+
+// --- Feed item expand ---
+function toggleFeedItem(index) {
+  const detail = document.getElementById(`feed-detail-${index}`);
+  const wasOpen = detail.classList.contains('open');
+  document.querySelectorAll('.feed-detail').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.feed-item').forEach(f => f.classList.remove('highlighted'));
+  if (!wasOpen) {
+    detail.classList.add('open');
+    detail.closest('.feed-item').classList.add('highlighted');
+  }
+}
+
+// --- Framework select + tooltip ---
+let selectedFw = -1;
+function selectFramework(index) {
+  const items = document.querySelectorAll('#fw-grid .fw-item');
+  if (selectedFw === index) {
+    items[index].classList.remove('selected');
+    selectedFw = -1;
+    showToast(`${frameworkData[index].name} deselected`, 'info');
+  } else {
+    items.forEach(it => it.classList.remove('selected'));
+    items[index].classList.add('selected');
+    selectedFw = index;
+    const fw = frameworkData[index];
+    const verb = fw.active ? 'Active' : 'Inactive';
+    showToast(`${fw.name}: ${verb} \u2014 ${fw.status}`, fw.active ? 'success' : 'warning');
+  }
+}
+
+function showFwTooltip(e, index) {
+  const tooltip = document.getElementById('fw-tooltip');
+  const fw = frameworkData[index];
+  tooltip.querySelector('.fw-tooltip-title').textContent = fw.name;
+  tooltip.querySelector('.fw-tooltip-desc').textContent = fw.desc;
+  tooltip.style.left = (e.clientX + 12) + 'px';
+  tooltip.style.top = (e.clientY + 12) + 'px';
+  tooltip.classList.add('visible');
+}
+
+function hideFwTooltip() {
+  document.getElementById('fw-tooltip').classList.remove('visible');
+}
+
+// Reposition tooltip on mousemove over fw-grid
+document.addEventListener('mousemove', (e) => {
+  const tooltip = document.getElementById('fw-tooltip');
+  if (tooltip.classList.contains('visible')) {
+    tooltip.style.left = (e.clientX + 12) + 'px';
+    tooltip.style.top = (e.clientY + 12) + 'px';
+  }
+});
+
+// --- Revenue toggle ---
+function toggleRevenue(index) {
+  const detail = document.getElementById(`rev-detail-${index}`);
+  const item = document.getElementById(`rev-item-${index}`);
+  const wasOpen = detail.classList.contains('open');
+  document.querySelectorAll('.rev-detail').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.rev-item').forEach(r => r.classList.remove('selected'));
+  if (!wasOpen) {
+    detail.classList.add('open');
+    item.classList.add('selected');
+  }
+}
+
+// --- Toast system ---
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  // Trigger animation
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add('show'));
+  });
+  // Auto-remove
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
+// ===========================
+// INIT
+// ===========================
+renderAgents();
+renderFeed();
+renderFrameworks();
+renderRevenue();
+
+// Scroll reveal
+const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
+      revealObserver.unobserve(entry.target);
     }
   });
-}, {
-  threshold: 0.08,
-  rootMargin: '0px 0px -40px 0px'
-});
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Nav scroll observer
+sectionIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) navObserver.observe(el);
+});
 </script>
 </body>
 </html>
